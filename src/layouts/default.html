@@ -5,10 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title | default: docTitle }}</title>
     <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="/pagefind/pagefind-component-ui.css">
+    <script type="module" src="/pagefind/pagefind-component-ui.js"></script>
     <script type="module" src="/assets/mermaid-viewer.js"></script>
   </head>
   <body>
-    <main>
+    {% comment %} base-url is not a link attribute, so the path prefix is added here rather than by the html base plugin {% endcomment %}
+    <pagefind-config base-url="{{ '/' | url }}"></pagefind-config>
+    <header class="site-header">
+      <a class="site-title" href="/">Jenkinsfile Cookbook</a>
+      <pagefind-modal-trigger></pagefind-modal-trigger>
+    </header>
+    <pagefind-modal></pagefind-modal>
+    {% comment %} the landing page only lists other pages, so it stays out of the search index {% endcomment %}
+    <main {% if page.url != "/" %}data-pagefind-body{% endif %}>
       {{ content }}
     </main>
   </body>

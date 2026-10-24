@@ -37,6 +37,30 @@ main, article {
   padding: var(--spacing-unit);
 }
 
+/* Site header: the home link and the search trigger */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-unit);
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--spacing-unit);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.site-title {
+  font-weight: 600;
+  color: var(--color-text);
+  border-bottom: none;
+}
+
+/* Search (Pagefind component UI): use the site's font and accent */
+:root {
+  --pf-font: var(--font-sans);
+  --pf-outline-focus: var(--color-accent);
+}
+
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
   line-height: 1.3;
@@ -255,7 +279,7 @@ th {
     font-size: 1.25rem;
   }
 
-  main, article {
+  main, article, .site-header {
     padding: calc(var(--spacing-unit) * 0.5);
   }
 }

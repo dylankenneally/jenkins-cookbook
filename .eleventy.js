@@ -2,6 +2,8 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { InputPathToUrlTransformPlugin, HtmlBasePlugin } = require("@11ty/eleventy");
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
+const markdownItAnchor = require("markdown-it-anchor");
+const { buildSearchIndex } = require("./scripts/search-index.js");
 
 // gets the first heading from the supplied markdown document
 function firstHeading(inputPath) {
@@ -140,6 +142,12 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.amendLibrary("md", renderMermaidFences);
   eleventyConfig.amendLibrary("md", renderCallouts);
+
+  // headings get ids, so search can link straight to a section
+  eleventyConfig.amendLibrary("md", (md) => md.use(markdownItAnchor, { slugify: eleventyConfig.getFilter("slugify"), tabIndex: false }));
+
+  // the search index is built from the finished html, on every build including each rebuild under --serve
+  eleventyConfig.on("eleventy.after", ({ dir }) => buildSearchIndex(dir.output));
 
   // prefixes root-relative urls with pathPrefix, so the site works under /jenkins-cookbook/ on github pages
   eleventyConfig.addPlugin(HtmlBasePlugin);

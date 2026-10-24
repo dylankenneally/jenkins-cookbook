@@ -15,6 +15,8 @@ The content is layered, so you can start at the level that suits you:
 - **Shared library building blocks** are the Docker and AWS steps, each written once and called by everything else.
 - **Composed pipelines** put those together end to end.
 
+Press `Cmd+K` (or `Ctrl+K`) on any page to search. The search covers page titles, headings, prose and code, so you can look up a step name or an error message and jump straight to the section that explains it.
+
 It's written as Markdown and built with [Eleventy](https://www.11ty.dev/). Changes to this repository are deployed automatically to GitHub Pages at [kenneally.dev/jenkins-cookbook](https://kenneally.dev/jenkins-cookbook).
 
 ## To build and run
@@ -43,7 +45,7 @@ npm start
 | Script | Action |
 | - | - |
 | `npm start` | **Starts the development server** with live reload at <http://localhost:8080>. |
-| `npm run build` | Performs a **production build** of the site to `./dist/`. |
+| `npm run build` | Performs a **production build** of the site to `./dist/`, including the search index. |
 | `npm run clean` | Deletes `./dist/`. |
 
 ## Contributing

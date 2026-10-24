@@ -28,6 +28,7 @@ The site is served at <http://localhost:8080> and reloads as you edit. See the [
 The pages live in `src/content/` as Markdown. Each one is published as its own page, with no front matter needed.
 
 - **Start with a single `#` heading.** It becomes the page title.
+- **Write headings that make sense on their own.** Every heading gets a link anchor and shows up as a section in search results, so "Roll back an ECS service" is more useful than "Steps".
 - **Link between pages with relative `.md` paths**, for example `[Troubleshooting](../guides/troubleshooting.md)`. They are rewritten to the right URL when the site is built.
 - **Tag every code fence with its language** (`groovy`, `bash`, `yaml` and so on) so it is highlighted.
 - **Use callouts for asides**: `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]` or `> [!CAUTION]`.
