@@ -1,0 +1,2 @@
+# store and check out text files with LF endings on every OS, so a Windows checkout matches macOS
+* text=auto eol=lf
