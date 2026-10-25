@@ -1,3 +1,7 @@
+---
+tags: [shared-library, aws, security]
+---
+
 # `withAws`
 
 Runs a block with AWS credentials from the Jenkins credentials store and a default region, so the steps inside can call the AWS CLI without `--region` on every command. The other AWS building blocks expect to run inside it.

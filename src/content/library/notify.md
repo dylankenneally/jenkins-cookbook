@@ -1,3 +1,7 @@
+---
+tags: [shared-library, notifications]
+---
+
 # `notifySlack` & `notifyTeams`
 
 Posts the build result to a Slack channel or a Microsoft Teams channel. Both pick a status from `currentBuild.currentResult`, so they're meant for `post { always { … } }`.

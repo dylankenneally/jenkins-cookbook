@@ -1,3 +1,7 @@
+---
+tags: [nodejs, testing]
+---
+
 # Node.js Build & Test
 
 Installs dependencies from the lockfile, builds, and runs the test suite. To ship the output to S3 and CloudFront, see the [static frontend pipeline](../pipelines/static-frontend.md).

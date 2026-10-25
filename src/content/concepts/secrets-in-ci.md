@@ -1,3 +1,7 @@
+---
+tags: [security]
+---
+
 # Secrets in CI
 
 A CI system needs secrets to do anything useful: tokens to push images, keys to deploy, passwords for test databases. It also runs code from every branch, often written by many people. This page explains where secrets live in Jenkins, how a pipeline gets at them, and the ways they leak. For syntax, see [Environment Variables & Secure Credentials](../fundamentals/environment-variables-and-secure-credentials.md).

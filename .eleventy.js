@@ -6,9 +6,13 @@ const markdownItAnchor = require("markdown-it-anchor");
 const { buildSearchIndex } = require("./scripts/search-index.js");
 const { validateLanding, pageFor } = require("./scripts/landing.js");
 const { buildSiteIndex } = require("./scripts/site-index.js");
+const { breadcrumbsFor, validateSections } = require("./scripts/breadcrumbs.js");
+const { validateTags, tagUrl, tagSummaries, groupBySection } = require("./scripts/tags.js");
 
 const CONTENT_DIR = "src/content";
 const LANDING_DATA = "src/data/landing.json";
+const SECTIONS_DATA = "src/data/sections.json";
+const TAG_VOCABULARY_DATA = "src/data/tagVocabulary.json";
 
 // self-hosted fonts: only the weights the site uses are copied, with the licences the font licence asks to travel with them
 const PLEX = "node_modules/@fontsource/ibm-plex-sans";
@@ -184,6 +188,15 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.on("eleventy.before", () => validateLanding(LANDING_DATA, CONTENT_DIR));
   eleventyConfig.addFilter("pageFor", (pages, ref) => pageFor(pages, ref, CONTENT_DIR));
 
+  // breadcrumbs link each folder to its heading on the browse page, so check those headings are still there
+  eleventyConfig.on("eleventy.before", () => validateSections(SECTIONS_DATA, CONTENT_DIR, eleventyConfig.getFilter("slugify")));
+
+  // the recipes, once every one has been checked against the tag vocabulary
+  eleventyConfig.addCollection("taggable", (api) => validateTags(api.getAll(), TAG_VOCABULARY_DATA, CONTENT_DIR));
+  eleventyConfig.addFilter("tagUrl", tagUrl);
+  eleventyConfig.addFilter("tagSummaries", tagSummaries);
+  eleventyConfig.addFilter("groupBySection", (pages, sections) => groupBySection(pages, sections, CONTENT_DIR));
+
   // prefixes root-relative urls with pathPrefix, so the site works under /jenkins-cookbook/ on github pages
   eleventyConfig.addPlugin(HtmlBasePlugin);
 
@@ -196,8 +209,11 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addGlobalData("layout", "default");
 
-  // every page gets a title, so documents need no front matter
-  eleventyConfig.addGlobalData("eleventyComputed", { docTitle: (data) => documentTitle(data.page.inputPath) });
+  // every page gets a title and a breadcrumb trail, so documents need no front matter for either
+  eleventyConfig.addGlobalData("eleventyComputed", {
+    docTitle: (data) => documentTitle(data.page.inputPath),
+    breadcrumbs: (data) => breadcrumbsFor(data, data.sections, CONTENT_DIR)
+  });
 
   return {
     // local runs are served from the root; the deploy workflow sets the project page's sub-path

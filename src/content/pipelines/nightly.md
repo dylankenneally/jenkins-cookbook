@@ -1,3 +1,7 @@
+---
+tags: [testing, notifications, docker]
+---
+
 # Nightly Build & Agent Maintenance
 
 Runs once a night on a cron [trigger](../fundamentals/triggers.md): the full test suite including the slow suites, a dependency update report that doesn't fail the build, and a Docker prune on every Docker agent. The prune is the agent-wide maintenance job that [`dockerCleanup`](../library/docker-cleanup.md) leaves to a separate schedule. Uses the [shared library](../library/setup.md) step [`notifySlack`](../library/notify.md); the build steps are the [Node.js recipe](../builds/nodejs.md).

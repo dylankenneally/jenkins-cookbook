@@ -1,3 +1,7 @@
+---
+tags: [getting-started, deploy, aws]
+---
+
 # From Build to Deploy
 
 This tutorial grows the pipeline from [Your First Pipeline](first-pipeline.md) into the [Static Frontend](../pipelines/static-frontend.md) pipeline. By the end, every branch and pull request builds and tests, and pushes to `main` also publish the site to an S3 bucket and refresh the CloudFront cache in front of it. It takes about 45 minutes of your time, plus the wait for the AWS resources and credential.

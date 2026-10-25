@@ -1,3 +1,7 @@
+---
+tags: [mobile, nodejs]
+---
+
 # React Native Build & Test
 
 Type-checks, lints and tests the JavaScript once on Linux, then builds the Android and iOS apps side by side. iOS can only be built on macOS with Xcode installed, so that stage runs on a `macos` agent.

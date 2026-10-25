@@ -1,0 +1,29 @@
+---
+title: Tags
+tagsPage: true
+searchable: false
+permalink: /tags/
+eleventyExcludeFromCollections: true
+---
+{% comment %} built from the tag vocabulary (src/data/tagVocabulary.json) and the tags in each page's front matter; nothing in this list is written by hand {% endcomment %}
+{% assign browse = collections.all | pageFor: "browse.md" %}
+{% assign summaries = collections.taggable | tagSummaries: tagVocabulary %}
+
+<section class="hero" aria-labelledby="hero-title">
+  <h1 id="hero-title">Tags</h1>
+  <p class="hero__summary">Every recipe is tagged with the tools and topics it covers. Pick a tag to see all the recipes that carry it, or <a href="{{ browse.url }}">browse all recipes</a> grouped by layer.</p>
+</section>
+
+<section class="section" aria-labelledby="all-tags-title">
+  <h2 id="all-tags-title">All tags</h2>
+
+  <ul class="grid tag-cards" role="list">
+    {% for item in summaries %}
+    <li class="tag-card">
+      <a class="tag-card__name" href="{{ item.url }}"><span aria-hidden="true">#</span>{{ item.id }}</a>
+      <span class="tag-card__count">{{ item.count }} {% if item.count == 1 %}recipe{% else %}recipes{% endif %}</span>
+      <p class="tag-card__description">{{ item.description | escape }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+</section>

@@ -1,3 +1,7 @@
+---
+tags: [shared-library, git, release]
+---
+
 # `gitVersion`
 
 Returns a version string for the checked-out commit, based on `git describe`. A tagged commit gives the tag (`v1.4.0`), a later commit gives the tag plus distance and short SHA (`v1.4.0-3-g1a2b3c4`), and a repo with no tags gives the short SHA alone.

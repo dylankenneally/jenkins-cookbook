@@ -1,3 +1,7 @@
+---
+tags: [security]
+---
+
 # Add a Secret or Credential
 
 How to get a secret (an API token, a password, a signing key, AWS access) into Jenkins and use it in a pipeline without it ending up in the repo, the console log or a chat history. The Jenkins administrator creates the credential; you decide what kind it is, request it, and reference it by ID. For the background, see [secrets in CI](../concepts/secrets-in-ci.md).

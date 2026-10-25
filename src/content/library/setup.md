@@ -1,3 +1,7 @@
+---
+tags: [shared-library]
+---
+
 # Shared Library Setup
 
 The Docker and AWS building blocks in this cookbook are [shared library](https://www.jenkins.io/doc/book/pipeline/shared-libraries/) steps. Each one is written once in its own repo and every `Jenkinsfile` calls it by name, rather than copying helper functions between repositories.

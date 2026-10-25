@@ -1,0 +1,50 @@
+---
+title: Tag
+tagsPage: true
+searchable: false
+eleventyExcludeFromCollections: true
+pagination:
+  data: tagVocabulary
+  size: 1
+  alias: tag
+permalink: "{{ tag.id | tagUrl }}"
+crumbParent:
+  label: tags
+  url: /tags/
+eleventyComputed:
+  title: "#{{ tag.id }}"
+  crumbName: "{{ tag.id }}.md"
+---
+{% comment %} one page for each tag in the vocabulary, listing the recipes that carry it grouped by the part of the cookbook they sit in {% endcomment %}
+{% assign browse = collections.all | pageFor: "browse.md" %}
+{% assign recipes = collections[tag.id] %}
+{% assign groups = recipes | groupBySection: sections %}
+
+<section class="hero" aria-labelledby="hero-title">
+  <h1 id="hero-title"><span aria-hidden="true">#</span>{{ tag.id }}</h1>
+  <p class="hero__summary">{{ tag.description | escape }} {{ recipes.size }} {% if recipes.size == 1 %}recipe carries{% else %}recipes carry{% endif %} this tag.</p>
+  <p class="hero__actions">
+    <a class="button button--primary" href="/tags/">All tags</a>
+    <a class="button" href="{{ browse.url }}">Browse all recipes</a>
+  </p>
+</section>
+
+{% for group in groups %}
+<section class="section" aria-labelledby="group-{{ group.id }}">
+  <h2 id="group-{{ group.id }}">{{ group.label | escape }}</h2>
+
+  <ul class="grid tagged" role="list">
+    {% for recipe in group.recipes %}
+    <li class="tagged__item">
+      <a class="tagged__title" href="{{ recipe.url }}">{{ recipe.title | escape }}</a>
+      <span class="tagged__file">{{ recipe.file }}</span>
+      <ul class="tagged__tags" role="list" aria-label="Tags on {{ recipe.title | escape }}">
+        {% for other in recipe.tags %}
+        {% unless other == tag.id %}<li><a class="tag-chip" href="{{ other | tagUrl }}"><span aria-hidden="true">#</span>{{ other }}</a></li>{% endunless %}
+        {% endfor %}
+      </ul>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endfor %}

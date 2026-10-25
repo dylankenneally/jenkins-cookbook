@@ -1,3 +1,7 @@
+---
+tags: [git, aws, deploy]
+---
+
 # Pull Request Previews
 
 Extends the [static frontend](static-frontend.md) so every pull request gets its own copy of the site under `previews/pr-<number>/`, with the link posted on the PR. `main` still deploys to production. Uses the [shared library](../library/setup.md) steps [`withAws`](../library/with-aws.md), [`s3Sync` and `cloudFrontInvalidate`](../library/s3-cloudfront.md); the PR handling is covered in [multibranch and pull requests](../fundamentals/multibranch-and-pull-requests.md).

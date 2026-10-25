@@ -1,3 +1,7 @@
+---
+tags: [getting-started]
+---
+
 # CI/CD in One Page
 
 The ideas behind every recipe in this cookbook, without any Jenkins syntax. If you know what a pipeline is for and why the `Jenkinsfile` lives in your repo, the rest of the cookbook reads as a set of answers to "how do I do that in Jenkins".

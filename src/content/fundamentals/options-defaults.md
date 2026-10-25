@@ -1,3 +1,7 @@
+---
+tags: [declarative]
+---
+
 # Options Defaults
 
 A set of pipeline-level `options {}` worth adding to nearly every `Jenkinsfile`. They cap runaway builds, make logs easier to read and stop old builds from filling the controller's disk.

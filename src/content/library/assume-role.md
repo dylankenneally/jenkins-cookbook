@@ -1,3 +1,7 @@
+---
+tags: [shared-library, aws, security]
+---
+
 # `assumeRole`
 
 Runs a block with short-lived credentials for another IAM role, typically a deploy role in a different AWS account. Run it inside [`withAws`](with-aws.md): the outer credentials are what call `sts assume-role`, and the region carries through.

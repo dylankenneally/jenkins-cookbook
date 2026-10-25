@@ -1,3 +1,7 @@
+---
+tags: [shared-library, aws, deploy]
+---
+
 # `cfnDeploy` & `terraformApply`
 
 Two ways to apply infrastructure changes from a pipeline, each showing what will change and pausing for approval before applying it. `cfnDeploy` uses AWS CloudFormation change sets and `terraformApply` uses a saved Terraform plan. Run both inside [`withAws`](with-aws.md); Terraform's AWS provider picks up the same credentials and region from the environment.

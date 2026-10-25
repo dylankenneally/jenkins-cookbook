@@ -1,3 +1,7 @@
+---
+tags: [testing]
+---
+
 # Deal with a Flaky Test
 
 A flaky test passes and fails on the same code. This guide covers how to confirm a test is flaky, get it out of the way of everyone else's builds without hiding it, and fix it.

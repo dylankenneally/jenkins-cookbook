@@ -1,3 +1,7 @@
+---
+tags: [conventions]
+---
+
 # Roles and Responsibilities
 
 Who owns which part of the CI/CD setup, and who to ask when something needs changing. One person can hold several roles; on a small team the repo owner and release approver are often the same developer.

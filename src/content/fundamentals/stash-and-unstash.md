@@ -1,3 +1,7 @@
+---
+tags: [declarative, agents]
+---
+
 # Stash & Unstash
 
 Stages on different agents each get their own workspace, so files built in one stage aren't there in the next. `stash` saves a set of files on the controller and `unstash` restores them on whichever agent runs a later stage.

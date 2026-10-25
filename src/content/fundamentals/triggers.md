@@ -1,3 +1,7 @@
+---
+tags: [declarative, git]
+---
+
 # Triggers
 
 The `triggers {}` directive starts a pipeline without a push: on a schedule, by polling the repo, or when another job finishes. Pushes and pull requests are better handled by webhooks, covered below.

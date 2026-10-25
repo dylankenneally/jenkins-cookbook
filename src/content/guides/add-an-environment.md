@@ -1,3 +1,7 @@
+---
+tags: [aws, deploy]
+---
+
 # Add an Environment or AWS Account
 
 How to add a new deploy target, such as a QA environment between dev and staging, or a new production region, to a pipeline that promotes one image through several AWS accounts. The cloud administrator creates the account, the infrastructure and a deploy role; you add a stage to the `Jenkinsfile` that assumes that role. The examples extend [Promote, Don't Rebuild](../pipelines/promote-across-environments.md) with a `qa` environment in account `444444444444`.

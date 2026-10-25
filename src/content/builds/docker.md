@@ -1,3 +1,7 @@
+---
+tags: [docker, aws, performance]
+---
+
 # Docker Image Builds
 
 Builds container images with BuildKit: a multi-stage Dockerfile, a layer cache kept in ECR so agents don't rebuild unchanged layers, and multi-architecture images for `amd64` and `arm64`. For a plain single-architecture image, the [`dockerPushToEcr`](../library/docker-push-to-ecr.md) building block is enough; this page covers what it doesn't. The ECR steps run inside [`withAws`](../library/with-aws.md).

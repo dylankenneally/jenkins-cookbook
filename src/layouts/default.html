@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+  {% comment %} the landing, 404, index and tag pages share the landing page's look: its hero, buttons and ruled grids {% endcomment %}
+  {% assign landingStyle = false %}
+  {% if landingPage or notFoundPage or indexPage or tagsPage %}{% assign landingStyle = true %}{% endif %}
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,10 +16,10 @@
     <meta name="theme-color" content="#fdfbf7">
     <link rel="preload" href="/assets/fonts/ibm-plex-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/assets/style.css">
-    {% comment %} the 404 and index pages borrow the landing page's hero, buttons and ruled grids, then add their own styles {% endcomment %}
-    {% if landingPage or notFoundPage or indexPage %}<link rel="stylesheet" href="/assets/landing.css">{% endif %}
+    {% if landingStyle %}<link rel="stylesheet" href="/assets/landing.css">{% endif %}
     {% if notFoundPage %}<link rel="stylesheet" href="/assets/not-found.css">{% endif %}
     {% if indexPage %}<link rel="stylesheet" href="/assets/site-index.css">{% endif %}
+    {% if tagsPage %}<link rel="stylesheet" href="/assets/tags.css">{% endif %}
     <link rel="stylesheet" href="/pagefind/pagefind-component-ui.css">
     <script type="module" src="/pagefind/pagefind-component-ui.js"></script>
     <script type="module" src="/assets/mermaid-viewer.js"></script>
@@ -25,7 +28,7 @@
     {% if landingPage %}<script type="module" src="/assets/landing.js"></script>{% endif %}
     {% if notFoundPage %}<script type="module" src="/assets/not-found.js"></script>{% endif %}
   </head>
-  <body{% if landingPage or notFoundPage or indexPage %} class="landing"{% endif %}>
+  <body{% if landingStyle %} class="landing"{% endif %}>
     {% comment %} bundle-path and base-url are not link attributes, so the path prefix is added here rather than by the html base plugin; the ui can't detect its own location when loaded as a module {% endcomment %}
     <pagefind-config bundle-path="{{ '/pagefind/' | url }}" base-url="{{ '/' | url }}"></pagefind-config>
     <header class="site-header">
@@ -46,7 +49,28 @@
     </header>
     {% comment %} pages set searchable: false in their front matter to stay out of the search index {% endcomment %}
     <main {% if searchable != false %}data-pagefind-body{% endif %}>
+      {% comment %} the trail is built from the page's place under the content folder (scripts/breadcrumbs.js); it's navigation, not content, so search skips it {% endcomment %}
+      <nav class="crumbs" aria-label="Breadcrumb" data-pagefind-ignore>
+        <ol class="crumbs__list">
+          {% for crumb in breadcrumbs %}
+          <li>{% if crumb.url %}<a href="{{ crumb.url }}">{{ crumb.label | escape }}</a>{% else %}<span aria-current="page">{{ crumb.label | escape }}</span>{% endif %}</li>
+          {% endfor %}
+        </ol>
+      </nav>
+
       {{ content }}
+
+      {% comment %} a page's tags, each linking to the page that lists every recipe with that tag; search can filter on them too {% endcomment %}
+      {% if tags.size > 0 %}
+      {% assign sortedTags = tags | sort %}
+      <nav class="page-tags" aria-label="Tags">
+        <ul class="page-tags__list" role="list">
+          {% for item in sortedTags %}
+          <li data-pagefind-filter="tag[data-tag]" data-tag="{{ item | escape }}"><a class="tag-chip" href="{{ item | tagUrl }}"><span aria-hidden="true">#</span>{{ item | escape }}</a></li>
+          {% endfor %}
+        </ul>
+      </nav>
+      {% endif %}
     </main>
   </body>
 </html>

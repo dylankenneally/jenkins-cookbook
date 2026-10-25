@@ -25,7 +25,7 @@ The site is served at <http://localhost:8080> and reloads as you edit. See the [
 
 ## Writing content
 
-The pages live in `src/content/` as Markdown. Each one is published as its own page, with no front matter needed.
+The pages live in `src/content/` as Markdown. Each one is published as its own page. The only front matter a page needs is its [tags](#tagging-a-page).
 
 - **Start with a single `#` heading.** It becomes the page title.
 - **Write headings that make sense on their own.** Every heading gets a link anchor and shows up as a section in search results, so "Roll back an ECS service" is more useful than "Steps".
@@ -35,6 +35,31 @@ The pages live in `src/content/` as Markdown. Each one is published as its own p
 - **Draw diagrams with mermaid** in a ` ```mermaid ` fence rather than text art.
 - **Add new pages to the browse list** in `src/content/browse.md`, so people can find them. If the page deserves a spot on the landing page, add it to the matching card in `src/data/landing.json`. The build fails if that file points at a page that doesn't exist.
 - **Use British spelling**, as the rest of the cookbook does (colour, behaviour, organisation).
+
+### Tagging a page
+
+Every recipe carries a few tags, shown as `#docker`-style links at the bottom of the page. Each tag links to a page listing every recipe that has it, and `/tags/` lists them all.
+
+Put the tags in the page's front matter, above the `#` heading:
+
+```markdown
+---
+tags: [docker, aws, deploy]
+---
+
+# Roll back an ECS service
+```
+
+- **Use one to four tags** for what the page is about: the tools, the stack and the task. Don't tag every service a page happens to mention.
+- **Pick from the existing tags.** They are listed, with a description of each, in `src/data/tagVocabulary.json`, so `docker` and `containers` don't both creep in.
+- **Need a new tag?** Add it to `src/data/tagVocabulary.json` in the same change, as lower-case words joined by hyphens (`static-analysis`), with a one-line description. Use it on at least one page, or the build fails.
+- **Pages that opt out of search** (`searchable: false`), such as the landing, browse and 404 pages, don't take tags.
+
+The build fails if a page has no tags, uses a tag that isn't in the vocabulary, or lists the same tag twice.
+
+### Breadcrumbs
+
+The trail above each page (`jenkinsfile-cookbook/guides/flaky-tests.md`) is built from where the file sits, so there is nothing to write. If you add a new folder under `src/content/`, add it to `src/data/sections.json` with the heading on the browse page it should link to. The build fails if the folder isn't listed or the heading doesn't exist.
 
 ### Examples must be safe to copy
 

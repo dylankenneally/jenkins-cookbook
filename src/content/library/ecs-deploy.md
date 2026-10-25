@@ -1,3 +1,7 @@
+---
+tags: [shared-library, aws, docker, deploy]
+---
+
 # `ecsDeploy`
 
 Rolls an Amazon ECS service onto a new container image. It copies the service's current task definition, swaps the image for one container, registers the copy as a new revision, points the service at it and waits for the deployment to settle. Run it inside [`withAws`](with-aws.md), typically with the URI returned by [`dockerPushToEcr`](docker-push-to-ecr.md).

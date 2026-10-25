@@ -1,3 +1,7 @@
+---
+tags: [shared-library, docker]
+---
+
 # `dockerCleanup`
 
 Removes the images this build created from the agent, to save disk space. It only touches images labelled by [`dockerPushToEcr`](docker-push-to-ecr.md), so on a shared agent other jobs keep their images and layer cache.

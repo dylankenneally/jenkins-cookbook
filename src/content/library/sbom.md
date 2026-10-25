@@ -1,3 +1,7 @@
+---
+tags: [shared-library, security, release]
+---
+
 # `sbom`
 
 Generates a CycloneDX software bill of materials with [Syft](https://github.com/anchore/syft) and archives it with the build. The target can be the workspace (a directory) or an image the build has just created.

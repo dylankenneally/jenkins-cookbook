@@ -1,3 +1,7 @@
+---
+tags: [mobile, release]
+---
+
 # Ship a Mobile Build
 
 Get a signed Android build onto a Google Play internal testing track and a signed iOS build onto TestFlight from Jenkins. This guide is a checklist; the pipeline code is in [Android](../builds/android.md) and [React Native](../builds/react-native.md).

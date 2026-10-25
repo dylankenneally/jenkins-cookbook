@@ -1,3 +1,7 @@
+---
+tags: [deploy]
+---
+
 # How to Work with Promotions
 
 A promotion moves one built image through dev, staging and production, in that order, with an approval in front of each later stage. This guide covers setting that up for a service, approving a promotion, finding out what is deployed where, and the less common cases: promoting an older build, skipping an environment, and rolling back. It builds on the [Promote, Don't Rebuild](../pipelines/promote-across-environments.md) pipeline. For why the image is built only once, see [build once, promote many](../concepts/build-once-promote-many.md).

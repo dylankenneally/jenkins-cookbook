@@ -1,3 +1,7 @@
+---
+tags: [shared-library, aws, deploy]
+---
+
 # `codeDeploy`
 
 Bundles a deployment directory (with its `appspec.yml`), uploads it to S3, starts an AWS CodeDeploy deployment and waits for it to succeed. Run it inside [`withAws`](with-aws.md).

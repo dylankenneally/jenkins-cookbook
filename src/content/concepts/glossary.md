@@ -1,3 +1,7 @@
+---
+tags: [getting-started]
+---
+
 # Glossary
 
 Short definitions of the Jenkins and CI/CD terms used across the cookbook, in alphabetical order. Each links to the page that covers it in most depth.

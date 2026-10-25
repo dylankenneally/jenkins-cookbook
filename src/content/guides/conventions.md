@@ -1,3 +1,7 @@
+---
+tags: [conventions]
+---
+
 # Conventions
 
 The names and defaults the rest of the cookbook assumes. Adopt them as they are, or override them, but pick one set per Jenkins controller and use it everywhere. Pipelines and library steps can then rely on a name instead of taking it as a parameter.

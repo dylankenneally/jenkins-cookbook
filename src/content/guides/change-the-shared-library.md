@@ -1,3 +1,7 @@
+---
+tags: [shared-library, git]
+---
+
 # Change the Shared Library Safely
 
 Every pipeline that loads the [shared library](../library/setup.md) runs its steps, so one bad change can break many builds at once. This guide takes a change from a branch to a tagged version that consuming repos opt into.

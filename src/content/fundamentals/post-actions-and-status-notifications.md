@@ -1,3 +1,7 @@
+---
+tags: [declarative, notifications]
+---
+
 # Post-Actions & Status Notifications
 
 Handling cleanup tasks, artifacts archiving, and conditional alerts based on whether the pipeline succeeded or failed.

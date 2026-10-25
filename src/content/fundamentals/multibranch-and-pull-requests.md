@@ -1,3 +1,7 @@
+---
+tags: [git, declarative]
+---
+
 # Multibranch & Pull Requests
 
 A Multibranch Pipeline job scans a repo and creates a child job for every branch, tag and pull request that has a `Jenkinsfile`. One `Jenkinsfile` then serves them all, and environment variables and `when` conditions decide what each kind of build does.

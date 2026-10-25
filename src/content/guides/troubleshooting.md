@@ -1,3 +1,7 @@
+---
+tags: [troubleshooting]
+---
+
 # Troubleshooting
 
 Common pipeline errors, what causes them and how to fix them. The exact text varies a little between Jenkins versions, so search the console log for the first line shown.

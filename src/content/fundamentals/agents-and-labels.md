@@ -1,3 +1,7 @@
+---
+tags: [agents, docker]
+---
+
 # Agents & Labels
 
 The `agent` directive says where a pipeline or stage runs. Labels pick a class of machine (macOS, Docker-capable, deploy box), and a Docker agent pins the exact toolchain image.

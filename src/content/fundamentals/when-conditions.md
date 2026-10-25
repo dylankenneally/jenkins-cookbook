@@ -1,3 +1,7 @@
+---
+tags: [declarative, git]
+---
+
 # `when` Conditions
 
 The `when {}` directive decides whether a stage runs. A skipped stage shows as skipped in the UI rather than failed, so one `Jenkinsfile` can build every branch and only deploy from some of them.

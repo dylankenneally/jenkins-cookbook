@@ -1,3 +1,7 @@
+---
+tags: [code-quality, conventions]
+---
+
 # Pipeline Review Checklist
 
 For reviewing a pull request that changes a `Jenkinsfile` or a shared library step. Copy the list into the review, tick what holds, and comment on what doesn't. Each item links to the page that explains it.

@@ -1,3 +1,7 @@
+---
+tags: [shared-library, docker, aws, security]
+---
+
 # `ecrScan`
 
 Waits for Amazon ECR's image scan to finish, then fails the build if the image has findings at or above a severity threshold. Run it inside [`withAws`](with-aws.md), after [`dockerPushToEcr`](docker-push-to-ecr.md).

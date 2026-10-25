@@ -1,3 +1,7 @@
+---
+tags: [deploy, aws]
+---
+
 # Roll Back a Bad Deploy
 
 How to put the previous good version back after a deploy goes wrong, for each deploy target in this cookbook: ECS, CodeDeploy, Lambda, and static sites on S3 and CloudFront. It also covers the case a rollback can't fix, database migrations, and what to write down afterwards.

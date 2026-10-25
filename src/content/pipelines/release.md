@@ -1,3 +1,7 @@
+---
+tags: [release, git]
+---
+
 # Tag-Triggered Release
 
 Pushing a tag such as `v1.4.0` builds the release artifacts, generates an SBOM and a changelog, and publishes a GitHub release with the files attached. Ordinary branch builds run the build and tests only. The build stages are the [Node.js recipe](../builds/nodejs.md); the release uses the [shared library](../library/setup.md) steps [`gitVersion`](../library/git-version.md) and [`sbom`](../library/sbom.md).

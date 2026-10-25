@@ -1,3 +1,7 @@
+---
+tags: [getting-started, agents]
+---
+
 # How Jenkins Runs Your Pipeline
 
 What actually happens between pushing a commit and seeing a green or red build. Most confusing Jenkins errors make sense once you know which machine a line of your `Jenkinsfile` runs on and which directory it runs in. Each section below ends with the errors it explains.

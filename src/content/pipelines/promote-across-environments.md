@@ -1,3 +1,7 @@
+---
+tags: [docker, aws, deploy]
+---
+
 # Promote, Don't Rebuild
 
 Builds and pushes an image once, scans it, then deploys that same image URI to dev, staging and prod, each in its own AWS account, with an approval before staging and prod. Uses the [shared library](../library/setup.md) steps [`withAws`](../library/with-aws.md), [`assumeRole`](../library/assume-role.md), [`gitVersion`](../library/git-version.md), [`dockerPushToEcr`](../library/docker-push-to-ecr.md), [`ecrScan`](../library/ecr-scan.md), [`ecsDeploy`](../library/ecs-deploy.md), [`notifySlack`](../library/notify.md) and [`dockerCleanup`](../library/docker-cleanup.md). The approval gates are the ones from [parameters and approval gates](../fundamentals/parameters-and-approval-gates.md).

@@ -1,3 +1,7 @@
+---
+tags: [deploy, release]
+---
+
 # Build Once, Promote Many
 
 The delivery half of CI/CD rests on one rule: build the thing you ship once, then move that same thing through each environment. This page explains why, and what has to be true of your artifact and configuration for it to work. The pipeline that does it is [Promote, Don't Rebuild](../pipelines/promote-across-environments.md).

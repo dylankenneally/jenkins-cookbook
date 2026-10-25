@@ -1,3 +1,7 @@
+---
+tags: [declarative, performance]
+---
+
 # Matrix Builds
 
 A `matrix {}` runs the same stages for every combination of a set of axes, in parallel. It replaces hand-written [parallel](parallel-execution.md) branches that only differ by platform or version.

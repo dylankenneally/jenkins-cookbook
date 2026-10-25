@@ -1,3 +1,7 @@
+---
+tags: [git, deploy]
+---
+
 # Branches, Pull Requests and What Runs Where
 
 In a multibranch job, one `Jenkinsfile` serves every branch, pull request and tag. They shouldn't all do the same thing: a feature branch has no business deploying to production, and a release tag shouldn't skip the tests. This page explains what each kind of build is for and how that maps to stages. The mechanics are in [Multibranch & Pull Requests](../fundamentals/multibranch-and-pull-requests.md).

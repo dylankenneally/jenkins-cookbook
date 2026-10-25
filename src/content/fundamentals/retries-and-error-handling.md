@@ -1,3 +1,7 @@
+---
+tags: [declarative, troubleshooting]
+---
+
 # Retries & Error Handling
 
 Steps that talk to the network (package registries, artifact stores, cloud APIs) fail now and then for reasons unrelated to your code. Jenkins has steps to retry them, cap how long they take, and mark a non-critical failure without stopping the run.

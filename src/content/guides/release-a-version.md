@@ -1,3 +1,7 @@
+---
+tags: [release, git]
+---
+
 # Release a New Version
 
 Cut a release by pushing a version tag. The tag starts the [tag-triggered release pipeline](../pipelines/release.md), which builds the artifacts and publishes the release. This guide covers choosing the version, tagging, checking the result and shipping a hotfix.

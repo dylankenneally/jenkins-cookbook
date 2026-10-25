@@ -1,3 +1,7 @@
+---
+tags: [getting-started, testing]
+---
+
 # Your First Pipeline
 
 By the end of this tutorial your repo will have a `Jenkinsfile` that installs dependencies and runs the tests on every push, publishes test results to Jenkins, and goes red when a test fails. It takes about 30 minutes, plus any wait for your Jenkins administrator to create the job.

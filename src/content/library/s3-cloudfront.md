@@ -1,3 +1,7 @@
+---
+tags: [shared-library, aws, deploy]
+---
+
 # `s3Sync` & `cloudFrontInvalidate`
 
 Syncs a directory of static assets to an S3 bucket, then invalidates the CloudFront cache in front of it. Run both inside [`withAws`](with-aws.md).

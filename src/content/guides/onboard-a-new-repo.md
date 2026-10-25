@@ -1,3 +1,7 @@
+---
+tags: [getting-started, conventions]
+---
+
 # Onboard a New Repo
 
 A checklist for getting a repository built by Jenkins: a `Jenkinsfile` in the repo, a multibranch job that finds it, a webhook so builds start on push, and branch protection so nothing merges to `main` without a green build. You write the `Jenkinsfile` and open the requests; the Jenkins administrator creates the job, and the repo owner (or you, if you have admin rights on the repo) sets up the Git host side.

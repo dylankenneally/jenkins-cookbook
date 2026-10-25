@@ -1,3 +1,7 @@
+---
+tags: [git, performance]
+---
+
 # Monorepo: Build Only What Changed
 
 One `Jenkinsfile` for a repo with several packages under `packages/`. Each package has its own stage inside `parallel`, and a `changeset` condition skips the packages a push didn't touch. Uses [parallel execution](../fundamentals/parallel-execution.md) and [`when` conditions](../fundamentals/when-conditions.md); the package steps are the [Node.js recipe](../builds/nodejs.md) with npm workspaces.

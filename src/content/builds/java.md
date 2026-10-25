@@ -1,3 +1,7 @@
+---
+tags: [java, testing]
+---
+
 # Java Build & Test
 
 Builds and tests a Maven project through the Maven Wrapper in a single lifecycle, and publishes the test results. The wrapper pins the Maven version in `.mvn/wrapper/maven-wrapper.properties`, so every agent builds with the same Maven.

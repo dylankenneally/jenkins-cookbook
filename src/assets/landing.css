@@ -27,17 +27,16 @@
   opacity: 1;
 }
 
-/* Hero */
-.hero {
-  padding: 2.25rem 0 1rem;
-  border-bottom: 1px solid var(--color-border);
+/* the breadcrumb sits above the hero, so the space the hero used to have at the top moves above the breadcrumb */
+.landing .crumbs {
+  padding-top: 2.25rem;
+  margin-bottom: 0.75rem;
 }
 
-.hero__crumb {
-  margin: 0 0 0.75rem;
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--color-text-light);
+/* Hero */
+.hero {
+  padding: 0 0 1rem;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .hero h1 {

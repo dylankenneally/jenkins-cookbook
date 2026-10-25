@@ -1,3 +1,7 @@
+---
+tags: [docker, aws, deploy]
+---
+
 # Container Service: ECR & CodeDeploy
 
 Builds a Docker image, pushes it to ECR, then rolls it out with CodeDeploy and waits for the result. Works for any stack whose build lives in its `Dockerfile` (Node.js, .NET, C++). Uses the [shared library](../library/setup.md) steps [`withAws`](../library/with-aws.md), [`dockerPushToEcr`](../library/docker-push-to-ecr.md), [`codeDeploy`](../library/codedeploy.md) and [`dockerCleanup`](../library/docker-cleanup.md).

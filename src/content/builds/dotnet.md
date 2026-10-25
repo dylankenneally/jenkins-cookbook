@@ -1,3 +1,7 @@
+---
+tags: [dotnet, testing]
+---
+
 # .NET Build, Test & Publish
 
 Handles multi-stage builds for modern .NET applications, runs unit tests, and outputs a deployment-ready package.

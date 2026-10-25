@@ -1,3 +1,7 @@
+---
+tags: [declarative, deploy]
+---
+
 # Parameters & Approval Gates
 
 Build parameters let someone choose options when starting a run, and a stage-level `input` pauses the run until a person approves the next step. Together they give a manual gate in front of production.

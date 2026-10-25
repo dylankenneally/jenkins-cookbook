@@ -1,0 +1,122 @@
+/* Tag pages: the list of every tag, and the recipes that carry one.
+   Loaded only on those pages, on top of style.css (chips) and landing.css (hero, buttons and ruled grids). */
+
+/* a link inside a sentence needs more than colour to stand out; landing.css removes the underline */
+.hero__summary a {
+  text-decoration: underline;
+}
+
+/* All tags: one ruled cell for each, the whole cell clickable */
+.tag-card {
+  position: relative;
+  padding: 0.9rem 1rem 1rem;
+}
+
+.tag-card:hover,
+.tag-card:focus-within {
+  background: var(--accent-soft);
+}
+
+.tag-card__name {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--color-link);
+}
+
+/* the cell has one link, so the link covers it */
+.tag-card__name::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.tag-card__name:hover {
+  text-decoration: underline;
+}
+
+.tag-card__count {
+  float: right;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+}
+
+.tag-card__description {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+}
+
+@media (min-width: 640px) {
+  .tag-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 960px) {
+  .tag-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* One tag: a row for each recipe, with its file name and its other tags */
+.tagged__item {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.25rem 1rem;
+  padding: 0.7rem 1rem;
+}
+
+.tagged__item:hover,
+.tagged__item:focus-within {
+  background: var(--accent-soft);
+}
+
+.tagged__title {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.tagged__title:hover {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+.tagged__file {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  overflow-wrap: anywhere;
+}
+
+.tagged__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tagged__tags li {
+  margin: 0;
+}
+
+@media (min-width: 720px) {
+  .tagged__item {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+  }
+
+  .tagged__file {
+    grid-column: 1;
+  }
+
+  .tagged__tags {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    justify-content: flex-end;
+    margin: 0;
+  }
+}

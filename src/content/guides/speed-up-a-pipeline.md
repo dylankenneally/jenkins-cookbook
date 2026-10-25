@@ -1,3 +1,7 @@
+---
+tags: [performance]
+---
+
 # Speed Up a Slow Pipeline
 
 Find where a slow build spends its time, then apply the fixes that pay off most. Most of the fixes are recipes elsewhere in this cookbook, so this guide is mainly a route through them.

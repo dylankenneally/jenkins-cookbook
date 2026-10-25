@@ -1,3 +1,7 @@
+---
+tags: [cpp, testing, performance]
+---
+
 # C++ / CMake Build & Test
 
 Compiles C++ code using CMake and executes automated testing via ctest. Needs CMake 3.21 or later.

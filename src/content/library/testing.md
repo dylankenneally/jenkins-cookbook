@@ -1,3 +1,7 @@
+---
+tags: [shared-library, testing]
+---
+
 # Testing the Shared Library
 
 Every pipeline that loads the library runs its steps, so a broken step breaks every build at once. [JenkinsPipelineUnit](https://github.com/jenkinsci/JenkinsPipelineUnit) loads a `vars/` script outside Jenkins, with pipeline steps like `sh` and `error` replaced by mocks, so each step's logic can be unit tested in the library's own repo.

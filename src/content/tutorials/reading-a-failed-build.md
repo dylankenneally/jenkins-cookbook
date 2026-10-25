@@ -1,3 +1,7 @@
+---
+tags: [getting-started, troubleshooting]
+---
+
 # Reading a Failed Build
 
 This tutorial is a routine for working out why a build went red: find the failing stage, read its log from the first error, decide whether your change caused it, and fix it or hand it to the right person with what they need. Working through it on a real failure takes about 15 minutes.

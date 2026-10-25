@@ -1,3 +1,7 @@
+---
+tags: [declarative, troubleshooting]
+---
+
 # `Jenkinsfile` Tips
 
 Short habits that make pipelines easier to write, review and debug. Each one links to the recipe that covers it in more depth.

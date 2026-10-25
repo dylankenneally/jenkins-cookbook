@@ -1,0 +1,9 @@
+[
+  { "id": "tutorials", "label": "Tutorials", "anchor": "new-to-jenkins-start-here" },
+  { "id": "concepts", "label": "Concepts", "anchor": "concepts" },
+  { "id": "guides", "label": "Guides", "anchor": "guides" },
+  { "id": "fundamentals", "label": "Fundamentals", "anchor": "fundamentals" },
+  { "id": "builds", "label": "Build recipes", "anchor": "build-recipes" },
+  { "id": "library", "label": "Shared library", "anchor": "shared-library-building-blocks" },
+  { "id": "pipelines", "label": "Composed pipelines", "anchor": "composed-pipelines" }
+]

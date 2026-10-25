@@ -1,3 +1,7 @@
+---
+tags: [code-quality]
+---
+
 # Lint & Static Analysis
 
 Publishes linter findings into Jenkins with the Warnings Next Generation plugin, gates the build on the number of issues, and runs a SonarQube analysis that waits for the server's quality gate.

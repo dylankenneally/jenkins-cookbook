@@ -1,3 +1,7 @@
+---
+tags: [shared-library, docker, aws]
+---
+
 # `dockerPushToEcr`
 
 Builds a container image and pushes it to an Amazon Elastic Container Registry (ECR). Run it inside [`withAws`](with-aws.md), in the same region as the registry.

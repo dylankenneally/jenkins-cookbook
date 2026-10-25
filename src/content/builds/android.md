@@ -1,3 +1,7 @@
+---
+tags: [mobile, testing, code-quality]
+---
+
 # Android Build & Test
 
 Runs Android Lint and the JVM unit tests with the Gradle wrapper, then assembles the release build. Needs the JUnit and Warnings Next Generation plugins, plus Credentials Binding for signing.

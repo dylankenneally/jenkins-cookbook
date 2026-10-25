@@ -2,6 +2,7 @@
 title: Jenkinsfile Cookbook
 landingPage: true
 searchable: false
+crumbName: README.md
 ---
 {% assign pages = collections.all %}
 {% assign browse = pages | pageFor: "browse.md" %}
@@ -10,7 +11,6 @@ searchable: false
 {% assign siteIndex = pages | pageFor: "site-index.html" %}
 
 <section class="hero" aria-labelledby="hero-title">
-  <p class="hero__crumb" aria-hidden="true">jenkinsfile-cookbook/README.md</p>
   <h1 id="hero-title">{{ site.title }}</h1>
   <p class="hero__summary">{{ landing.hero.summary }}</p>
   <p class="hero__actions">

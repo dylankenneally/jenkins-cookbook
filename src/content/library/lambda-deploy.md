@@ -1,3 +1,7 @@
+---
+tags: [shared-library, aws, deploy]
+---
+
 # `lambdaDeploy`
 
 Updates an AWS Lambda function's code from a zip file or a container image, waits for the update to finish, publishes a version and optionally moves an alias onto it. Run it inside [`withAws`](with-aws.md).

@@ -1,3 +1,7 @@
+---
+tags: [declarative, performance]
+---
+
 # Parallel Execution (Speed Booster)
 
 If you want to cut down build times by running independent test suites or multi-platform builds simultaneously.

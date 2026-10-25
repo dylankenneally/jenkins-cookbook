@@ -1,3 +1,7 @@
+---
+tags: [declarative, security]
+---
+
 # Environment Variables & Secure Credentials
 
 How to inject environment variables and securely pull secrets (like API keys or tokens) from the Jenkins credentials store without leaking them in logs.

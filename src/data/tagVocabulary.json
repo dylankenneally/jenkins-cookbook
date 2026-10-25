@@ -1,0 +1,23 @@
+[
+  { "id": "getting-started", "description": "First steps: the ideas behind CI/CD and Jenkins, and a first working pipeline." },
+  { "id": "declarative", "description": "Declarative Pipeline syntax: stages, directives, options and the features you use in any Jenkinsfile." },
+  { "id": "agents", "description": "Where a build runs: agents, labels, executors and workspaces." },
+  { "id": "git", "description": "Branches, pull requests, tags, triggers and what runs where." },
+  { "id": "testing", "description": "Running tests, publishing results and coverage, and dealing with flaky tests." },
+  { "id": "code-quality", "description": "Linting, static analysis, quality gates and pipeline review." },
+  { "id": "performance", "description": "Faster builds: parallel stages, matrix builds and dependency caches." },
+  { "id": "security", "description": "Secrets, credentials, scanning and supply-chain checks." },
+  { "id": "docker", "description": "Docker agents, image builds, registries and cleanup." },
+  { "id": "aws", "description": "AWS accounts, credentials and services such as ECR, ECS, S3 and Lambda." },
+  { "id": "deploy", "description": "Deploying, promoting and rolling back across environments." },
+  { "id": "release", "description": "Versioning and releasing: tags, changelogs, SBOMs and store builds." },
+  { "id": "notifications", "description": "Telling people how a build went: post actions, Slack and Teams." },
+  { "id": "troubleshooting", "description": "Reading failed builds and fixing common pipeline errors." },
+  { "id": "conventions", "description": "Team conventions, roles and how to request changes." },
+  { "id": "shared-library", "description": "Shared library steps that the pipelines call, and how to change them safely." },
+  { "id": "nodejs", "description": "Node.js builds and frontends." },
+  { "id": "dotnet", "description": ".NET builds and NuGet packages." },
+  { "id": "java", "description": "Java builds with Maven and Gradle." },
+  { "id": "cpp", "description": "C++ builds with CMake." },
+  { "id": "mobile", "description": "Android and iOS builds, signing and store releases." }
+]
