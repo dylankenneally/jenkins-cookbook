@@ -263,7 +263,7 @@ function mountViewer(pre, svgMarkup) {
     toolbarButton("Zoom in", "+", () => view.zoomCentre(ZOOM_STEP)),
     toolbarButton("Zoom out", "\u2212", () => view.zoomCentre(1 / ZOOM_STEP)),
     toolbarButton("Fit to view", "\u2922", () => view.fit()),
-    toolbarButton("Actual size", "1:1", () => view.actualSize()),
+    toolbarButton("Actual size 1:1", "1:1", () => view.actualSize()),
     toolbarButton("Toggle fullscreen", "\u26F6", () => toggleFullscreen(viewer))
   );
   viewer.prepend(toolbar);

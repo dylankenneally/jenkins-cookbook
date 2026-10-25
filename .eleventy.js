@@ -4,6 +4,24 @@ const { InputPathToUrlTransformPlugin, HtmlBasePlugin } = require("@11ty/elevent
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 const markdownItAnchor = require("markdown-it-anchor");
 const { buildSearchIndex } = require("./scripts/search-index.js");
+const { validateLanding, pageFor } = require("./scripts/landing.js");
+
+const CONTENT_DIR = "src/content";
+const LANDING_DATA = "src/data/landing.json";
+
+// self-hosted fonts: only the weights the site uses are copied, with the licences the font licence asks to travel with them
+const PLEX = "node_modules/@fontsource/ibm-plex-sans";
+const MONO = "node_modules/@fontsource/jetbrains-mono";
+const FONT_FILES = {
+  [`${PLEX}/files/ibm-plex-sans-latin-400-normal.woff2`]: "assets/fonts/ibm-plex-sans-latin-400-normal.woff2",
+  [`${PLEX}/files/ibm-plex-sans-latin-400-italic.woff2`]: "assets/fonts/ibm-plex-sans-latin-400-italic.woff2",
+  [`${PLEX}/files/ibm-plex-sans-latin-600-normal.woff2`]: "assets/fonts/ibm-plex-sans-latin-600-normal.woff2",
+  [`${PLEX}/files/ibm-plex-sans-latin-700-normal.woff2`]: "assets/fonts/ibm-plex-sans-latin-700-normal.woff2",
+  [`${MONO}/files/jetbrains-mono-latin-400-normal.woff2`]: "assets/fonts/jetbrains-mono-latin-400-normal.woff2",
+  [`${MONO}/files/jetbrains-mono-latin-700-normal.woff2`]: "assets/fonts/jetbrains-mono-latin-700-normal.woff2",
+  [`${PLEX}/LICENSE`]: "assets/fonts/ibm-plex-sans-LICENSE.txt",
+  [`${MONO}/LICENSE`]: "assets/fonts/jetbrains-mono-LICENSE.txt"
+};
 
 // gets the first heading from the supplied markdown document
 function firstHeading(inputPath) {
@@ -149,6 +167,10 @@ module.exports = function (eleventyConfig) {
   // the search index is built from the finished html, on every build including each rebuild under --serve
   eleventyConfig.on("eleventy.after", ({ dir }) => buildSearchIndex(dir.output));
 
+  // the landing page is built from landing.json, so check its page references before every build
+  eleventyConfig.on("eleventy.before", () => validateLanding(LANDING_DATA, CONTENT_DIR));
+  eleventyConfig.addFilter("pageFor", (pages, ref) => pageFor(pages, ref, CONTENT_DIR));
+
   // prefixes root-relative urls with pathPrefix, so the site works under /jenkins-cookbook/ on github pages
   eleventyConfig.addPlugin(HtmlBasePlugin);
 
@@ -157,6 +179,7 @@ module.exports = function (eleventyConfig) {
 
   // served from /assets/
   eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
+  eleventyConfig.addPassthroughCopy(FONT_FILES);
 
   eleventyConfig.addGlobalData("layout", "default");
 
@@ -167,9 +190,10 @@ module.exports = function (eleventyConfig) {
     // local runs are served from the root; the deploy workflow sets the project page's sub-path
     pathPrefix: process.env.ELEVENTY_PATH_PREFIX || "/",
     dir: {
-      input: "src/content",
+      input: CONTENT_DIR,
       output: "dist",
-      // includes and layouts resolve relative to the input folder
+      // data, includes and layouts resolve relative to the input folder
+      data: "../data",
       includes: "../includes",
       layouts: "../layouts"
     },

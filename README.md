@@ -1,4 +1,4 @@
-# Jenkins Cookbook
+# Jenkinsfile Cookbook
 
 [![Deploy to GitHub Pages](https://github.com/dylankenneally/jenkins-cookbook/actions/workflows/deploy-to-ghpages.yml/badge.svg)](https://github.com/dylankenneally/jenkins-cookbook/actions/workflows/deploy-to-ghpages.yml)
 

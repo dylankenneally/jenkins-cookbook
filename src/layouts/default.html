@@ -4,21 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title | default: docTitle }}</title>
+    <link rel="preload" href="/assets/fonts/ibm-plex-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/assets/style.css">
+    {% if landingPage %}<link rel="stylesheet" href="/assets/landing.css">{% endif %}
     <link rel="stylesheet" href="/pagefind/pagefind-component-ui.css">
     <script type="module" src="/pagefind/pagefind-component-ui.js"></script>
     <script type="module" src="/assets/mermaid-viewer.js"></script>
+    <script type="module" src="/assets/site.js"></script>
+    {% if landingPage %}<script type="module" src="/assets/landing.js"></script>{% endif %}
   </head>
-  <body>
-    {% comment %} base-url is not a link attribute, so the path prefix is added here rather than by the html base plugin {% endcomment %}
-    <pagefind-config base-url="{{ '/' | url }}"></pagefind-config>
+  <body{% if landingPage %} class="landing"{% endif %}>
+    {% comment %} bundle-path and base-url are not link attributes, so the path prefix is added here rather than by the html base plugin; the ui can't detect its own location when loaded as a module {% endcomment %}
+    <pagefind-config bundle-path="{{ '/pagefind/' | url }}" base-url="{{ '/' | url }}"></pagefind-config>
     <header class="site-header">
-      <a class="site-title" href="/">Jenkinsfile Cookbook</a>
-      <pagefind-modal-trigger></pagefind-modal-trigger>
+      <div class="site-header__brand">
+        <a class="site-title" href="/">{{ site.title }}</a>
+        <span class="site-version"><span class="visually-hidden">Version </span>v{{ site.version }}</span>
+      </div>
+      <div class="site-header__tools">
+        <div class="site-header__search">
+          <pagefind-searchbox placeholder="Search" max-results="8" show-sub-results></pagefind-searchbox>
+        </div>
+        <a class="site-repo" href="{{ site.repoUrl }}">GitHub</a>
+        {% comment %} placeholder only: the light/dark switch is not built yet, so the button is disabled {% endcomment %}
+        <button class="theme-toggle" type="button" disabled aria-label="Toggle dark mode (not available yet)" title="Dark mode: coming soon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+      </div>
     </header>
-    <pagefind-modal></pagefind-modal>
-    {% comment %} the landing page only lists other pages, so it stays out of the search index {% endcomment %}
-    <main {% if page.url != "/" %}data-pagefind-body{% endif %}>
+    {% comment %} pages set searchable: false in their front matter to stay out of the search index {% endcomment %}
+    <main {% if searchable != false %}data-pagefind-body{% endif %}>
       {{ content }}
     </main>
   </body>

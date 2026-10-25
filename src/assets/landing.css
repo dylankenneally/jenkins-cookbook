@@ -1,0 +1,401 @@
+/* Landing page: a left-aligned hero, hairline-ruled grids and a monospace data grid.
+   Loaded only on the landing page, on top of style.css, which holds the palette and fonts. */
+
+.landing {
+  --landing-width: 1120px;
+  --accent-soft: color-mix(in srgb, var(--color-accent) 8%, var(--color-bg));
+  --accent-line: color-mix(in srgb, var(--color-accent) 25%, var(--color-bg));
+  --zebra: color-mix(in srgb, #7a6a50 6%, var(--color-bg));
+}
+
+.landing main,
+.landing .site-header {
+  max-width: var(--landing-width);
+}
+
+.landing main {
+  padding-top: 0;
+}
+
+/* style.css underlines every link and fades it on hover; the landing page styles its own links */
+/* :where() keeps these at the lowest specificity, so a component such as .button can still set its own border */
+.landing :where(a) {
+  border-bottom: none;
+}
+
+.landing :where(a):hover {
+  opacity: 1;
+}
+
+/* Hero */
+.hero {
+  padding: 2.25rem 0 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.hero__crumb {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--color-text-light);
+}
+
+.hero h1 {
+  margin: 0;
+  padding: 0;
+  border: none;
+  font-size: clamp(2rem, 4.5vw, 2.9rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--color-text);
+}
+
+.hero__summary {
+  max-width: 70ch;
+  margin: 0.9rem 0 0;
+  font-size: 1.1rem;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1.4rem 0 0;
+}
+
+.button {
+  display: inline-block;
+  padding: 0.5rem 0.95rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-text);
+  border-radius: var(--radius);
+}
+
+.button:hover {
+  background: var(--accent-soft);
+}
+
+.button--primary {
+  color: #ffffff;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.button--primary:hover {
+  background: var(--color-link);
+  border-color: var(--color-link);
+}
+
+/* Sections */
+.section {
+  margin-top: 2rem;
+}
+
+.section h2 {
+  margin: 0;
+  padding-bottom: 0.4rem;
+  font-size: 1.15rem;
+  font-size: 1.5rem;
+  color: var(--color-text);
+}
+
+.section__lead {
+  margin: 0.6rem 0 0;
+  font-size: 0.95rem;
+  color: var(--color-text-light);
+}
+
+.section__note {
+  margin: 0.75rem 0 0;
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+}
+
+.section__note a {
+  text-decoration: underline;
+}
+
+/* Grids ruled with 1px lines: the container's background shows through the gaps between cells */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  background: var(--color-border);
+  border: 1px solid var(--color-border);
+}
+
+.grid > li {
+  margin: 0;
+  background: var(--color-bg);
+}
+
+/* Start-here track: five steps in a row when there is room, otherwise stacked */
+.track__step {
+  position: relative;
+  padding: 0.9rem 1rem;
+}
+
+.track__step:hover,
+.track__step:focus-within {
+  background: var(--accent-soft);
+}
+
+/* the deeper rust, because the lighter accent drops just under 4.5:1 on the hover tint */
+.track__number,
+.card__index {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--color-link);
+}
+
+.track__number {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+}
+
+.track__title {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* the whole step is clickable: it has one link, so the link covers the cell */
+.track__title::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.track__title:hover {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+.track__summary {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+}
+
+@media (min-width: 1000px) {
+  .track {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* Layer cells */
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 0.9rem 1rem 1rem;
+}
+
+.card:hover,
+.card:focus-within {
+  background: var(--accent-soft);
+}
+
+.card__title {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.card__index {
+  margin-right: 0.6rem;
+  font-size: 0.8rem;
+}
+
+.card__summary {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+}
+
+.card__links {
+  margin: 0.75rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card__links li {
+  margin: 0;
+  padding: 0.25rem 0;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.92rem;
+}
+
+.card__links a {
+  color: var(--color-link);
+}
+
+.card__links a:hover,
+.card__more:hover {
+  text-decoration: underline;
+}
+
+.card__more {
+  margin-top: auto;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-link);
+}
+
+@media (min-width: 640px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 960px) {
+  .cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Building block matrix: a monospace data grid with alternating rows */
+.matrix-wrap {
+  position: relative; /* clips the visually hidden text in the cells to this box */
+  margin-top: 1rem;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+}
+
+.matrix {
+  width: auto;
+  min-width: 100%;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.matrix th,
+.matrix td {
+  padding: 0.3rem;
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.matrix tbody tr {
+  --row-bg: var(--color-bg);
+}
+
+.matrix tbody tr:nth-child(even) {
+  --row-bg: var(--zebra);
+}
+
+.matrix tbody tr:hover {
+  --row-bg: var(--accent-soft);
+}
+
+.matrix tbody th,
+.matrix td {
+  background: var(--row-bg);
+}
+
+.matrix tbody tr:last-child > * {
+  border-bottom: none;
+}
+
+.matrix thead th {
+  vertical-align: bottom;
+  background: var(--color-code-bg);
+}
+
+.matrix__block {
+  min-width: 2.75rem;
+}
+
+/* block names read upwards, which keeps twelve columns narrow */
+.matrix__block a {
+  display: inline-block;
+  padding: 0.5rem 0.25rem;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  color: var(--color-link);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius);
+}
+
+.matrix__block a:hover {
+  color: #ffffff;
+  background: var(--color-link);
+  border-color: var(--color-link);
+}
+
+.matrix code {
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+  background: none;
+}
+
+.matrix th.matrix__pipeline {
+  position: sticky;
+  left: 0;
+  min-width: 12.5rem;
+  padding: 0.45rem 0.85rem;
+  text-align: left;
+}
+
+.matrix__pipeline a {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.matrix__pipeline a:hover {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+.matrix__none {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--color-text-light);
+}
+
+.matrix__mark {
+  display: block;
+  width: 0.7rem;
+  height: 0.7rem;
+  margin: 0 auto;
+  background: var(--color-accent);
+}
+
+/* landing.js adds the column and keyboard focus on top of the css-only row hover */
+.matrix .is-active {
+  background: var(--accent-soft);
+}
+
+.matrix td.is-origin {
+  background: var(--accent-line);
+}
+
+@media (forced-colors: active) {
+  .matrix__mark {
+    background: CanvasText;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 1.5rem 0 1.25rem;
+  }
+
+  .hero__summary {
+    font-size: 1rem;
+  }
+}

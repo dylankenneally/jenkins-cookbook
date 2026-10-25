@@ -33,7 +33,7 @@ The pages live in `src/content/` as Markdown. Each one is published as its own p
 - **Tag every code fence with its language** (`groovy`, `bash`, `yaml` and so on) so it is highlighted.
 - **Use callouts for asides**: `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]` or `> [!CAUTION]`.
 - **Draw diagrams with mermaid** in a ` ```mermaid ` fence rather than text art.
-- **Add new pages to the index** in `src/content/index.md`, so people can find them.
+- **Add new pages to the browse list** in `src/content/browse.md`, so people can find them. If the page deserves a spot on the landing page, add it to the matching card in `src/data/landing.json`. The build fails if that file points at a page that doesn't exist.
 - **Use British spelling**, as the rest of the cookbook does (colour, behaviour, organisation).
 
 ### Examples must be safe to copy

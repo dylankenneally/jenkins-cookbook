@@ -1,0 +1,100 @@
+---
+title: Jenkinsfile Cookbook
+landingPage: true
+searchable: false
+---
+{% assign pages = collections.all %}
+{% assign browse = pages | pageFor: "browse.md" %}
+{% assign glossary = pages | pageFor: "concepts/glossary.md" %}
+{% assign roles = pages | pageFor: "guides/roles-and-responsibilities.md" %}
+
+<section class="hero" aria-labelledby="hero-title">
+  <p class="hero__crumb" aria-hidden="true">jenkinsfile-cookbook/README.md</p>
+  <h1 id="hero-title">{{ site.title }}</h1>
+  <p class="hero__summary">{{ landing.hero.summary }}</p>
+  <p class="hero__actions">
+    <a class="button button--primary" href="#start-here">New to Jenkins? Start here</a>
+    <a class="button" href="{{ browse.url }}">Browse all recipes</a>
+  </p>
+</section>
+
+<section class="section" id="start-here" aria-labelledby="start-here-title">
+  <h2 id="start-here-title">New to Jenkins? Start here</h2>
+  <p class="section__lead">Work through these in order. Together they take an afternoon, plus any wait for your Jenkins administrator.</p>
+
+  <ol class="grid track" role="list">
+    {% for step in landing.track %}
+    {% assign ref = pages | pageFor: step.page %}
+    <li class="track__step">
+      <span class="track__number" aria-hidden="true">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
+      <a class="track__title" href="{{ ref.url }}">{{ ref.title | escape }}</a>
+      <p class="track__summary">{{ step.summary | escape }}</p>
+    </li>
+    {% endfor %}
+  </ol>
+
+  <p class="section__note">Keep the <a href="{{ glossary.url }}">Glossary</a> open while you read, and see <a href="{{ roles.url }}">Roles and Responsibilities</a> for who to ask for what.</p>
+</section>
+
+<section class="section" aria-labelledby="layers-title">
+  <h2 id="layers-title">Browse by layer</h2>
+  <p class="section__lead">Start at the level that suits you, from the ideas behind a pipeline to complete pipelines you can copy.</p>
+
+  <ul class="grid cards" role="list">
+    {% for card in landing.cards %}
+    {% assign more = pages | pageFor: card.more.page %}
+    <li class="card">
+      <h3 class="card__title"><span class="card__index" aria-hidden="true">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>{{ card.title | escape }}</h3>
+      <p class="card__summary">{{ card.summary | escape }}</p>
+      <ul class="card__links" role="list">
+        {% for link in card.links %}
+        {% assign ref = pages | pageFor: link.page %}
+        <li><a href="{{ ref.url }}">{{ ref.title | escape }}</a></li>
+        {% endfor %}
+      </ul>
+      <a class="card__more" href="{{ more.url }}">{{ card.more.label | escape }} <span aria-hidden="true">&rarr;</span></a>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="section" aria-labelledby="matrix-title">
+  <h2 id="matrix-title">Which building blocks each pipeline uses</h2>
+  <p class="section__lead">Each pipeline is assembled from shared library steps. Hover or focus a pipeline or a block to follow it across the table.</p>
+
+  <div class="matrix-wrap" role="region" aria-label="Composed pipelines and the shared library blocks they use" tabindex="0">
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th scope="col"><span class="visually-hidden">Pipeline</span></th>
+          {% for block in landing.matrix.blocks %}
+          {% assign ref = pages | pageFor: block.page %}
+          <th scope="col" class="matrix__block" data-col="{{ forloop.index0 }}"><a href="{{ ref.url }}"><code>{{ block.name | escape }}</code></a></th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for pipeline in landing.matrix.pipelines %}
+        {% assign row = forloop.index0 %}
+        {% assign ref = pages | pageFor: pipeline.page %}
+        <tr>
+          <th scope="row" class="matrix__pipeline" data-row="{{ row }}">
+            <a href="{{ ref.url }}">{{ pipeline.label | escape }}</a>
+            {% if pipeline.blocks.size == 0 %}<span class="matrix__none">no building blocks</span>{% endif %}
+          </th>
+          {% for block in landing.matrix.blocks %}
+          <td data-row="{{ row }}" data-col="{{ forloop.index0 }}">
+            {% if pipeline.blocks contains block.name %}<span class="matrix__mark" aria-hidden="true"></span><span class="visually-hidden">uses {{ block.name | escape }}</span>{% endif %}
+          </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <p class="section__note">
+    Not used by a composed pipeline yet, so their pages show them in a stage on their own:
+    {% for block in landing.matrix.unused %}{% assign ref = pages | pageFor: block.page %}<a href="{{ ref.url }}">{{ block.label | escape }}</a>{% unless forloop.last %}, {% endunless %}{% endfor %}.
+  </p>
+</section>

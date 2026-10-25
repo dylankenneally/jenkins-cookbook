@@ -1,0 +1,113 @@
+{
+  "hero": {
+    "summary": "Practical recipes for Jenkins Declarative Pipelines. Copy, adapt and ship without digging through the docs."
+  },
+  "track": [
+    { "page": "concepts/ci-cd-basics.md", "summary": "What CI and CD are, and why the pipeline lives in the repo." },
+    { "page": "tutorials/first-pipeline.md", "summary": "Request a job, add a Jenkinsfile, publish test results, then break a test and fix it." },
+    { "page": "concepts/how-jenkins-runs-your-pipeline.md", "summary": "Controller, agents, executors and workspaces, and the errors each one explains." },
+    { "page": "tutorials/reading-a-failed-build.md", "summary": "Find the failing stage, read from the first error, and know when to ask for help." },
+    { "page": "tutorials/build-to-deploy.md", "summary": "Grow the first pipeline into one that deploys a static site from main." }
+  ],
+  "cards": [
+    {
+      "title": "Quick start and concepts",
+      "summary": "New to Jenkins or CI/CD? Learn the ideas, then ship a first pipeline.",
+      "links": [
+        { "page": "concepts/ci-cd-basics.md" },
+        { "page": "tutorials/first-pipeline.md" },
+        { "page": "concepts/how-jenkins-runs-your-pipeline.md" },
+        { "page": "concepts/glossary.md" }
+      ],
+      "more": { "label": "All concepts", "page": "browse.md#concepts" }
+    },
+    {
+      "title": "Guides",
+      "summary": "Step-by-step help for the jobs that come up: onboarding, credentials, releases and rollbacks.",
+      "links": [
+        { "page": "guides/onboard-a-new-repo.md" },
+        { "page": "guides/add-a-credential.md" },
+        { "page": "guides/troubleshooting.md" },
+        { "page": "guides/roll-back-a-deploy.md" }
+      ],
+      "more": { "label": "All guides", "page": "browse.md#guides" }
+    },
+    {
+      "title": "Fundamentals",
+      "summary": "The pipeline features that work with any stack: stages, conditions, parallelism and secrets.",
+      "links": [
+        { "page": "fundamentals/pipeline-skeleton.md" },
+        { "page": "fundamentals/when-conditions.md" },
+        { "page": "fundamentals/parallel-execution.md" },
+        { "page": "fundamentals/environment-variables-and-secure-credentials.md" }
+      ],
+      "more": { "label": "All fundamentals", "page": "browse.md#fundamentals" }
+    },
+    {
+      "title": "Build recipes",
+      "summary": "Drop-in build, test and package stages for your stack.",
+      "links": [
+        { "page": "builds/nodejs.md" },
+        { "page": "builds/dotnet.md" },
+        { "page": "builds/cpp-cmake.md" },
+        { "page": "builds/java.md" },
+        { "page": "builds/android.md" },
+        { "page": "builds/docker.md" }
+      ],
+      "more": { "label": "All build recipes", "page": "browse.md#build-recipes" }
+    },
+    {
+      "title": "Shared library building blocks",
+      "summary": "Reusable Docker and AWS steps, written once and called from every pipeline.",
+      "links": [
+        { "page": "library/setup.md" },
+        { "page": "library/with-aws.md" },
+        { "page": "library/docker-push-to-ecr.md" },
+        { "page": "library/s3-cloudfront.md" }
+      ],
+      "more": { "label": "All building blocks", "page": "browse.md#shared-library-building-blocks" }
+    },
+    {
+      "title": "Composed pipelines",
+      "summary": "Complete Jenkinsfiles that put the building blocks together, from commit to deploy.",
+      "links": [
+        { "page": "pipelines/container-service.md" },
+        { "page": "pipelines/static-frontend.md" },
+        { "page": "pipelines/promote-across-environments.md" },
+        { "page": "pipelines/pr-preview.md" }
+      ],
+      "more": { "label": "All composed pipelines", "page": "browse.md#composed-pipelines" }
+    }
+  ],
+  "matrix": {
+    "blocks": [
+      { "name": "withAws", "page": "library/with-aws.md" },
+      { "name": "assumeRole", "page": "library/assume-role.md" },
+      { "name": "dockerPushToEcr", "page": "library/docker-push-to-ecr.md" },
+      { "name": "ecrScan", "page": "library/ecr-scan.md" },
+      { "name": "dockerCleanup", "page": "library/docker-cleanup.md" },
+      { "name": "codeDeploy", "page": "library/codedeploy.md" },
+      { "name": "ecsDeploy", "page": "library/ecs-deploy.md" },
+      { "name": "s3Sync", "page": "library/s3-cloudfront.md" },
+      { "name": "cloudFrontInvalidate", "page": "library/s3-cloudfront.md" },
+      { "name": "gitVersion", "page": "library/git-version.md" },
+      { "name": "sbom", "page": "library/sbom.md" },
+      { "name": "notifySlack", "page": "library/notify.md" }
+    ],
+    "pipelines": [
+      { "page": "pipelines/container-service.md", "label": "Container Service", "blocks": ["withAws", "dockerPushToEcr", "codeDeploy", "dockerCleanup"] },
+      { "page": "pipelines/promote-across-environments.md", "label": "Promote, Don't Rebuild", "blocks": ["withAws", "assumeRole", "gitVersion", "dockerPushToEcr", "ecrScan", "ecsDeploy", "dockerCleanup", "notifySlack"] },
+      { "page": "pipelines/static-frontend.md", "label": "Static Frontend", "blocks": ["withAws", "s3Sync", "cloudFrontInvalidate"] },
+      { "page": "pipelines/pr-preview.md", "label": "Pull Request Previews", "blocks": ["withAws", "s3Sync", "cloudFrontInvalidate"] },
+      { "page": "pipelines/release.md", "label": "Tag-Triggered Release", "blocks": ["gitVersion", "sbom"] },
+      { "page": "pipelines/monorepo.md", "label": "Monorepo", "blocks": [] },
+      { "page": "pipelines/nightly.md", "label": "Nightly Build", "blocks": ["notifySlack"] }
+    ],
+    "unused": [
+      { "label": "lambdaDeploy", "page": "library/lambda-deploy.md" },
+      { "label": "cfnDeploy and terraformApply", "page": "library/infrastructure-deploy.md" },
+      { "label": "notifyTeams", "page": "library/notify.md" },
+      { "label": "dependency caches", "page": "library/dependency-cache.md" }
+    ]
+  }
+}
