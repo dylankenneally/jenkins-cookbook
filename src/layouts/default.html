@@ -6,14 +6,17 @@
     <title>{{ title | default: docTitle }}</title>
     <link rel="preload" href="/assets/fonts/ibm-plex-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/assets/style.css">
-    {% if landingPage %}<link rel="stylesheet" href="/assets/landing.css">{% endif %}
+    {% comment %} the 404 page borrows the landing page's hero, buttons and ruled grids, then adds its recipe card {% endcomment %}
+    {% if landingPage or notFoundPage %}<link rel="stylesheet" href="/assets/landing.css">{% endif %}
+    {% if notFoundPage %}<link rel="stylesheet" href="/assets/not-found.css">{% endif %}
     <link rel="stylesheet" href="/pagefind/pagefind-component-ui.css">
     <script type="module" src="/pagefind/pagefind-component-ui.js"></script>
     <script type="module" src="/assets/mermaid-viewer.js"></script>
     <script type="module" src="/assets/site.js"></script>
     {% if landingPage %}<script type="module" src="/assets/landing.js"></script>{% endif %}
+    {% if notFoundPage %}<script type="module" src="/assets/not-found.js"></script>{% endif %}
   </head>
-  <body{% if landingPage %} class="landing"{% endif %}>
+  <body{% if landingPage or notFoundPage %} class="landing"{% endif %}>
     {% comment %} bundle-path and base-url are not link attributes, so the path prefix is added here rather than by the html base plugin; the ui can't detect its own location when loaded as a module {% endcomment %}
     <pagefind-config bundle-path="{{ '/pagefind/' | url }}" base-url="{{ '/' | url }}"></pagefind-config>
     <header class="site-header">

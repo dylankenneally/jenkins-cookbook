@@ -1,0 +1,152 @@
+/* 404 page: a recipe card, ruled with 1px lines like the landing page's grids.
+   Loaded only on the 404 page, on top of style.css and landing.css (hero, buttons, .grid and .section). */
+
+.recipe {
+  grid-template-columns: 1fr;
+}
+
+/* panels sit on the paper; the container's border colour shows through the gaps as the ruled lines */
+.recipe > * {
+  margin: 0;
+  background: var(--color-bg);
+}
+
+.recipe__panel {
+  padding: 0.9rem 1rem 1rem;
+}
+
+.recipe__panel h3 {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+}
+
+/* Status, prep time and servings: a row of labelled cells across the top of the card */
+.recipe__meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  padding: 0;
+  background: var(--color-border);
+}
+
+.recipe__meta > div {
+  padding: 0.6rem 1rem;
+  background: var(--color-code-bg);
+}
+
+.recipe__meta dt {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+}
+
+.recipe__meta dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* Ingredients: a checklist, with an empty box for each item */
+.recipe__ingredients {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recipe__ingredients li {
+  position: relative;
+  margin: 0;
+  padding: 0.3rem 0 0.3rem 1.5rem;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.92rem;
+  color: var(--color-text);
+}
+
+.recipe__ingredients li::before {
+  content: "";
+  position: absolute;
+  top: 0.65rem;
+  left: 0;
+  width: 0.8rem;
+  height: 0.8rem;
+  border: 1px solid var(--color-text-light);
+  border-radius: var(--radius);
+}
+
+.recipe__ingredients code {
+  overflow-wrap: anywhere;
+}
+
+/* Method: numbered steps in the landing page's monospace index style */
+.recipe__steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recipe__steps li {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.3rem 0;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.92rem;
+  color: var(--color-text-light);
+}
+
+.recipe__steps p {
+  margin: 0;
+}
+
+.recipe__number {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.9;
+  color: var(--color-link);
+}
+
+.recipe__steps a {
+  text-decoration: underline;
+}
+
+.recipe__steps a:hover {
+  color: var(--color-text);
+}
+
+/* Console output: the failed build the visitor just had */
+.recipe__console {
+  grid-column: 1 / -1;
+}
+
+.recipe__console figcaption {
+  margin-bottom: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+}
+
+.recipe__console pre {
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .recipe {
+    grid-template-columns: 1fr 2fr;
+  }
+
+  .recipe__meta {
+    grid-column: 1 / -1;
+  }
+}

@@ -1,0 +1,78 @@
+---
+title: Page not found
+notFoundPage: true
+searchable: false
+permalink: 404.html
+eleventyExcludeFromCollections: true
+---
+{% comment %} github pages serves /404.html for any address that doesn't exist, from any depth; root-relative links are prefixed by the html base plugin, so they still resolve {% endcomment %}
+{% assign pages = collections.all %}
+{% assign browse = pages | pageFor: "browse.md" %}
+{% assign start = pages | pageFor: "index.html#start-here" %}
+{% assign failed = pages | pageFor: "tutorials/reading-a-failed-build.md" %}
+
+<section class="hero" aria-labelledby="hero-title">
+  <p class="hero__crumb" aria-hidden="true">jenkinsfile-cookbook/404.md</p>
+  <h1 id="hero-title">Recipe not found</h1>
+  <p class="hero__summary">That page isn't in the cookbook. It may have been renamed or moved, or the address has a typo. The recipe card below shows how to find what you were after.</p>
+  <p class="hero__actions">
+    <a class="button button--primary" href="/">Back to the contents</a>
+    <a class="button" href="{{ browse.url }}">Browse all recipes</a>
+  </p>
+</section>
+
+<section class="section" aria-labelledby="recipe-title">
+  <h2 id="recipe-title">Recipe: find the page you wanted</h2>
+
+  <div class="grid recipe">
+    <dl class="recipe__meta">
+      <div><dt>Status</dt><dd>404 Not Found</dd></div>
+      <div><dt>Prep time</dt><dd>1 minute</dd></div>
+      <div><dt>Serves</dt><dd>1 developer</dd></div>
+    </dl>
+
+    <div class="recipe__panel">
+      <h3>Ingredients</h3>
+      <ul class="recipe__ingredients" role="list">
+        <li>The address you tried: <code data-requested-path>this address</code></li>
+        <li>A typo, a renamed page or an old bookmark</li>
+        <li>A search box and a few seconds</li>
+      </ul>
+    </div>
+
+    <div class="recipe__panel">
+      <h3>Method</h3>
+      <ol class="recipe__steps" role="list">
+        <li>
+          <span class="recipe__number" aria-hidden="true">01</span>
+          <p><strong>Check the address.</strong> Look for a typo, a missing <code>/</code> or an old bookmark.</p>
+        </li>
+        <li>
+          <span class="recipe__number" aria-hidden="true">02</span>
+          <p><strong>Search the cookbook.</strong> Press <code>Cmd+K</code> (<code>Ctrl+K</code> on Windows and Linux) or use the search box at the top of the page.</p>
+        </li>
+        <li>
+          <span class="recipe__number" aria-hidden="true">03</span>
+          <p><strong>Browse the recipes.</strong> <a href="{{ browse.url }}">Every page, grouped by layer</a>, from concepts to complete pipelines.</p>
+        </li>
+        <li>
+          <span class="recipe__number" aria-hidden="true">04</span>
+          <p><strong>Start from the beginning.</strong> New to Jenkins? <a href="{{ start.url }}">Work through the starter track</a>, or see <a href="{{ failed.url }}">how to read a failed build</a>.</p>
+        </li>
+      </ol>
+    </div>
+
+    <figure class="recipe__panel recipe__console">
+      <figcaption>Console output</figcaption>
+<pre><code>[Pipeline] stage
+[Pipeline] { (Find page)
+[Pipeline] error
+[Pipeline] }
+[Pipeline] // stage
+ERROR: 404 page not found
+Finished: FAILURE</code></pre>
+    </figure>
+  </div>
+
+  <p class="section__note">Followed a link from inside the cookbook to get here? That link is broken, so please <a href="{{ site.repoUrl }}/issues">open an issue</a> and say where you found it.</p>
+</section>
