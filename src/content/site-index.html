@@ -1,0 +1,53 @@
+---
+title: Index
+indexPage: true
+searchable: false
+permalink: /index/
+---
+{% comment %} built from the pages by the siteIndex filter (scripts/site-index.js); nothing in this list is written by hand {% endcomment %}
+{% assign pages = collections.all %}
+{% assign browse = pages | pageFor: "browse.md" %}
+{% assign idx = pages | siteIndex %}
+
+<section class="hero" aria-labelledby="hero-title">
+  <p class="hero__crumb" aria-hidden="true">jenkinsfile-cookbook/INDEX.md</p>
+  <h1 id="hero-title">Index</h1>
+  <p class="hero__summary">Every recipe, step and term in the cookbook, from A to Z. To see the pages grouped by layer instead, <a href="{{ browse.url }}">browse all recipes</a>, or press <code>Cmd+K</code> (<code>Ctrl+K</code> on Windows and Linux) to search.</p>
+
+  <dl class="facts">
+    <div><dt>Entries</dt><dd>{{ idx.entryCount }}</dd></div>
+    <div><dt>Pages</dt><dd>{{ idx.pageCount }}</dd></div>
+    <div><dt>Letters</dt><dd>{{ idx.groups.size }}</dd></div>
+  </dl>
+</section>
+
+<nav class="letters" aria-label="Jump to a letter">
+  <ul class="letters__list" role="list">
+    {% for letter in idx.letters %}
+    <li>{% if letter.id %}<a href="#{{ letter.id }}">{{ letter.label }}</a>{% else %}<span aria-hidden="true">{{ letter.label }}</span>{% endif %}</li>
+    {% endfor %}
+  </ul>
+</nav>
+
+<p class="section__note">Bold entries are whole pages, shown with the part of the cookbook they sit in. The rest are topics inside a page, followed by the pages that cover them.</p>
+
+{% for group in idx.groups %}
+<section class="letter" id="{{ group.id }}">
+  <h2 class="letter__head"><span class="letter__tab">{{ group.letter }}</span></h2>
+
+  <ul class="entries" role="list">
+    {% for entry in group.entries %}
+    <li class="entry{% if entry.href %} entry--page{% endif %}">
+      <span class="entry__term">{% if entry.href %}<a href="{{ entry.href }}">{% endif %}{% for part in entry.parts %}{% if part.code %}<code>{{ part.text | escape }}</code>{% else %}{{ part.text | escape }}{% endif %}{% endfor %}{% if entry.href %}</a>{% endif %}</span>
+      <span class="entry__leader" aria-hidden="true"></span>
+      <span class="visually-hidden">: </span>
+      {% if entry.locators.size > 0 %}
+      <span class="entry__refs">{% for locator in entry.locators %}<a href="{{ locator.url }}">{{ locator.label | escape }}</a>{% unless forloop.last %}, {% endunless %}{% endfor %}</span>
+      {% elsif entry.section != "" %}
+      <span class="entry__section">{{ entry.section | escape }}</span>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endfor %}

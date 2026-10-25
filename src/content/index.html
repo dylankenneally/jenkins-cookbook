@@ -7,6 +7,7 @@ searchable: false
 {% assign browse = pages | pageFor: "browse.md" %}
 {% assign glossary = pages | pageFor: "concepts/glossary.md" %}
 {% assign roles = pages | pageFor: "guides/roles-and-responsibilities.md" %}
+{% assign siteIndex = pages | pageFor: "site-index.html" %}
 
 <section class="hero" aria-labelledby="hero-title">
   <p class="hero__crumb" aria-hidden="true">jenkinsfile-cookbook/README.md</p>
@@ -15,6 +16,7 @@ searchable: false
   <p class="hero__actions">
     <a class="button button--primary" href="#start-here">New to Jenkins? Start here</a>
     <a class="button" href="{{ browse.url }}">Browse all recipes</a>
+    <a class="button" href="{{ siteIndex.url }}">A to Z index</a>
   </p>
 </section>
 

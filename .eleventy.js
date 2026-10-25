@@ -5,6 +5,7 @@ const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 const markdownItAnchor = require("markdown-it-anchor");
 const { buildSearchIndex } = require("./scripts/search-index.js");
 const { validateLanding, pageFor } = require("./scripts/landing.js");
+const { buildSiteIndex } = require("./scripts/site-index.js");
 
 const CONTENT_DIR = "src/content";
 const LANDING_DATA = "src/data/landing.json";
@@ -163,6 +164,18 @@ module.exports = function (eleventyConfig) {
 
   // headings get ids, so search can link straight to a section
   eleventyConfig.amendLibrary("md", (md) => md.use(markdownItAnchor, { slugify: eleventyConfig.getFilter("slugify"), tabIndex: false }));
+
+  // the a to z index reads the pages with the site's own markdown instance, so the heading ids it links to are the ones rendered
+  let markdown;
+  eleventyConfig.amendLibrary("md", (md) => { markdown = md; });
+  eleventyConfig.addFilter("siteIndex", (pages) => {
+    if (!markdown) {
+      console.error("[site-index] the markdown library isn't available, so the index can't read the pages");
+      throw new Error("markdown library not initialised");
+    }
+
+    return buildSiteIndex(pages, { contentDir: CONTENT_DIR, parse: (source) => markdown.parse(source, {}) });
+  });
 
   // the search index is built from the finished html, on every build including each rebuild under --serve
   eleventyConfig.on("eleventy.after", ({ dir }) => buildSearchIndex(dir.output));

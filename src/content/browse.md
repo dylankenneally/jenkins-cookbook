@@ -4,7 +4,7 @@ searchable: false
 
 # Browse All Recipes
 
-Every page in the `Jenkinsfile` Cookbook, grouped by layer. To look for something specific, press `Cmd+K` (or `Ctrl+K`) to search instead.
+Every page in the `Jenkinsfile` Cookbook, grouped by layer. To look for something specific, press `Cmd+K` (or `Ctrl+K`) to search instead, or look it up in the [A to Z index](site-index.html).
 
 The tutorials and concepts get you started, the guides walk through common tasks, and the rest is reference: fundamentals cover pipeline features that work with any stack, build recipes cover one stack each, the building blocks are shared-library steps for Docker and AWS, and the composed pipelines put them together end to end. Each Docker or AWS action is written once, as a building block, and everything else calls it.
 

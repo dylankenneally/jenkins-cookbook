@@ -8,6 +8,7 @@ eleventyExcludeFromCollections: true
 {% comment %} github pages serves /404.html for any address that doesn't exist, from any depth; root-relative links are prefixed by the html base plugin, so they still resolve {% endcomment %}
 {% assign pages = collections.all %}
 {% assign browse = pages | pageFor: "browse.md" %}
+{% assign siteIndex = pages | pageFor: "site-index.html" %}
 {% assign start = pages | pageFor: "index.html#start-here" %}
 {% assign failed = pages | pageFor: "tutorials/reading-a-failed-build.md" %}
 
@@ -18,6 +19,7 @@ eleventyExcludeFromCollections: true
   <p class="hero__actions">
     <a class="button button--primary" href="/">Back to the contents</a>
     <a class="button" href="{{ browse.url }}">Browse all recipes</a>
+    <a class="button" href="{{ siteIndex.url }}">A to Z index</a>
   </p>
 </section>
 

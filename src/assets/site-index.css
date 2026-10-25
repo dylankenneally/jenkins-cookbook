@@ -1,0 +1,242 @@
+/* A to Z index: laid out like the index at the back of a cookbook, with a thumb-tab letter for each group,
+   entries in ruled columns and dotted leaders out to the page references.
+   Loaded only on the index page, on top of style.css and landing.css (hero, links and .section__note). */
+
+/* Entries, pages and letters: labelled cells across the hero, like the 404 page's recipe card */
+.facts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  max-width: 28rem;
+  margin: 1.4rem 0 0;
+  padding: 0;
+  background: var(--color-border);
+  border: 1px solid var(--color-border);
+}
+
+.facts > div {
+  padding: 0.5rem 0.85rem;
+  background: var(--color-code-bg);
+}
+
+.facts dt {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+}
+
+.facts dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* a link inside a sentence needs more than colour to stand out; landing.css removes the underline */
+.hero__summary a {
+  text-decoration: underline;
+}
+
+/* Jump bar: a row of lettered tabs that stays at the top of the window while the index scrolls under it */
+.letters {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin-top: 1.25rem;
+  padding: 0.5rem 0;
+  background: var(--color-bg);
+}
+
+.letters__list {
+  display: flex;
+  flex-wrap: wrap;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 0 1px 1px 0;
+  list-style: none;
+}
+
+/* each tab draws its own border and overlaps its neighbours by 1px, so a short last row has no filler behind it */
+.letters__list li {
+  margin: 0 -1px -1px 0;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+}
+
+.letters__list a,
+.letters__list span {
+  display: grid;
+  place-items: center;
+  min-width: 1.85rem;
+  height: 1.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.letters__list a {
+  color: var(--color-link);
+}
+
+.letters__list a:hover {
+  color: #ffffff;
+  background: var(--color-link);
+}
+
+/* letters with no entries are shown so the alphabet reads complete, but they aren't links */
+.letters__list span {
+  color: color-mix(in srgb, var(--color-text-light) 45%, var(--color-bg));
+  font-weight: 400;
+}
+
+/* One block per letter: a filled tab, then a rule across to the edge */
+.letter {
+  margin-top: 1.75rem;
+  scroll-margin-top: 3.5rem;
+}
+
+.letter__head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+}
+
+.letter__head::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid var(--color-border);
+}
+
+.letter__tab {
+  display: grid;
+  place-items: center;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  padding: 0 0.4rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #ffffff;
+  background: var(--color-accent);
+  border-radius: var(--radius);
+}
+
+/* Entries run down ruled columns: two across when there is room, one on a phone */
+.entries {
+  --leader: color-mix(in srgb, var(--color-text-light) 55%, var(--color-bg));
+  columns: 25rem 2;
+  column-gap: 2rem;
+  column-rule: 1px solid var(--color-border);
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entry {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0.2rem 0.35rem;
+  break-inside: avoid;
+  font-size: 0.92rem;
+  color: var(--color-text);
+  border-radius: var(--radius);
+}
+
+.entry:hover,
+.entry:focus-within {
+  background: var(--accent-soft);
+}
+
+.entry__term {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* a code span is monospace but not boxed, so a run of them stays quiet */
+.entry__term code {
+  padding: 0;
+  font-size: 0.88em;
+  color: inherit;
+  background: none;
+}
+
+/* the dotted leader that carries the eye from the term to where it is covered */
+.entry__leader {
+  flex: 1 1 0.75rem;
+  min-width: 0.75rem;
+  height: 0;
+  border-bottom: 2px dotted var(--leader);
+  transform: translateY(-0.2em);
+}
+
+.entry__refs,
+.entry__section {
+  flex: 0 1 auto;
+  max-width: 55%;
+  text-align: right;
+}
+
+.entry__refs {
+  font-size: 0.85rem;
+}
+
+.entry__refs a {
+  color: var(--color-link);
+}
+
+.entry__refs a:hover {
+  text-decoration: underline;
+}
+
+.entry__section {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--color-text-light);
+}
+
+/* page titles are the recipes: bold, linked from the term itself */
+.entry--page .entry__term a {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.entry--page .entry__term a:hover {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  /* the jump bar would take a third of a phone screen, so it scrolls away with the page */
+  .letters {
+    position: static;
+  }
+
+  .letter {
+    scroll-margin-top: 0.5rem;
+  }
+
+  .facts {
+    max-width: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .letter__tab {
+    border: 1px solid CanvasText;
+  }
+
+  .entry__leader {
+    border-bottom-color: CanvasText;
+  }
+}
