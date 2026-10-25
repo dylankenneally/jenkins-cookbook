@@ -1,0 +1,182 @@
+/* About page: the cookbook's layers, how it is made, and how to get in touch.
+   Loaded only on the about page, on top of style.css and landing.css (hero, facts, buttons, .grid and .section). */
+
+.about__prose {
+  max-width: 70ch;
+  margin: 0.6rem 0 0;
+}
+
+/* Layers: one ruled cell for each part of the cookbook, the whole cell clickable */
+.layer,
+.contact__item {
+  position: relative;
+  padding: 0.9rem 1rem 1rem;
+}
+
+.layer:hover,
+.layer:focus-within,
+.contact__item:hover,
+.contact__item:focus-within {
+  background: var(--accent-soft);
+}
+
+.layer__index {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-link);
+}
+
+.layer__title,
+.contact__title {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* each cell has one link, so the link covers it */
+.layer__title::after,
+.contact__title::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.layer__title:hover,
+.contact__title:hover {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+.layer__summary,
+.contact__summary {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+}
+
+.contact__summary code {
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 640px) {
+  .layers,
+  .contact {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 960px) {
+  .layers {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .contact {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* a last cell on a row of its own fills the row, rather than leaving the grid's ruling colour showing */
+@media (min-width: 640px) and (max-width: 959px) {
+  .layers > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 960px) {
+  .layers > :last-child:nth-child(3n + 1) {
+    grid-column: 1 / -1;
+  }
+
+  .layers > :last-child:nth-child(3n + 2) {
+    grid-column: span 2;
+  }
+}
+
+/* How it's made: a recipe card with a checklist of ingredients and numbered steps, like the 404 page's */
+.made {
+  grid-template-columns: 1fr;
+}
+
+.made__panel {
+  padding: 0.9rem 1rem 1rem;
+  background: var(--color-bg);
+}
+
+.made__panel h3 {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+}
+
+.made__ingredients,
+.made__steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.made__ingredients li {
+  position: relative;
+  margin: 0;
+  padding: 0.3rem 0 0.3rem 1.5rem;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.92rem;
+  color: var(--color-text);
+}
+
+.made__ingredients li::before {
+  content: "";
+  position: absolute;
+  top: 0.65rem;
+  left: 0;
+  width: 0.8rem;
+  height: 0.8rem;
+  border: 1px solid var(--color-text-light);
+  border-radius: var(--radius);
+}
+
+.made__steps li {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.3rem 0;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.92rem;
+  color: var(--color-text-light);
+}
+
+.made__steps p {
+  margin: 0;
+}
+
+.made__number {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.9;
+  color: var(--color-link);
+}
+
+/* links inside a sentence need more than colour to stand out; landing.css removes the underline */
+.made__ingredients a,
+.made__steps a,
+.section__lead a {
+  text-decoration: underline;
+}
+
+.made__ingredients a:hover,
+.made__steps a:hover {
+  color: var(--color-text);
+}
+
+@media (min-width: 768px) {
+  .made {
+    grid-template-columns: 1fr 1fr;
+  }
+}

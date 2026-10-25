@@ -1,0 +1,108 @@
+---
+title: About
+aboutPage: true
+searchable: false
+---
+{% comment %} the counts and links come from the pages, the tag vocabulary and package.json, so nothing here goes stale {% endcomment %}
+{% assign pages = collections.all %}
+{% assign browse = pages | pageFor: "browse.md" %}
+{% assign start = pages | pageFor: "index.html#start-here" %}
+{% assign tagsOverview = pages | pageFor: "tags.html" %}
+
+<section class="hero" aria-labelledby="hero-title">
+  <h1 id="hero-title">About the cookbook</h1>
+  <p class="hero__summary">Short, copyable recipes for Jenkins Declarative Pipelines, from a first <code>Jenkinsfile</code> through to deploying to AWS. Written and maintained by {{ site.author | escape }}.</p>
+  <p class="hero__actions">
+    <a class="button button--primary" href="{{ start.url }}">New to Jenkins? Start here</a>
+    <a class="button" href="{{ browse.url }}">Browse all recipes</a>
+    <a class="button" href="{{ site.repoUrl }}">Source on GitHub</a>
+  </p>
+
+  <dl class="facts">
+    <div><dt>Recipes</dt><dd>{{ collections.taggable.size }}</dd></div>
+    <div><dt>Tags</dt><dd>{{ tagVocabulary.size }}</dd></div>
+    <div><dt>Version</dt><dd>{{ site.version }}</dd></div>
+  </dl>
+</section>
+
+<section class="section about" aria-labelledby="why-title">
+  <h2 id="why-title">Why it exists</h2>
+  <p class="about__prose">Pipelines tend to be copied from the last project and drift from there. This cookbook is one place to copy from instead: a recipe for each of the common jobs, so you don't have to dig through the Jenkins documentation to find the pattern you need.</p>
+  <p class="about__prose">The recipes are meant to be copied into real pipelines, so they use placeholders instead of real values, pin their versions, and handle secrets the safe way.</p>
+</section>
+
+<section class="section" aria-labelledby="inside-title">
+  <h2 id="inside-title">What's in it</h2>
+  <p class="section__lead">The cookbook is layered, so you can start at the level that suits you. You can also look a recipe up by <a href="{{ tagsOverview.url }}">tag</a>.</p>
+
+  <ul class="grid layers" role="list">
+    {% for section in sections %}
+    <li class="layer">
+      <span class="layer__index" aria-hidden="true">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
+      <a class="layer__title" href="{{ browse.url }}#{{ section.anchor }}">{{ section.label | escape }}</a>
+      <p class="layer__summary">{{ section.summary | escape }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section class="section" aria-labelledby="made-title">
+  <h2 id="made-title">How it's made</h2>
+
+  <div class="grid made">
+    <div class="made__panel">
+      <h3>Ingredients</h3>
+      <ul class="made__ingredients" role="list">
+        <li>Pages written in Markdown</li>
+        <li>Built into a static site with <a href="https://www.11ty.dev/">Eleventy</a></li>
+        <li>Searched in the browser with <a href="https://pagefind.app/">Pagefind</a>, so there is no server behind it</li>
+        <li>Set in IBM Plex Sans and JetBrains Mono, served from this site</li>
+        <li>Published on GitHub Pages</li>
+      </ul>
+    </div>
+
+    <div class="made__panel">
+      <h3>Method</h3>
+      <ol class="made__steps" role="list">
+        <li>
+          <span class="made__number" aria-hidden="true">01</span>
+          <p><strong>Edit a page.</strong> Every recipe is a Markdown file in the <a href="{{ site.repoUrl }}">repository</a>.</p>
+        </li>
+        <li>
+          <span class="made__number" aria-hidden="true">02</span>
+          <p><strong>Open a pull request.</strong> The site is built on every pull request, so a build error shows up before the change is merged.</p>
+        </li>
+        <li>
+          <span class="made__number" aria-hidden="true">03</span>
+          <p><strong>Merge to <code>master</code>.</strong> The change is deployed automatically.</p>
+        </li>
+      </ol>
+    </div>
+  </div>
+
+  <p class="section__note">The cookbook is released under the <a href="{{ site.repoUrl }}/blob/master/LICENSE">MIT License</a>.</p>
+</section>
+
+<section class="section" aria-labelledby="involved-title">
+  <h2 id="involved-title">Get in touch</h2>
+  <p class="section__lead">Spotted a mistake, or have a recipe to suggest? Any of these will reach me.</p>
+
+  <ul class="grid contact" role="list">
+    <li class="contact__item">
+      <a class="contact__title" href="mailto:{{ site.contactEmail }}">Email</a>
+      <p class="contact__summary">Questions, feedback or ideas, at <code>{{ site.contactEmail }}</code>.</p>
+    </li>
+    <li class="contact__item">
+      <a class="contact__title" href="{{ site.repoUrl }}/issues">Open an issue</a>
+      <p class="contact__summary">Report a broken recipe or a wrong step, or ask for a new page, on GitHub.</p>
+    </li>
+    <li class="contact__item">
+      <a class="contact__title" href="{{ site.repoUrl }}/blob/master/CONTRIBUTING.md">Contribute</a>
+      <p class="contact__summary">How to write a page, what makes an example safe to copy, and how to submit a change.</p>
+    </li>
+    <li class="contact__item">
+      <a class="contact__title" href="{{ site.repoUrl }}/blob/master/SECURITY.md">Report a security problem</a>
+      <p class="contact__summary">A recipe that leaks a secret or recommends an unsafe default counts. Please report it privately.</p>
+    </li>
+  </ul>
+</section>

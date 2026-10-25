@@ -2,7 +2,7 @@
 <html lang="en">
   {% comment %} the landing, 404, index and tag pages share the landing page's look: its hero, buttons and ruled grids {% endcomment %}
   {% assign landingStyle = false %}
-  {% if landingPage or notFoundPage or indexPage or tagsPage %}{% assign landingStyle = true %}{% endif %}
+  {% if landingPage or notFoundPage or indexPage or tagsPage or aboutPage %}{% assign landingStyle = true %}{% endif %}
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,6 +20,7 @@
     {% if notFoundPage %}<link rel="stylesheet" href="/assets/not-found.css">{% endif %}
     {% if indexPage %}<link rel="stylesheet" href="/assets/site-index.css">{% endif %}
     {% if tagsPage %}<link rel="stylesheet" href="/assets/tags.css">{% endif %}
+    {% if aboutPage %}<link rel="stylesheet" href="/assets/about.css">{% endif %}
     <link rel="stylesheet" href="/pagefind/pagefind-component-ui.css">
     <script type="module" src="/pagefind/pagefind-component-ui.js"></script>
     <script type="module" src="/assets/mermaid-viewer.js"></script>
@@ -72,5 +73,16 @@
       </nav>
       {% endif %}
     </main>
+    {% comment %} outside <main>, so search doesn't index it; the about page is looked up by file, so a rename fails the build {% endcomment %}
+    {% assign about = collections.all | pageFor: "about.html" %}
+    <footer class="site-footer">
+      <p class="site-footer__copy">&copy; {{ site.author | escape }} {{ site.year }}.</p>
+      <nav aria-label="Footer">
+        <ul class="site-footer__links" role="list">
+          <li><a href="{{ about.url }}">About</a></li>
+          <li><a href="mailto:{{ site.contactEmail }}">Contact</a></li>
+        </ul>
+      </nav>
+    </footer>
   </body>
 </html>

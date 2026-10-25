@@ -1,9 +1,9 @@
 [
-  { "id": "tutorials", "label": "Tutorials", "anchor": "new-to-jenkins-start-here" },
-  { "id": "concepts", "label": "Concepts", "anchor": "concepts" },
-  { "id": "guides", "label": "Guides", "anchor": "guides" },
-  { "id": "fundamentals", "label": "Fundamentals", "anchor": "fundamentals" },
-  { "id": "builds", "label": "Build recipes", "anchor": "build-recipes" },
-  { "id": "library", "label": "Shared library", "anchor": "shared-library-building-blocks" },
-  { "id": "pipelines", "label": "Composed pipelines", "anchor": "composed-pipelines" }
+  { "id": "tutorials", "label": "Tutorials", "anchor": "new-to-jenkins-start-here", "summary": "Your first pipeline, how to read a failed build, and how to grow a build into a deploy." },
+  { "id": "concepts", "label": "Concepts", "anchor": "concepts", "summary": "How CI/CD, Jenkins, secrets and branches work, plus a glossary of the terms." },
+  { "id": "guides", "label": "Guides", "anchor": "guides", "summary": "Step-by-step help for common jobs: onboarding a repo, adding a credential, releasing and rolling back." },
+  { "id": "fundamentals", "label": "Fundamentals", "anchor": "fundamentals", "summary": "The pipeline features that work with any stack: stages, conditions, parallelism and secrets." },
+  { "id": "builds", "label": "Build recipes", "anchor": "build-recipes", "summary": "One recipe for each stack: Node.js, .NET, Java, C++, Android, React Native and Docker." },
+  { "id": "library", "label": "Shared library", "anchor": "shared-library-building-blocks", "summary": "The Docker and AWS steps, each written once and called by everything else." },
+  { "id": "pipelines", "label": "Composed pipelines", "anchor": "composed-pipelines", "summary": "Complete pipelines that put the building blocks together, end to end." }
 ]

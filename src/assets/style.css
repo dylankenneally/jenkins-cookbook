@@ -212,6 +212,61 @@ main, article {
   }
 }
 
+/* Site footer: copyright, then About | Contact; the rule above it is inset to match the content */
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.5rem;
+  position: relative;
+  max-width: var(--max-width);
+  margin: calc(var(--spacing-unit) * 2) auto 0;
+  padding: var(--spacing-unit) var(--inset);
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+}
+
+.site-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: var(--inset);
+  left: var(--inset);
+  border-top: 1px solid var(--color-border);
+}
+
+.site-footer__copy {
+  margin: 0;
+}
+
+.site-footer__links {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-footer__links li {
+  margin: 0;
+}
+
+/* the bar is drawn, not typed, and given an empty alternative so a screen reader skips it */
+.site-footer__links li + li::before {
+  content: "|";
+  content: "|" / "";
+  margin: 0 0.5rem;
+}
+
+.site-footer__links a {
+  color: var(--color-link);
+  border-bottom: none;
+}
+
+.site-footer__links a:hover {
+  text-decoration: underline;
+  opacity: 1;
+}
+
 /* Search (Pagefind component UI): use the site's fonts and colours */
 :root {
   --pf-font: var(--font-sans);

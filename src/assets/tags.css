@@ -1,11 +1,6 @@
 /* Tag pages: the list of every tag, and the recipes that carry one.
    Loaded only on those pages, on top of style.css (chips) and landing.css (hero, buttons and ruled grids). */
 
-/* a link inside a sentence needs more than colour to stand out; landing.css removes the underline */
-.hero__summary a {
-  text-decoration: underline;
-}
-
 /* All tags: one ruled cell for each, the whole cell clickable */
 .tag-card {
   position: relative;
@@ -56,6 +51,23 @@
 @media (min-width: 960px) {
   .tag-cards {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* a last cell on a row of its own fills the row, rather than leaving the grid's ruling colour showing */
+@media (min-width: 640px) and (max-width: 959px) {
+  .tag-cards > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 960px) {
+  .tag-cards > :last-child:nth-child(3n + 1) {
+    grid-column: 1 / -1;
+  }
+
+  .tag-cards > :last-child:nth-child(3n + 2) {
+    grid-column: span 2;
   }
 }
 
