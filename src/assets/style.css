@@ -310,6 +310,43 @@ pre code {
   font-size: 0.85rem;
 }
 
+/* Code copy button: code-copy.js wraps each block so the button stays in the corner while a wide block scrolls */
+.code-block {
+  position: relative;
+  margin: var(--spacing-unit) 0;
+}
+
+.code-block pre {
+  margin: 0;
+}
+
+.code-copy {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  min-height: 1.75rem;
+  padding: 0.2rem 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  background-color: var(--color-code-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 0 var(--radius) 0 var(--radius);
+  cursor: pointer;
+}
+
+.code-copy:hover {
+  color: var(--color-link);
+  border-color: var(--color-link);
+}
+
+@media print {
+  .code-copy {
+    display: none;
+  }
+}
+
 /* Syntax highlighting (Prism tokens via eleventy-plugin-syntaxhighlight); every colour is 4.5:1 or better on --color-code-bg */
 .token.comment,
 .token.prolog,

@@ -1,6 +1,6 @@
 {
   "name": "jenkins-cookbook",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Recipes for Jenkins Declarative Pipelines",
   "keywords": [
     "jenkins",
