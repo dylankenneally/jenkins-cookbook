@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <title>Jenkinsfile Cookbook</title>
+  <!-- site palette: rust tile, paper foreground -->
+  <rect width="32" height="32" rx="4" fill="#c2410c"/>
+  <!-- bookmark ribbon: the cookbook -->
+  <path d="M12 0h8v15l-4-3.2-4 3.2z" fill="#fdfbf7"/>
+  <!-- three linked stages: the pipeline -->
+  <path d="M6.5 24h19" stroke="#fdfbf7" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+  <circle cx="6.5" cy="24" r="3" fill="#fdfbf7"/>
+  <circle cx="16" cy="24" r="3" fill="#fdfbf7"/>
+  <circle cx="25.5" cy="24" r="3" fill="#fdfbf7"/>
+</svg>
