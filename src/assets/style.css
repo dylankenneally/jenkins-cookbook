@@ -346,10 +346,56 @@ main, article {
   opacity: 1;
 }
 
-.page-tags {
+/* the foot of a recipe: edit links on the left, tags on the right, wrapping onto two lines on a narrow screen */
+.page-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem var(--spacing-unit);
   margin-top: calc(var(--spacing-unit) * 2.5);
   padding-top: var(--spacing-unit);
   border-top: 1px solid var(--color-border);
+}
+
+.page-edit__list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  font-size: 0.85rem;
+  list-style: none;
+}
+
+.page-edit__list li {
+  margin: 0;
+}
+
+/* the bar is drawn, not typed, and given an empty alternative so a screen reader skips it */
+.page-edit__list li + li::before {
+  content: "|";
+  content: "|" / "";
+  margin: 0 0.5rem;
+  color: var(--color-text-light);
+}
+
+.page-edit__list a {
+  border-bottom: none;
+}
+
+.page-edit__list a:hover {
+  text-decoration: underline;
+  opacity: 1;
+}
+
+@media print {
+  .page-edit {
+    display: none;
+  }
+}
+
+.page-tags {
+  margin-left: auto; /* stays on the right when a page has no edit links */
 }
 
 .page-tags__list {

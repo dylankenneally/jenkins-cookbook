@@ -72,6 +72,21 @@ People copy these recipes into real pipelines, so keep the examples safe.
 
 ## Submitting a change
 
+Every change reaches `master` through a pull request, including the maintainer's own. Nobody pushes to `master` directly.
+
+### Quick fixes from the page
+
+Each recipe has two links at the bottom, next to its tags:
+
+- **Edit on GitHub** opens that page's Markdown file in GitHub's editor. If you don't have write access, GitHub makes a fork for you and opens a pull request when you save. It suits typos, wrong steps and small rewrites.
+- **Report a problem** opens a new issue that already names the page and links to its source. Use it when you've spotted a mistake but don't want to fix it yourself.
+
+The links are worked out from each page's file, so a new recipe gets them without any setup.
+
+### Larger changes
+
+Anything bigger than a quick fix, such as a new page or a restructure, is easier to do locally:
+
 1. Fork the repository and create a branch from `master`.
 2. Make your change and check it in the browser with `npm start`.
 3. Run `npm run build` and make sure it finishes without errors.

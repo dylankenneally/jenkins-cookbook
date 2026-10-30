@@ -61,16 +61,29 @@
 
       {{ content }}
 
-      {% comment %} a page's tags, each linking to the page that lists every recipe with that tag; search can filter on them too {% endcomment %}
-      {% if tags.size > 0 %}
-      {% assign sortedTags = tags | sort %}
-      <nav class="page-tags" aria-label="Tags">
-        <ul class="page-tags__list" role="list">
-          {% for item in sortedTags %}
-          <li data-pagefind-filter="tag[data-tag]" data-tag="{{ item | escape }}"><a class="tag-chip" href="{{ item | tagUrl }}"><span aria-hidden="true">#</span>{{ item | escape }}</a></li>
-          {% endfor %}
-        </ul>
-      </nav>
+      {% comment %} the foot of a recipe: links to edit it or report a problem on GitHub (scripts/edit-links.js), then its tags, each linking to the page that lists every recipe with that tag; search can filter on the tags too {% endcomment %}
+      {% if editLinks or tags.size > 0 %}
+      <div class="page-foot">
+        {% if editLinks %}
+        <nav class="page-edit" aria-label="Edit this page" data-pagefind-ignore>
+          <ul class="page-edit__list" role="list">
+            {% comment %} both open GitHub in a new tab, so the recipe stays open behind them; rel stops the new page reaching back into this one, and the hidden text warns assistive technology {% endcomment %}
+            <li><a href="{{ editLinks.editUrl }}" target="_blank" rel="noopener noreferrer">Edit on GitHub<span class="visually-hidden"> (opens in a new tab)</span></a></li>
+            <li><a href="{{ editLinks.reportUrl }}" target="_blank" rel="noopener noreferrer">Report a problem<span class="visually-hidden"> (opens in a new tab)</span></a></li>
+          </ul>
+        </nav>
+        {% endif %}
+        {% if tags.size > 0 %}
+        {% assign sortedTags = tags | sort %}
+        <nav class="page-tags" aria-label="Tags">
+          <ul class="page-tags__list" role="list">
+            {% for item in sortedTags %}
+            <li data-pagefind-filter="tag[data-tag]" data-tag="{{ item | escape }}"><a class="tag-chip" href="{{ item | tagUrl }}"><span aria-hidden="true">#</span>{{ item | escape }}</a></li>
+            {% endfor %}
+          </ul>
+        </nav>
+        {% endif %}
+      </div>
       {% endif %}
     </main>
     {% comment %} outside <main>, so search doesn't index it; the about page is looked up by file, so a rename fails the build {% endcomment %}

@@ -15,6 +15,8 @@ module.exports = {
   title: "Jenkinsfile Cookbook",
   version: pkg.version,
   repoUrl: pkg.repository.url.replace(/^git\+/, "").replace(/\.git$/, ""),
+  homepage: pkg.homepage,
+  editBranch: "master", // he branch the "Edit on GitHub" links open;
   author: authorName(pkg.author),
   year: new Date().getFullYear(), // the year of the build, not of the last edit (used in the footer)
   contactEmail: "hello+jenkins-cookbook@dylankenneally.com"

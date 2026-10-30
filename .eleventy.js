@@ -8,6 +8,7 @@ const { validateLanding, pageFor } = require("./scripts/landing.js");
 const { buildSiteIndex } = require("./scripts/site-index.js");
 const { breadcrumbsFor, validateSections } = require("./scripts/breadcrumbs.js");
 const { validateTags, tagUrl, tagSummaries, groupBySection } = require("./scripts/tags.js");
+const { editLinksFor } = require("./scripts/edit-links.js");
 
 const CONTENT_DIR = "src/content";
 const LANDING_DATA = "src/data/landing.json";
@@ -209,10 +210,11 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addGlobalData("layout", "default");
 
-  // every page gets a title and a breadcrumb trail, so documents need no front matter for either
+  // every page gets a title and a breadcrumb trail, and every recipe its GitHub links, so documents need no front matter for any of them
   eleventyConfig.addGlobalData("eleventyComputed", {
     docTitle: (data) => documentTitle(data.page.inputPath),
-    breadcrumbs: (data) => breadcrumbsFor(data, data.sections, CONTENT_DIR)
+    breadcrumbs: (data) => breadcrumbsFor(data, data.sections, CONTENT_DIR),
+    editLinks: (data) => editLinksFor(data),
   });
 
   return {
