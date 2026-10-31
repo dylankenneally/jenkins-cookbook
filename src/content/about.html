@@ -22,6 +22,7 @@ searchable: false
     <div><dt>Recipes</dt><dd>{{ collections.taggable.size }}</dd></div>
     <div><dt>Tags</dt><dd>{{ tagVocabulary.size }}</dd></div>
     <div><dt>Version</dt><dd>{{ site.version }}</dd></div>
+    <div><dt>Updated</dt><dd><time datetime="{{ siteLastUpdated.iso }}">{{ siteLastUpdated.label }}</time></dd></div>
   </dl>
 </section>
 

@@ -9,6 +9,7 @@ const { buildSiteIndex } = require("./scripts/site-index.js");
 const { breadcrumbsFor, validateSections } = require("./scripts/breadcrumbs.js");
 const { validateTags, tagUrl, tagSummaries, groupBySection } = require("./scripts/tags.js");
 const { editLinksFor } = require("./scripts/edit-links.js");
+const { assertFullHistory, getRecipeLastUpdated, getSiteLastUpdated } = require("./scripts/last-updated.js");
 
 const CONTENT_DIR = "src/content";
 const LANDING_DATA = "src/data/landing.json";
@@ -189,6 +190,9 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.on("eleventy.before", () => validateLanding(LANDING_DATA, CONTENT_DIR));
   eleventyConfig.addFilter("pageFor", (pages, ref) => pageFor(pages, ref, CONTENT_DIR));
 
+  // each page's date is its latest commit, so git must be there and must have the full history
+  eleventyConfig.on("eleventy.before", () => assertFullHistory());
+
   // breadcrumbs link each folder to its heading on the browse page, so check those headings are still there
   eleventyConfig.on("eleventy.before", () => validateSections(SECTIONS_DATA, CONTENT_DIR, eleventyConfig.getFilter("slugify")));
 
@@ -209,12 +213,13 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy(FONT_FILES);
 
   eleventyConfig.addGlobalData("layout", "default");
-
-  // every page gets a title and a breadcrumb trail, and every recipe its GitHub links, so documents need no front matter for any of them
+  eleventyConfig.addGlobalData("date", "git Last Modified");
+  eleventyConfig.addGlobalData("siteLastUpdated", () => getSiteLastUpdated());
   eleventyConfig.addGlobalData("eleventyComputed", {
     docTitle: (data) => documentTitle(data.page.inputPath),
     breadcrumbs: (data) => breadcrumbsFor(data, data.sections, CONTENT_DIR),
     editLinks: (data) => editLinksFor(data),
+    lastUpdated: (data) => getRecipeLastUpdated(data),
   });
 
   return {
