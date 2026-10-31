@@ -4,7 +4,7 @@ tags: [security]
 
 # Secrets in CI
 
-A CI system needs secrets to do anything useful: tokens to push images, keys to deploy, passwords for test databases. It also runs code from every branch, often written by many people. This page explains where secrets live in Jenkins, how a pipeline gets at them, and the ways they leak. For syntax, see [Environment Variables & Secure Credentials](../fundamentals/environment-variables-and-secure-credentials.md).
+A CI system needs secrets to do anything useful: tokens to push images, keys to deploy, passwords for test databases. It also runs code from every branch, often written by many people. This page explains where secrets live in Jenkins, how a pipeline gets at them, and the ways they leak. For syntax, see [Environment Variables and Secure Credentials](../fundamentals/environment-variables-and-secure-credentials.md).
 
 ## Where secrets live
 
@@ -15,7 +15,7 @@ Credentials can be stored at different levels:
 - **Global store**: on the controller, usable by any job (with the **Global** scope). **System** scope credentials are only for Jenkins itself, such as connecting to agents, and pipelines can't use them.
 - **Folder store**: attached to a folder, usable only by jobs inside it. A production deploy key stored on the folder that holds your service's jobs can't be used by unrelated jobs elsewhere.
 
-Prefer the narrowest store that works. Your Jenkins administrator usually manages credentials; with folder permissions you may be able to add your own. See [Add a Credential](../guides/add-a-credential.md).
+Prefer the narrowest store that works. Your Jenkins administrator usually manages credentials; with folder permissions you may be able to add your own. See [Add a Secret or Credential](../guides/add-a-credential.md).
 
 ## Credential types
 
@@ -43,14 +43,14 @@ stage('Publish') {
                 passwordVariable: 'REG_PASS'
             )
         ]) {
-            // single quotes: the shell expands the variables, groovy never sees the values
+            // single quotes: the shell expands the variables, Groovy never sees the values
             sh 'echo "$REG_PASS" | docker login --username "$REG_USER" --password-stdin registry.example.com'
         }
     }
 }
 ```
 
-Keep the block as small as possible, around the steps that need the secret. The `credentials()` helper in an `environment` block does the same for a whole stage or pipeline, which is convenient but puts the secret in scope for every step there. For AWS, use [`withAws`](../library/with-aws.md).
+Keep the block as small as possible, around the steps that need the secret. The `credentials` helper in an `environment` block does the same for a whole stage or pipeline, which is convenient but puts the secret in scope for every step there. For AWS, use [`withAws`](../library/with-aws.md).
 
 ## Masking is not protection
 
@@ -69,7 +69,7 @@ In Groovy, a double-quoted string expands `${…}` before the step runs. With a 
 
 ```groovy
 withCredentials([string(credentialsId: 'api-token', variable: 'API_TOKEN')]) {
-    // wrong: groovy pastes the token into the command before sh runs
+    // wrong: Groovy pastes the token into the command before sh runs
     sh "curl -H 'Authorization: Bearer ${API_TOKEN}' https://api.example.com/deploy"
 
     // right: single quotes, so the shell reads the token from its environment
@@ -93,13 +93,13 @@ Where your cloud provider supports it, prefer this over storing deploy keys per 
 
 ## Pull request builds from forks
 
-A PR build runs the PR's code. For a PR from a fork, that is code from someone outside your organisation, and it runs on your agents.
+A pull request (PR) build runs the PR's code. For a PR from a fork, that is code from someone outside your organisation, and it runs on your agents.
 
 - The branch source's trust setting decides which PRs are built and whose `Jenkinsfile` is used. For untrusted PRs, Jenkins uses the `Jenkinsfile` from the target branch, but the PR's build scripts, tests and dependencies still run.
-- Never bind deploy or publishing credentials in stages that run on PRs. Guard them with `when { branch 'main' }` or similar; see [`when` Conditions](../fundamentals/when-conditions.md).
+- Never bind deploy or publishing credentials in stages that run on PRs. Guard them with `when { branch 'master' }` or similar; see [`when` Conditions](../fundamentals/when-conditions.md).
 - For public repositories, consider not building fork PRs at all, or building them on isolated agents with no credentials.
 
-See [Multibranch & Pull Requests](../fundamentals/multibranch-and-pull-requests.md) and [Branches, Pull Requests and What Runs Where](branches-and-pull-requests.md).
+See [Multibranch and Pull Requests](../fundamentals/multibranch-and-pull-requests.md) and [Branches, Pull Requests and What Runs Where](branches-and-pull-requests.md).
 
 ## When a secret leaks
 
@@ -115,6 +115,6 @@ Tell your Jenkins administrator and the owner of the system the secret belongs t
 ## Related pages
 
 - [Environment Variables & Secure Credentials](../fundamentals/environment-variables-and-secure-credentials.md)
-- [Add a Credential](../guides/add-a-credential.md)
+- [Add a Secret or Credential](../guides/add-a-credential.md)
 - [`withAws`](../library/with-aws.md) and [`assumeRole`](../library/assume-role.md)
 - [`Jenkinsfile` Tips](../fundamentals/tips.md) for quoting secrets in `sh`

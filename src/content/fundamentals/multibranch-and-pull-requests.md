@@ -4,14 +4,14 @@ tags: [git, declarative]
 
 # Multibranch & Pull Requests
 
-A Multibranch Pipeline job scans a repo and creates a child job for every branch, tag and pull request that has a `Jenkinsfile`. One `Jenkinsfile` then serves them all, and environment variables and `when` conditions decide what each kind of build does.
+A Multibranch Pipeline job scans a repo and creates a child job for every branch, tag and pull request (PR) that has a `Jenkinsfile`. One `Jenkinsfile` then serves them all, and environment variables and `when` conditions decide what each kind of build does.
 
 ```groovy
 pipeline {
     agent any
 
     options {
-        // a new push to a branch or pr aborts the build of the commit it replaces
+        // a new push to a branch or PR aborts the build of the commit it replaces
         disableConcurrentBuilds(abortPrevious: true)
     }
 
@@ -34,10 +34,10 @@ pipeline {
         }
 
         stage('Deploy') {
-            // prs build under their own name (PR-42), so this skips them
+            // PRs build under their own name (PR-42), so this skips them
             when {
                 beforeAgent true
-                branch 'main'
+                branch 'master'
             }
             steps {
                 sh 'make deploy'
@@ -51,9 +51,9 @@ pipeline {
 
 | Variable | Set for | Example |
 | --- | --- | --- |
-| `BRANCH_NAME` | every build | `main`, `feature/login`, `PR-42` |
+| `BRANCH_NAME` | every build | `master`, `feature/login`, `PR-42` |
 | `CHANGE_ID` | pull requests | `42` |
-| `CHANGE_TARGET` | pull requests | `main` |
+| `CHANGE_TARGET` | pull requests | `master` |
 | `CHANGE_BRANCH` | pull requests | `feature/login` |
 | `CHANGE_AUTHOR` | pull requests | the author's username |
 | `CHANGE_URL` | pull requests | link to the PR on the Git host |
@@ -64,9 +64,9 @@ For a pull request, `BRANCH_NAME` is `PR-<number>`, not the source branch. Use `
 ## Building PRs differently
 
 - `when { changeRequest() }` is true for any pull request build.
-- `when { changeRequest target: 'main' }` narrows it to PRs into `main`.
+- `when { changeRequest target: 'master' }` narrows it to PRs into `master`.
 - `when { not { changeRequest() } }` runs only on branch and tag builds.
-- `when { branch 'main' }` is false on PRs, even PRs into `main`, so deploy stages guarded by it never run from a PR.
+- `when { branch 'master' }` is false on PRs, even PRs into `master`, so deploy stages guarded by it never run from a PR.
 
 In a `script` block, check `env.CHANGE_ID` directly:
 
@@ -87,6 +87,6 @@ script {
 
 - By default the branch source builds a PR merged with its target branch, so tests see the result of merging. This is configurable under the source's discovery settings.
 - Tags are only built if tag discovery is enabled on the branch source, and discovered tags are not built automatically unless a build strategy says so.
-- A webhook from the Git host makes new branches and PRs appear straight away; otherwise they wait for the next periodic scan. See [triggers](triggers.md).
+- A webhook from the Git host makes new branches and PRs appear straight away; otherwise they wait for the next periodic scan. See [Triggers](triggers.md).
 
-Per-PR environments are in [PR preview pipeline](../pipelines/pr-preview.md). The full list of conditions is on [`when` conditions](when-conditions.md).
+Per-PR environments are in [PR preview pipeline](../pipelines/pr-preview.md). The full list of conditions is on [`when` Conditions](when-conditions.md).

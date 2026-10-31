@@ -34,7 +34,7 @@ pipeline {
         stage('Deploy Staging') {
             when {
                 allOf {
-                    branch 'main'
+                    branch 'master'
                     environment name: 'DEPLOY_TO', value: 'staging'
                 }
             }
@@ -57,11 +57,11 @@ pipeline {
 
 ## Branches and tags
 
-- `branch 'main'` matches `env.BRANCH_NAME`. Patterns are globs by default, so `branch 'release/*'` matches every release branch. Add `comparator: 'REGEXP'` for a regular expression.
-- `buildingTag()` is true for any tag build.
+- `branch 'master'` matches `env.BRANCH_NAME`. Patterns are globs by default, so `branch 'release/*'` matches every release branch. Add `comparator: 'REGEXP'` for a regular expression.
+- `buildingTag` is true for any tag build.
 - `tag 'v*'` matches the tag name as a glob. `tag pattern: '...', comparator: 'REGEXP'` does the same with a regular expression.
 
-These only work in multibranch jobs, which set `BRANCH_NAME` and `TAG_NAME`. Tag builds also need tag discovery enabled on the branch source. See [multibranch and pull requests](multibranch-and-pull-requests.md).
+These only work in multibranch jobs, which set `BRANCH_NAME` and `TAG_NAME`. Tag builds also need tag discovery enabled on the branch source. See [Multibranch and Pull Requests](multibranch-and-pull-requests.md).
 
 ## Changesets
 
@@ -70,12 +70,20 @@ These only work in multibranch jobs, which set `BRANCH_NAME` and `TAG_NAME`. Tag
 > [!WARNING]
 > The changelog is the set of commits since the previous build of this job. The first build of a new branch has an empty changelog, so a `changeset` stage is skipped there. Don't rely on `changeset` alone to guard something that must run.
 
+## Other conditions
+
+- `equals expected: 'prod', actual: params.TARGET` compares two values. Use `expression` for anything more involved.
+- `triggeredBy 'TimerTrigger'` is true when that cause started the build. Other causes are `'SCMTrigger'` (a poll), `'BuildUpstreamCause'` (an upstream job) and `cause: 'UserIdCause', detail: 'alice'` (a person). See [Triggers](triggers.md).
+- `isRestartedRun` is true when the build is a **Restart from Stage** run, which suits steps that must not repeat.
+- `changelog '.*^\\[DEPENDENCY\\] .+$'` is true when a commit message in the build's changelog matches the regular expression.
+- `changeRequest` is true for pull request builds, and `changeRequest target: 'master'` narrows it to a target branch. See [Multibranch and Pull Requests](multibranch-and-pull-requests.md).
+
 ## Combining conditions
 
 ```groovy
 when {
     anyOf {
-        branch 'main'
+        branch 'master'
         branch 'release/*'
     }
 }
@@ -106,7 +114,7 @@ stage('Deploy Production') {
     }
     when {
         beforeAgent true
-        branch 'main'
+        branch 'master'
     }
     steps {
         sh 'make deploy-production'
@@ -114,4 +122,4 @@ stage('Deploy Production') {
 }
 ```
 
-`beforeInput true` and `beforeOptions true` do the same for a stage's `input` and `options`. There is an example in [parameters and approval gates](parameters-and-approval-gates.md). For per-stage agents, see [agents and labels](agents-and-labels.md).
+`beforeInput true` and `beforeOptions true` do the same for a stage's `input` and `options`. There is an example in [Parameters and Approval Gates](parameters-and-approval-gates.md). For per-stage agents, see [Agents and Labels](agents-and-labels.md).

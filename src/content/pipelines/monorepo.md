@@ -4,7 +4,7 @@ tags: [git, performance]
 
 # Monorepo: Build Only What Changed
 
-One `Jenkinsfile` for a repo with several packages under `packages/`. Each package has its own stage inside `parallel`, and a `changeset` condition skips the packages a push didn't touch. Uses [parallel execution](../fundamentals/parallel-execution.md) and [`when` conditions](../fundamentals/when-conditions.md); the package steps are the [Node.js recipe](../builds/nodejs.md) with npm workspaces.
+One `Jenkinsfile` for a repo with several packages under `packages/`. Each package has its own stage inside `parallel`, and a `changeset` condition skips the packages a push didn't touch. Uses [parallel execution](../fundamentals/parallel-execution.md) and [`when` Conditions](../fundamentals/when-conditions.md); the package steps are the [Node.js recipe](../builds/nodejs.md) with npm workspaces.
 
 ```groovy
 pipeline {
@@ -74,10 +74,10 @@ pipeline {
 
 ## What `changeset` actually compares
 
-`changeset` matches against the build's changelog: the commits between this build and the previous build of the same job. It is not a diff against `main`. That has a few consequences:
+`changeset` matches against the build's changelog: the commits between this build and the previous build of the same job. It is not a diff against `master`. That has a few consequences:
 
 - The first build of a new branch has no previous build, so the changelog is empty and every `changeset` stage is skipped.
-- A pull request is its own job (`PR-42`), so the same applies. Its first build has an empty changelog, and later builds only see the commits pushed since the last PR build, not the whole PR.
+- A pull request (PR) is its own job (`PR-42`), so the same applies. Its first build has an empty changelog, and later builds only see the commits pushed since the last PR build, not the whole PR.
 - If a build fails and the next push touches a different package, the next build's changelog doesn't include the failed build's commits. The package that broke is skipped, and the run can go green without it being rebuilt.
 - A manual rebuild with no new commits has an empty changelog.
 
@@ -86,13 +86,13 @@ pipeline {
 
 ## Fallback: diff against the target branch
 
-To build what differs from the target branch instead, compute it with `git diff --name-only origin/main...HEAD`. The three dots diff from the point where the branch left `main`, so changes that landed on `main` since don't count. Add this stage before `Packages`:
+To build what differs from the target branch instead, compute it with `git diff --name-only origin/master...HEAD`. The three dots diff from the point where the branch left `master`, so changes that landed on `master` since don't count. Add this stage before `Packages`:
 
 ```groovy
 stage('Detect Changes') {
     steps {
         script {
-            String target = env.CHANGE_TARGET ?: 'main'
+            String target = env.CHANGE_TARGET ?: 'master'
             String base = "origin/${target}"
             String fetchTarget = "git fetch --no-tags origin '+refs/heads/${target}:refs/remotes/${base}'"
 
@@ -112,12 +112,12 @@ stage('Detect Changes') {
 }
 ```
 
-Then guard each package stage on the result, and build everything on `main` itself, where the diff against `origin/main` is empty:
+Then guard each package stage on the result, and build everything on `master` itself, where the diff against `origin/master` is empty:
 
 ```groovy
 when {
     anyOf {
-        branch 'main'
+        branch 'master'
         environment name: 'API_CHANGED', value: 'true'
         environment name: 'SHARED_CHANGED', value: 'true'
     }

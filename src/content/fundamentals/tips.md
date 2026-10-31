@@ -4,7 +4,7 @@ tags: [declarative, troubleshooting]
 
 # `Jenkinsfile` Tips
 
-Short habits that make pipelines easier to write, review and debug. Each one links to the recipe that covers it in more depth.
+Short habits that make pipelines easier to write, review and debug. Most link to the page that covers them in more depth.
 
 ## Validate before you push
 
@@ -71,7 +71,7 @@ withCredentials([string(credentialsId: 'deploy-token', variable: 'DEPLOY_TOKEN')
 }
 ```
 
-Never `echo` a secret, even to check it's set. Masking only matches the exact value, so any transformed copy (base64, URL-encoded, split across lines) prints in clear text. See [Environment Variables & Secure Credentials](environment-variables-and-secure-credentials.md).
+Never `echo` a secret, even to check it's set. Masking only matches the exact value, so any transformed copy (base64, URL-encoded, split across lines) prints in clear text. See [Environment Variables and Secure Credentials](environment-variables-and-secure-credentials.md).
 
 ## Pin versions
 
@@ -84,8 +84,8 @@ pipeline {
     agent {
         docker {
             // a specific tag, not 'node' or 'node:latest'
-            image 'node:20.11-bookworm'
-            label 'docker'
+            image 'node:22.11.0'
+            label 'linux && docker'
         }
     }
     stages {
@@ -99,11 +99,11 @@ pipeline {
 }
 ```
 
-For `tools {}`, name an installation that is itself pinned in **Manage Jenkins → Tools** (for example `nodejs 'node-20.11'`) rather than one called `latest`. See [Shared Library Setup](../library/setup.md) and [Agents & Labels](agents-and-labels.md).
+For `tools {}`, name an installation that is itself pinned in **Manage Jenkins → Tools** (for example `nodejs 'node-22'`) rather than one called `latest`. See [Shared Library Setup](../library/setup.md) and [Agents and Labels](agents-and-labels.md).
 
 ## Avoid `agent any`
 
-`agent any` runs on whichever executor is free, including agents that lack the right toolchain or the built-in node. The cookbook's short examples use it for brevity; real pipelines should ask for a label.
+`agent any` runs on whichever executor is free, including agents that lack the right toolchain or the controller. The cookbook's short examples use it for brevity; real pipelines should ask for a label.
 
 ```groovy
 pipeline {
@@ -115,7 +115,7 @@ pipeline {
 }
 ```
 
-See [Agents & Labels](agents-and-labels.md).
+See [Agents and Labels](agents-and-labels.md).
 
 ## Avoid `script {}` sprawl
 
@@ -135,18 +135,18 @@ stage('Deploy') {
 }
 ```
 
-See [Shared Library Setup](../library/setup.md) and [Shared Library Testing](../library/testing.md).
+See [Shared Library Setup](../library/setup.md) and [Testing the Shared Library](../library/testing.md).
 
 ## CPS gotchas
 
-Pipeline code is [CPS-transformed](https://www.jenkins.io/doc/book/pipeline/cps-method-mismatches/) so a build can pause and survive a controller restart. At each step, the running program's state, including local variables, is serialized to disk. A few rules follow from that:
+Pipeline code is [CPS-transformed](https://www.jenkins.io/doc/book/pipeline/cps-method-mismatches/) so a build can pause and survive a controller restart. At each step, the running program's state, including local variables, is serialised to disk. A few rules follow from that:
 
-- Don't hold a non-serializable object, such as a `java.util.regex.Matcher` or the `LazyMap` returned by `groovy.json.JsonSlurper`, in a variable while a step runs. It fails with `java.io.NotSerializableException`.
-- A method marked `@NonCPS` runs as plain Groovy. It can't call steps (`sh`, `echo`, `node` and so on), but it can safely use non-serializable objects, as long as it returns something serializable.
+- Don't hold a non-serialisable object, such as a `java.util.regex.Matcher` or the `LazyMap` returned by `groovy.json.JsonSlurper`, in a variable while a step runs. It fails with `java.io.NotSerializableException`.
+- A method marked `@NonCPS` runs as plain Groovy. It can't call steps (`sh`, `echo`, `node` and so on), but it can safely use non-serialisable objects, as long as it returns something serialisable.
 - Closures with `.each` and `.collect` used to fail under CPS. That was fixed long ago ([JENKINS-26481](https://issues.jenkins.io/browse/JENKINS-26481)), but a few methods that take a closure, such as `toSorted` with a comparator, still return wrong results. Wrap those in a `@NonCPS` method.
 
 ```groovy
-// plain groovy: the Matcher never outlives this method
+// plain Groovy: the Matcher never outlives this method
 @NonCPS
 String majorVersion(String version) {
     def matcher = version =~ /^(\d+)\./
@@ -157,7 +157,7 @@ String majorVersion(String version) {
 }
 ```
 
-For JSON, prefer `readJSON` from the [Pipeline Utility Steps](https://plugins.jenkins.io/pipeline-utility-steps/) plugin, which returns serializable objects. See [Troubleshooting](../guides/troubleshooting.md) for the error texts.
+For JSON, prefer `readJSON` from the [Pipeline Utility Steps](https://plugins.jenkins.io/pipeline-utility-steps/) plugin, which returns serialisable objects. See [Troubleshooting](../guides/troubleshooting.md) for the error texts.
 
 ## Replay
 
@@ -167,7 +167,7 @@ Replay needs the **Run / Replay** permission. Editing the sources of a trusted g
 
 ## Restart from a stage
 
-For Declarative pipelines, **Restart from Stage** on a completed build reruns from a chosen top-level stage, reusing the same commit and parameters. Stashes are discarded at the end of a build by default, so a restarted `Deploy` stage would have nothing to `unstash`. Keep them for recent builds:
+For Declarative Pipelines, **Restart from Stage** on a completed build reruns from a chosen top-level stage, reusing the same commit and parameters. Stashes are discarded at the end of a build by default, so a restarted `Deploy` stage would have nothing to `unstash`. Keep them for recent builds:
 
 ```groovy
 options {
@@ -176,7 +176,7 @@ options {
 }
 ```
 
-See [Stash & Unstash](stash-and-unstash.md) and [Options Defaults](options-defaults.md).
+See [Stash and Unstash](stash-and-unstash.md) and [Options Defaults](options-defaults.md).
 
 ## Consistent credential IDs
 

@@ -63,10 +63,10 @@ stash(
 ## Notes
 
 - `unstash` restores files at the same relative paths, overwriting any that already exist.
-- Stashes belong to one run and are deleted when it finishes. Add `preserveStashes(buildCount: 5)` to the pipeline `options` if you use "Restart from Stage" on recent runs.
+- Stashes belong to one run and are deleted when it finishes. Add `preserveStashes(buildCount: 5)` to the pipeline `options` if you use **Restart from Stage** on recent runs.
 - Stashing the same name twice replaces the first stash.
 
 > [!WARNING]
-> Stashes are copied through the controller and suit small to medium files: build output, test reports, a few MB of binaries. For large artifacts (hundreds of MB, container layers, full SDKs) use `archiveArtifacts`, ideally backed by an artifact-manager plugin, or upload to S3 with [`s3Sync`](../library/s3-cloudfront.md) and download it where needed.
+> Stashes are copied through the controller and suit small to medium files: build output, test reports, a few MB of binaries. For large artifacts (hundreds of MB, container layers, full SDKs) use `archiveArtifacts`, ideally backed by an artifact-manager plugin, or upload to S3 with [`s3Sync`](../library/s3-cloudfront.md) and fetch it in the later stage with `aws s3 sync` or `aws s3 cp`. `s3Sync` only uploads, and it removes objects under its prefix that aren't in the source, so give each build its own prefix.
 
-`stash` is not a substitute for `archiveArtifacts`: stashes vanish with the run, archived artifacts are kept with the build record (subject to the [build discarder](options-defaults.md)). Per-stage agents are covered in [agents and labels](agents-and-labels.md).
+`stash` is not a substitute for `archiveArtifacts`: stashes vanish with the run, archived artifacts are kept with the build record (subject to the [build discarder](options-defaults.md)). Per-stage agents are covered in [Agents and Labels](agents-and-labels.md).

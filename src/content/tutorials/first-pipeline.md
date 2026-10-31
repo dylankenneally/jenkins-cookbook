@@ -16,7 +16,7 @@ You need three things:
 - a Jenkins user account that can see and build jobs
 - a multibranch job for the repo
 
-A [multibranch job](../concepts/glossary.md) (Multibranch Pipeline) watches a repo and creates a child job for every branch and pull request that contains a `Jenkinsfile`. A `Jenkinsfile` is a text file in the repo that describes the [pipeline](../concepts/glossary.md): the ordered set of [stages](../concepts/glossary.md) Jenkins runs for each commit. See [Multibranch & Pull Requests](../fundamentals/multibranch-and-pull-requests.md) for how branches and PRs behave.
+A [multibranch job](../concepts/glossary.md) (Multibranch Pipeline) watches a repo and creates a child job for every branch and pull request (PR) that contains a `Jenkinsfile`. A `Jenkinsfile` is a text file in the repo that describes the [pipeline](../concepts/glossary.md): the ordered set of [stages](../concepts/glossary.md) Jenkins runs for each commit. See [Multibranch and Pull Requests](../fundamentals/multibranch-and-pull-requests.md) for how branches and PRs behave.
 
 Creating the job usually needs your Jenkins administrator, because it involves job permissions and stored credentials. If you can create jobs yourself, the same settings apply. Ask for these:
 
@@ -29,7 +29,7 @@ Creating the job usually needs your Jenkins administrator, because it involves j
 A request your Jenkins administrator can act on looks like this:
 
 ```email to="your Jenkins administrator"
-Please create a multibranch pipeline job for our repo.
+Please create a Multibranch Pipeline job for our repo.
 
 - Git host and repo URL: https://git.example.com/my-group/my-app
 - Branch source: discover branches and pull requests from the origin repo
@@ -48,13 +48,13 @@ Create a file called `Jenkinsfile` at the root of the repo, next to `package.jso
 
 ```groovy
 pipeline {
-    // run on an agent that has the tools for this build; use the label your jenkins administrator gave you
+    // run on an agent that has the tools for this build; use the label your Jenkins administrator gave you
     agent {
         label 'linux'
     }
 
     stages {
-        // no checkout stage: jenkins checks out the commit before the first stage
+        // no checkout stage: Jenkins checks out the commit before the first stage
         stage('Install') {
             steps {
                 // installs exactly what's in package-lock.json
@@ -168,6 +168,6 @@ For a fuller walkthrough of investigating a red build, see [Reading a Failed Bui
 
 ## Next steps
 
-- [From Build to Deploy](build-to-deploy.md) grows this pipeline into one that deploys a static site to AWS from `main`.
+- [From Build to Deploy](build-to-deploy.md) grows this pipeline into one that deploys a static site to AWS from `master`.
 - [Options Defaults](../fundamentals/options-defaults.md) adds a timeout, timestamps and build retention to every pipeline.
 - [Agents & Labels](../fundamentals/agents-and-labels.md) explains labels and how to run the build in a pinned Docker image.

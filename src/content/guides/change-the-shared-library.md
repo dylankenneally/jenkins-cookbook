@@ -9,7 +9,7 @@ Every pipeline that loads the [shared library](../library/setup.md) runs its ste
 ## Before you start
 
 - You have write access to the shared library repo, or can open pull requests against it. The repo owner controls who can merge.
-- You can run the library's tests locally: a JDK 21 and the committed Gradle wrapper. See [testing the shared library](../library/testing.md).
+- You can run the library's tests locally: a JDK 21 and the committed Gradle Wrapper. See [Testing the Shared Library](../library/testing.md).
 - You have a repo, or a scratch branch of one, where you can run a pipeline that loads the library.
 
 ## Who can change it, and why it is reviewed
@@ -28,7 +28,7 @@ That is why:
 ## 1. Branch and write a test
 
 ```bash
-git switch main
+git switch master
 git pull --ff-only
 git switch -c my-branch
 ```
@@ -67,7 +67,7 @@ pipeline {
 }
 ```
 
-Use a scratch branch of a consuming repo, or **Replay** on an existing build and edit the `@Library` line there, so nothing reaches `main`. Use a step that doesn't deploy or change shared resources.
+Use a scratch branch of a consuming repo, or **Replay** on an existing build and edit the `@Library` line there, so nothing reaches `master`. Use a step that doesn't deploy or change shared resources.
 
 If Jenkins reports that the version can't be overridden, the library is configured to only allow its default version. Ask your Jenkins administrator to enable **Allow default version to be overridden** on the library.
 
@@ -91,10 +91,10 @@ Versions follow [Semantic Versioning](https://semver.org/):
 | Adds a step, or an optional argument with a default | minor | `v1.6.0` to `v1.7.0` |
 | Fixes a bug without changing the interface | patch | `v1.6.0` to `v1.6.1` |
 
-Tag the merge commit on `main` with an annotated tag and push it by name:
+Tag the merge commit on `master` with an annotated tag and push it by name:
 
 ```bash
-git switch main
+git switch master
 git pull --ff-only
 git tag -a v1.7.0 -m "gitVersion: optional prefix argument"
 git push origin v1.7.0
@@ -102,7 +102,7 @@ git push origin v1.7.0
 
 ## 5. Announce it
 
-Write release notes for the tag on the git host: what changed, which steps are affected, and for a major version the exact changes callers need to make. Post a link where the people who maintain pipelines will see it.
+Write release notes for the tag on the Git host: what changed, which steps are affected, and for a major version the exact changes callers need to make. Post a link where the people who maintain pipelines will see it.
 
 ## 6. Bump the pin in consuming repos
 
@@ -124,10 +124,10 @@ Moving a tag changes the code that every pinned pipeline loads, with no change i
 
 Your Jenkins administrator sets a default version when registering the library. `@Library('cookbook') _` with no version loads that default.
 
-- If the default is a branch such as `main`, every merge to the library reaches every unpinned pipeline on its next build. A bad merge breaks them all at once.
+- If the default is a branch such as `master`, every merge to the library reaches every unpinned pipeline on its next build. A bad merge breaks them all at once.
 - If the default is a tag, it only moves when the administrator changes it, but that change still lands everywhere at once.
 
-A pinned version means a library change reaches your pipeline only when you bump the pin and your build passes. Pin in every `Jenkinsfile` that matters.
+A pinned version means a library change reaches your pipeline only when you bump the pin and your build passes. Pin in every `Jenkinsfile`.
 
 To ask for the default to move, for example after a new major version has been adopted:
 
@@ -145,9 +145,9 @@ Timing: <when, and who to contact if builds break>
 
 ## Related
 
-- [Shared library setup](../library/setup.md)
-- [Testing the shared library](../library/testing.md)
-- [Release a new version](release-a-version.md)
+- [Shared Library Setup](../library/setup.md)
+- [Testing the Shared Library](../library/testing.md)
+- [Release a New Version](release-a-version.md)
 - [Secrets in CI](../concepts/secrets-in-ci.md)
-- [Roles and responsibilities](roles-and-responsibilities.md)
-- [Pipeline review checklist](pipeline-review-checklist.md)
+- [Roles & Responsibilities](roles-and-responsibilities.md)
+- [Pipeline Review Checklist](pipeline-review-checklist.md)

@@ -51,13 +51,13 @@ The Gradle daemon is a background JVM that stays alive after the build to speed 
 
 ## JDK version
 
-The `tools` directive puts a JDK installation on `PATH` and sets `JAVA_HOME` for the whole pipeline. The name refers to a JDK installation configured under Manage Jenkins → Tools.
+The `tools` directive puts a JDK installation on `PATH` and sets `JAVA_HOME` for the whole pipeline. The name refers to a JDK installation configured under **Manage Jenkins → Tools**.
 
 ```groovy
 pipeline {
     agent any
     tools {
-        // must match the installation name under manage jenkins → tools exactly
+        // must match the installation name under Manage Jenkins → Tools exactly
         jdk 'temurin-21'
     }
     stages {
@@ -126,13 +126,13 @@ stage('Build & Test') {
     post {
         always {
             junit 'target/surefire-reports/*.xml'
-            junit 'target/failsafe-reports/*.xml'
+            junit testResults: 'target/failsafe-reports/*.xml', allowEmptyResults: true
         }
     }
 }
 ```
 
-`-DskipITs` skips only the integration tests, which suits a quick feedback stage. `-DskipTests` skips both Surefire and Failsafe.
+`allowEmptyResults: true` stops a module with no integration tests from failing the step because it found no test report files. `-DskipITs` skips only the integration tests, which suits a quick feedback stage. `-DskipTests` skips both Surefire and Failsafe.
 
 ## Coverage
 
@@ -181,7 +181,7 @@ environment {
 ```groovy
 stage('Build & Test') {
     steps {
-        // file-lock lets concurrent builds share the local repository safely on maven 3.9
+        // file-lock lets concurrent builds share the local repository safely on Maven 3.9
         sh '''
             ./mvnw -B -ntp verify \
               -Dmaven.repo.local="$MAVEN_REPO" \
@@ -207,12 +207,12 @@ The same `-D` options can go in `MAVEN_OPTS` instead, which keeps the `sh` comma
 ```groovy
 stage('Deploy') {
     when {
-        branch 'main'
+        branch 'master'
     }
     steps {
         // config file provider plugin; the file is removed when the block ends
         configFileProvider([configFile(fileId: 'maven-settings', variable: 'MAVEN_SETTINGS')]) {
-            // single quotes: the shell expands the path, groovy never sees it
+            // single quotes: the shell expands the path, Groovy never sees it
             sh '''
                 ./mvnw -B -ntp deploy \
                   -s "$MAVEN_SETTINGS" \
@@ -225,10 +225,10 @@ stage('Deploy') {
 
 Create `maven-settings` as a Maven settings.xml config file, and use its Server Credentials section to map each server `id` to a Jenkins username and password credential. The plugin fills the credentials in when it writes the file, so the stored file has no passwords in it. The credentials themselves come from the Credentials plugin, which Config File Provider depends on.
 
-The `Deploy` stage starts the lifecycle again. `-DskipTests` stops it from running the tests a second time, since the `Build & Test` stage already ran them on the same commit. To build only once on `main`, run `deploy` in place of `verify` there. A repository that rejects redeploying a release version fails a re-run of the same build; snapshot versions can be deployed any number of times.
+The `Deploy` stage starts the lifecycle again. `-DskipTests` stops it from running the tests a second time, since the `Build & Test` stage already ran them on the same commit. To build only once on `master`, run `deploy` in place of `verify` there. A repository that rejects redeploying a release version fails a re-run of the same build; snapshot versions can be deployed any number of times.
 
 ## Notes
 
-- Warnings Next Generation reads `javac` warnings from the console log with `java()`, and Maven's own warnings with `mavenConsole()`. It also has parsers for SpotBugs (`spotBugs()`), Checkstyle (`checkStyle()`) and PMD (`pmdParser()`) reports. `mvn sonar:sonar` runs the SonarQube analysis inside `withSonarQubeEnv`. Quality gates and the SonarQube setup are in [lint & static analysis](static-analysis.md).
-- To build and test against several JDK versions, put the JDK on a matrix axis; see [matrix builds](../fundamentals/matrix-builds.md).
+- Warnings Next Generation reads `javac` warnings from the console log with `java`, and Maven's own warnings with `mavenConsole`. It also has parsers for SpotBugs (`spotBugs`), Checkstyle (`checkStyle`) and PMD (`pmdParser`) reports. `mvn sonar:sonar` runs the SonarQube analysis inside `withSonarQubeEnv`. Quality gates and the SonarQube setup are in [Lint and Static Analysis](static-analysis.md).
+- To build and test against several JDK versions, put the JDK on a matrix axis; see [Matrix Builds](../fundamentals/matrix-builds.md).
 - To ship the build as a container image, use Jib (which builds the image from Maven or Gradle without a Dockerfile) or a Dockerfile, then follow the [container service pipeline](../pipelines/container-service.md).

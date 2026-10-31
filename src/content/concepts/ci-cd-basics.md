@@ -8,7 +8,7 @@ The ideas behind every recipe in this cookbook, without any Jenkins syntax. If y
 
 ## Continuous integration
 
-Continuous integration (CI) means everyone merges small changes into the main branch often, and every change is built and tested automatically before and after it lands. The goal is to find out within minutes that a change broke something, while the author still remembers what they did.
+Continuous integration (CI) means everyone merges small changes into the default branch often, and every change is built and tested automatically before and after it lands. The goal is to find out within minutes that a change broke something, while the author still remembers what they did.
 
 Without CI, people work on long-lived branches and merge rarely. Each merge then brings a pile of conflicts and surprises, and nobody knows which of the last forty commits broke the tests. With CI, the answer is usually "the one that just turned the build red".
 
@@ -39,7 +39,7 @@ flowchart LR
     package --> deployDev
 ```
 
-The early stages are fast and run on every change. The later ones are slower, touch real environments and usually run only on `main`. A failure anywhere stops the run, so a change that fails its tests never reaches an environment.
+The early stages are fast and run on every change. The later ones are slower, touch real environments and usually run only on `master`. A failure anywhere stops the run, so a change that fails its tests never reaches an environment.
 
 In Jenkins, each box is usually a stage, and the whole thing is described in a `Jenkinsfile`. See [Pipeline Skeleton](../fundamentals/pipeline-skeleton.md) for that shape in code, and [How Jenkins Runs Your Pipeline](how-jenkins-runs-your-pipeline.md) for what happens when it runs.
 
@@ -49,32 +49,32 @@ The pipeline is defined in a file called `Jenkinsfile` at the root of your repos
 
 - **Review**: a change to the pipeline goes through a pull request like any other change. Someone else sees that you removed the test stage before it happens.
 - **History**: `git log Jenkinsfile` shows who changed the build, when, and why. A form on a web page has no such history.
-- **Branches**: a feature branch can change its own build (add a new test suite, say) without affecting `main` until it merges.
+- **Branches**: a feature branch can change its own build (add a new test suite, say) without affecting `master` until it merges.
 - **Reproducibility**: the pipeline for a given commit is the one in that commit. Building an old tag uses the pipeline as it was then.
 - **Reuse**: common steps live in a shared library, so a fix to "how we push an image" reaches every repo. See [Shared Library Setup](../library/setup.md).
 
 Treat the `Jenkinsfile` as production code. It decides what gets deployed and holds references to credentials, so it deserves the same review as the code it ships.
 
-## Green main
+## Green master
 
-"Green main" means the latest build of the `main` branch passed. It is the single most useful signal CI gives you, and it only stays useful if the team protects it.
+"Green master" means the latest build of the `master` branch passed. It is the single most useful signal CI gives you, and it only stays useful if the team protects it.
 
-When `main` is green:
+When `master` is green:
 
 - anyone can branch from it and know that a failure on their branch is theirs
-- `main` can be released or deployed at any time
+- `master` can be released or deployed at any time
 - a new failure points straight at the change that caused it
 
-When `main` stays red, people stop looking. New failures hide behind the old one, people branch from broken code, and deploys either stop or go out untested.
+When `master` stays red, people stop looking. New failures hide behind the old one, people branch from broken code, and deploys either stop or go out untested.
 
 Habits that keep it green:
 
 - build and test every pull request before merge, and make the Git host require that check to pass; see [Branches, Pull Requests and What Runs Where](branches-and-pull-requests.md)
-- if `main` goes red, fixing it (or reverting the change) comes before new work
-- quarantine a flaky test rather than teaching people to ignore red builds; see [Retries & Error Handling](../fundamentals/retries-and-error-handling.md)
+- if `master` goes red, fixing it (or reverting the change) comes before new work
+- quarantine a flaky test rather than teaching people to ignore red builds; see [Retries and Error Handling](../fundamentals/retries-and-error-handling.md)
 
 > [!TIP]
-> Reverting is a perfectly good fix. Revert the change that broke `main`, get back to green, then fix the change properly on a branch.
+> Reverting is a perfectly good fix. Revert the change that broke `master`, get back to green, then fix the change properly on a branch.
 
 ## Where to go next
 

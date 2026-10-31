@@ -18,7 +18,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                // jenkins' junit step can't read .trx, so log in junit format instead
+                // Jenkins' junit step can't read .trx, so log in junit format instead
                 sh '''
                     dotnet test \
                       --configuration Release \
@@ -28,7 +28,7 @@ pipeline {
             }
             post {
                 always {
-                    // Publishes test results back to Jenkins
+                    // publishes test results back to Jenkins
                     junit '**/TestResults/*.xml'
                 }
             }
@@ -98,7 +98,7 @@ stage('Test') {
 ```groovy
 stage('Pack & Push') {
     when {
-        branch 'main'
+        branch 'master'
     }
     steps {
         sh '''
@@ -109,7 +109,7 @@ stage('Pack & Push') {
               -p:PackageVersion=1.0.$BUILD_NUMBER
         '''
         withCredentials([string(credentialsId: 'nuget-api-key', variable: 'NUGET_API_KEY')]) {
-            // single quotes: the shell expands the key, groovy never sees it
+            // single quotes: the shell expands the key, Groovy never sees it
             sh '''
                 dotnet nuget push 'artifacts/*.nupkg' \
                   --api-key "$NUGET_API_KEY" \

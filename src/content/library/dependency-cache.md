@@ -4,7 +4,7 @@ tags: [shared-library, performance, nodejs, dotnet]
 
 # `withNodeCache` & `withNuGetCache`
 
-Runs a block with npm's or NuGet's package cache pointed at a persistent directory on the agent, outside the workspace. `cleanWs()` and fresh checkouts then don't throw away downloaded packages between builds.
+Runs a block with npm's or NuGet's package cache pointed at a persistent directory on the agent, outside the workspace. `cleanWs` and fresh checkouts then don't throw away downloaded packages between builds.
 
 ## `vars/withNodeCache.groovy`
 

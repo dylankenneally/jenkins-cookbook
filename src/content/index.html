@@ -86,7 +86,7 @@ crumbName: README.md
           </th>
           {% for block in landing.matrix.blocks %}
           <td data-row="{{ row }}" data-col="{{ forloop.index0 }}">
-            {% if pipeline.blocks contains block.name %}<span class="matrix__mark" aria-hidden="true"></span><span class="visually-hidden">uses {{ block.name | escape }}</span>{% endif %}
+            {% if pipeline.blocks contains block.name %}<span class="matrix__mark" aria-hidden="true"></span><span class="visually-hidden">uses {{ block.name | escape }}</span>{% else %}<span class="visually-hidden">does not use {{ block.name | escape }}</span>{% endif %}
           </td>
           {% endfor %}
         </tr>

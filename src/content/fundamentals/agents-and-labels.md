@@ -7,7 +7,7 @@ tags: [agents, docker]
 The `agent` directive says where a pipeline or stage runs. Labels pick a class of machine (macOS, Docker-capable, deploy box), and a Docker agent pins the exact toolchain image.
 
 > [!WARNING]
-> The other pages use `agent any` to keep examples short. In a real pipeline, `any` means "whichever executor is free", which may lack the tools you need, or be the controller if it has executors. Give every agent a label.
+> The other pages use `agent any` to keep examples short. In a real pipeline, `any` means "whichever executor is free", which may lack the tools you need, or be the controller (the built-in node), if it has executors. Give every agent a label.
 
 ## A labelled agent
 
@@ -28,7 +28,7 @@ pipeline {
 }
 ```
 
-Labels are set on each node under Manage Jenkins > Nodes. A label expression can combine them, for example `label 'linux && docker'` or `label 'macos || linux'`.
+Labels are set on each node under **Manage Jenkins → Nodes**. A label expression can combine them, for example `label 'linux && docker'` or `label 'macos || linux'`.
 
 ## `agent none` with per-stage agents
 
@@ -59,7 +59,7 @@ pipeline {
 }
 ```
 
-Each stage gets its own workspace on its own agent, and the repo is checked out again in each one. Pass build output between them with [stash and unstash](stash-and-unstash.md). With `agent none` at the top, a `post` block that runs steps needing a workspace (like `cleanWs()`) must sit inside a stage that has an agent.
+Each stage gets its own workspace on its own agent, and the repo is checked out again in each one. Pass build output between them with [Stash and Unstash](stash-and-unstash.md). With `agent none` at the top, a `post` block that runs steps needing a workspace (like `cleanWs`) must sit inside a stage that has an agent.
 
 ## Docker agent with a pinned image
 
@@ -93,4 +93,4 @@ pipeline {
 > [!NOTE]
 > Docker agents run Linux containers. On macOS agents Docker runs inside a VM and is slower; for native macOS builds use a labelled macOS agent instead.
 
-For running the same stages across several labels, see [matrix builds](matrix-builds.md). For skipping a stage before its agent is allocated, see [`when` conditions](when-conditions.md).
+For running the same stages across several labels, see [Matrix Builds](matrix-builds.md). For skipping a stage before its agent is allocated, see [`when` Conditions](when-conditions.md).

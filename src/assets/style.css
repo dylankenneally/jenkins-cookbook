@@ -93,6 +93,23 @@ main, article {
   padding: var(--inset);
 }
 
+/* the first stop for keyboard users: off screen until it takes focus, then it jumps past the header to the content */
+.skip-link {
+  position: absolute;
+  top: -4rem;
+  left: var(--inset);
+  z-index: 100;
+  padding: 0.5rem 0.75rem;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius);
+}
+
+.skip-link:focus {
+  top: 0.5rem;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -163,6 +180,12 @@ main, article {
   min-width: 0;
   /* the search field's edge needs 3:1 against the paper to be seen as a control; the page's hairline colour is only 1.4:1 */
   --pf-border: #8a8174;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .site-repo {
@@ -257,6 +280,7 @@ main, article {
   margin: 0 0.5rem;
 }
 
+.site-footer__copy a,
 .site-footer__links a {
   color: var(--color-link);
   border-bottom: none;

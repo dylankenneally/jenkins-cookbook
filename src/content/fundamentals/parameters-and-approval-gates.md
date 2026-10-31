@@ -92,17 +92,17 @@ pipeline {
 Read them with `params.NAME`. They are typed, so `params.RUN_SMOKE_TESTS` is a real boolean. Timer, SCM and upstream triggers start runs with the default values.
 
 > [!NOTE]
-> Jenkins learns the parameters by running the `Jenkinsfile`. The first run of a new job or branch uses the defaults without asking, and "Build with Parameters" appears afterwards.
+> Jenkins learns the parameters by running the `Jenkinsfile`. The first run of a new job or branch uses the defaults without asking, and **Build with Parameters** appears afterwards.
 
 ## Approval gates
 
 - The stage-level `input` pauses before the stage's agent is allocated. That only saves an executor if nothing above it holds one, which is why the pipeline uses `agent none` and gives each working stage its own agent.
-- `submitter` limits who can approve, as a comma-separated list of users or groups. Leave it out and anyone with build permission can click Deploy.
+- `submitter` limits who can approve, as a comma-separated list of users or groups. Leave it out and anyone with build permission can click **Deploy**.
 - `submitterParameter` puts the approver's id in an environment variable for the rest of the stage, which is useful for audit logs.
-- Clicking Abort, or the timeout expiring, aborts the run.
+- Clicking **Abort**, or the timeout expiring, aborts the run.
 - `input` can also take a `parameters { }` block if the approver should fill something in.
 
 > [!WARNING]
 > With `agent any` at the top, the run sits on an executor for as long as the prompt is open, possibly days. Keep approvals out of any agent block.
 
-Stages on different agents don't share a workspace, so the build output travels via [stash and unstash](stash-and-unstash.md). Per-stage agents are covered in [agents and labels](agents-and-labels.md), and a fuller promotion flow is in [promote across environments](../pipelines/promote-across-environments.md).
+Stages on different agents don't share a workspace, so the build output travels via [Stash and Unstash](stash-and-unstash.md). Per-stage agents are covered in [Agents and Labels](agents-and-labels.md), and a fuller promotion flow is in [promote across environments](../pipelines/promote-across-environments.md).

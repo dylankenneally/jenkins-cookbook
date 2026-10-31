@@ -12,6 +12,10 @@ Builds a Node.js frontend, syncs the output to an S3 bucket and invalidates the 
 pipeline {
     agent any
 
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+    }
+
     environment {
         AWS_REGION = 'us-east-1'
     }
@@ -26,6 +30,9 @@ pipeline {
         }
 
         stage('Deploy') {
+            when {
+                branch 'master'
+            }
             steps {
                 withAws {
                     s3Sync(source: 'dist', bucket: 'my-frontend-app-bucket')
@@ -42,3 +49,5 @@ pipeline {
     }
 }
 ```
+
+Every branch and pull request builds and tests, but only `master` deploys. Without the `when` condition, any branch or pull request would sync its output over the live site. To preview pull requests without touching production, see [Pull Request Previews](pr-preview.md).

@@ -17,7 +17,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                // getconf works on linux and macos agents; nproc is linux-only
+                // getconf works on Linux and macOS agents; nproc is Linux-only
                 sh '''
                     cmake --build build \
                       --config Release \
@@ -47,7 +47,7 @@ pipeline {
 
 `--config` and `--build-config` only matter for multi-config generators (Visual Studio, Xcode, Ninja Multi-Config); single-config generators take the build type from the configure step.
 
-## Sanitizer build
+## Sanitiser build
 
 AddressSanitizer and UndefinedBehaviorSanitizer catch memory errors and undefined behaviour that a release build lets through. They need their own build tree, so build it in parallel with the release tree. This replaces the `Build` and `Test` stages above; `Configure` stays as it is.
 
@@ -104,7 +104,7 @@ stage('Build & Test') {
 }
 ```
 
-CMake passes `CMAKE_<LANG>_FLAGS` to the link step as well, so the sanitizer runtimes are linked without extra linker flags. Both branches compile on every core at once; on a small agent, halve the `--parallel` value in each. See [parallel execution](../fundamentals/parallel-execution.md) for how parallel stages behave.
+CMake passes `CMAKE_<LANG>_FLAGS` to the link step as well, so the sanitiser runtimes are linked without extra linker flags. Both branches compile on every core at once; on a small agent, halve the `--parallel` value in each. See [parallel execution](../fundamentals/parallel-execution.md) for how parallel stages behave.
 
 ## ccache
 
@@ -161,14 +161,14 @@ stage('clang-tidy') {
     }
     post {
         always {
-            // warnings next generation plugin
-            recordIssues(tools: [clangTidy(pattern: 'clang-tidy.log')])
+            // Warnings Next Generation plugin; enabledForFailure keeps the findings when clang-tidy fails the stage
+            recordIssues(enabledForFailure: true, tools: [clangTidy(pattern: 'clang-tidy.log')])
         }
     }
 }
 ```
 
-The other option is `-DCMAKE_CXX_CLANG_TIDY=clang-tidy` at configure time, which runs clang-tidy on each file as it compiles (Makefile and Ninja generators). That is simpler but slows every build of that tree, so it suits a dedicated lint tree better than the release one. Checks differ between LLVM releases, so pin the LLVM version on the agents; on macOS, `run-clang-tidy` comes with Homebrew's `llvm`, not Xcode. Quality gates on the published issues are covered in [lint & static analysis](static-analysis.md).
+The other option is `-DCMAKE_CXX_CLANG_TIDY=clang-tidy` at configure time, which runs clang-tidy on each file as it compiles (Makefile and Ninja generators). That is simpler but slows every build of that tree, so it suits a dedicated lint tree better than the release one. Checks differ between LLVM releases, so pin the LLVM version on the agents; on macOS, `run-clang-tidy` comes with Homebrew's `llvm`, not Xcode. Quality gates on the published issues are covered in [Lint and Static Analysis](static-analysis.md).
 
 ## Dependency caching
 

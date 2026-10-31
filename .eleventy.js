@@ -58,6 +58,44 @@ function firstHeading(inputPath) {
   }
 }
 
+// the first paragraph of a markdown document as plain text, cut short enough for a search result's description
+function firstParagraph(inputPath, maxLength = 160) {
+  if (typeof inputPath !== "string" || !inputPath.endsWith(".md")) {
+    return null;
+  }
+
+  try {
+    const content = fs.readFileSync(inputPath, "utf8");
+
+    // skip the front matter, then the code fences, so a blank line inside a snippet is never mistaken for a paragraph break
+    let body = content;
+    if (content.startsWith("---")) {
+      const endFrontmatterIndex = content.indexOf("\n---", 3);
+      if (endFrontmatterIndex !== -1) {
+        body = content.slice(endFrontmatterIndex + 4);
+      }
+    }
+    body = body.replace(/^```[\s\S]*?^```/gm, "");
+
+    // the first block of plain prose: not a heading, quote, callout, table, list or html
+    const block = body.split(/\n\s*\n/).map((candidate) => candidate.trim()).find((candidate) => candidate && !/^(#|>|\||[-*+]\s|\d+\.\s|<)/.test(candidate));
+    if (!block) {
+      return null;
+    }
+
+    const text = plainText(block).replace(/\s+/g, " ").trim();
+    if (text.length <= maxLength) {
+      return text;
+    }
+
+    // cut at a word boundary
+    return `${text.slice(0, maxLength - 1).replace(/\s+\S*$/, "")}…`;
+  } catch (error) {
+    console.error(`[error] Failed to get the first paragraph from ${inputPath}`, error);
+    throw error;
+  }
+}
+
 // stands in for a backslash-escaped character while the markup around it is stripped
 const ESCAPED = (char) => `\uE000${char.charCodeAt(0)}\uE001`;
 
@@ -344,6 +382,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addGlobalData("siteLastUpdated", () => getSiteLastUpdated());
   eleventyConfig.addGlobalData("eleventyComputed", {
     docTitle: (data) => documentTitle(data.page.inputPath),
+    metaDescription: (data) => data.description ?? firstParagraph(data.page.inputPath),
     breadcrumbs: (data) => breadcrumbsFor(data, data.sections, CONTENT_DIR),
     editLinks: (data) => editLinksFor(data),
     lastUpdated: (data) => getRecipeLastUpdated(data),

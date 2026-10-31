@@ -4,7 +4,7 @@ tags: [declarative, notifications]
 
 # Post-Actions & Status Notifications
 
-Handling cleanup tasks, artifacts archiving, and conditional alerts based on whether the pipeline succeeded or failed.
+Handling cleanup tasks, artifacts archiving and conditional alerts based on whether the pipeline succeeded or failed.
 
 ```groovy
 pipeline {
@@ -28,10 +28,10 @@ pipeline {
         }
         // cleanup runs after every other post condition; in `always` it would wipe the workspace before `success` could archive
         cleanup {
-            cleanWs() // Deletes workspace contents to save disk space
+            cleanWs() // deletes workspace contents to save disk space
         }
     }
 }
 ```
 
-Post conditions run in a fixed order (`always`, …, `failure`, `success`, …, `cleanup`) regardless of how they're written, so anything destructive belongs in `cleanup`. For Docker agents, add [`dockerCleanup()`](../library/docker-cleanup.md) there too.
+Post conditions run in a fixed order (`always`, …, `failure`, `success`, …, `cleanup`) regardless of how they're written, so anything destructive belongs in `cleanup`. For Docker agents, add [`dockerCleanup`](../library/docker-cleanup.md) there too.

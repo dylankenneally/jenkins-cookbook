@@ -25,7 +25,7 @@ pipeline {
     stages {
         stage('Nightly Checks') {
             agent {
-                label 'docker'
+                label 'linux && docker'
             }
             stages {
                 stage('Install') {
@@ -60,13 +60,13 @@ pipeline {
         }
 
         stage('Docker Maintenance') {
-            // no agent here: the script visits every docker agent in turn
+            // no agent here: the script visits every Docker agent in turn
             steps {
                 script {
                     Map prunes = [:]
 
                     // offline agents are left out by default
-                    nodesByLabel('docker').each { String agentName ->
+                    nodesByLabel('linux && docker').each { String agentName ->
                         prunes[agentName] = {
                             node(agentName) {
                                 // dangling layers only; tagged images and recent build cache stay
@@ -94,15 +94,15 @@ pipeline {
 ## Notes
 
 - Jenkins registers the cron trigger when the `Jenkinsfile` runs, so the first nightly run happens after one manual or push-triggered build.
-- In a multibranch job, every branch whose `Jenkinsfile` has the trigger gets its own nightly run. Either use a standalone Pipeline job for this, or limit it with `cron(env.BRANCH_NAME == 'main' ? 'H 2 * * *' : '')`.
+- In a multibranch job, every branch whose `Jenkinsfile` has the trigger gets its own nightly run. Either use a standalone Pipeline job for this, or limit it with `cron(env.BRANCH_NAME == 'master' ? 'H 2 * * *' : '')`.
 - `catchError` with `buildResult: 'SUCCESS'` leaves the build result alone and shows the stage as unstable, so outdated packages are visible without paging anyone. The list itself is in the stage log.
 - The sequential stages inside `Nightly Checks` share one agent and workspace.
 
 ## Pruning every agent
 
-A stage with `agent { label 'docker' }` runs on one matching agent, not all of them, so the prune has to fan out by hand. `nodesByLabel` comes from the [Pipeline Utility Steps](https://plugins.jenkins.io/pipeline-utility-steps/) plugin and returns the names of the online agents with a label. Each `node(agentName)` then waits for a free executor on that agent, which also means the prune never runs in the middle of another build on a single-executor agent.
+A stage with `agent { label 'linux && docker' }` runs on one matching agent, not all of them, so the prune has to fan out by hand. `nodesByLabel` comes from the [Pipeline Utility Steps](https://plugins.jenkins.io/pipeline-utility-steps/) plugin and returns the names of the online agents with a label. Each `node(agentName)` then waits for a free executor on that agent, which also means the prune never runs in the middle of another build on a single-executor agent.
 
-Without that plugin, a `matrix` with an axis listing the agent names does the same job, at the cost of editing the list when agents change. See [matrix builds](../fundamentals/matrix-builds.md).
+Without that plugin, a `matrix` with an axis listing the agent names does the same job, at the cost of editing the list when agents change. See [Matrix Builds](../fundamentals/matrix-builds.md).
 
 - `docker image prune -f` removes dangling images only. Adding `-a` would remove every image not used by a container, including the layer cache other jobs build on.
 - `docker builder prune -f --filter until=72h` removes BuildKit cache older than three days and keeps what recent builds use.

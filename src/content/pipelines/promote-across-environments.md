@@ -4,7 +4,7 @@ tags: [docker, aws, deploy]
 
 # Promote, Don't Rebuild
 
-Builds and pushes an image once, scans it, then deploys that same image URI to dev, staging and prod, each in its own AWS account, with an approval before staging and prod. Uses the [shared library](../library/setup.md) steps [`withAws`](../library/with-aws.md), [`assumeRole`](../library/assume-role.md), [`gitVersion`](../library/git-version.md), [`dockerPushToEcr`](../library/docker-push-to-ecr.md), [`ecrScan`](../library/ecr-scan.md), [`ecsDeploy`](../library/ecs-deploy.md), [`notifySlack`](../library/notify.md) and [`dockerCleanup`](../library/docker-cleanup.md). The approval gates are the ones from [parameters and approval gates](../fundamentals/parameters-and-approval-gates.md).
+Builds and pushes an image once, scans it, then deploys that same image URI to dev, staging and prod, each in its own AWS account, with an approval before staging and prod. Uses the [shared library](../library/setup.md) steps [`withAws`](../library/with-aws.md), [`assumeRole`](../library/assume-role.md), [`gitVersion`](../library/git-version.md), [`dockerPushToEcr`](../library/docker-push-to-ecr.md), [`ecrScan`](../library/ecr-scan.md), [`ecsDeploy`](../library/ecs-deploy.md), [`notifySlack`](../library/notify.md) and [`dockerCleanup`](../library/docker-cleanup.md). The approval gates are the ones from [Parameters and Approval Gates](../fundamentals/parameters-and-approval-gates.md).
 
 ```groovy
 @Library('cookbook@v1.2.0') _
@@ -26,7 +26,7 @@ pipeline {
     stages {
         stage('Build, Push & Scan') {
             agent {
-                label 'docker'
+                label 'linux && docker'
             }
             steps {
                 checkout scm
@@ -60,7 +60,7 @@ pipeline {
             agent any
             when {
                 beforeAgent true
-                branch 'main'
+                branch 'master'
             }
             steps {
                 // aborts older runs that haven't reached this point yet
@@ -80,9 +80,9 @@ pipeline {
 
         stage('Approve Staging') {
             when {
-                // off main, skip the prompt and its timeout entirely
+                // off master, skip the prompt and its timeout entirely
                 beforeOptions true
-                branch 'main'
+                branch 'master'
             }
             options {
                 // options apply before input, so an ignored prompt aborts the run after a day
@@ -101,7 +101,7 @@ pipeline {
             agent any
             when {
                 beforeAgent true
-                branch 'main'
+                branch 'master'
             }
             steps {
                 milestone(ordinal: 20)
@@ -121,7 +121,7 @@ pipeline {
         stage('Approve Production') {
             when {
                 beforeOptions true
-                branch 'main'
+                branch 'master'
             }
             options {
                 timeout(time: 1, unit: 'DAYS')
@@ -141,7 +141,7 @@ pipeline {
             agent any
             when {
                 beforeAgent true
-                branch 'main'
+                branch 'master'
             }
             steps {
                 milestone(ordinal: 30)
@@ -174,10 +174,10 @@ A build for staging and another for prod are two different artifacts, even from 
 
 ## Notes
 
-- Every branch builds and scans; only `main` deploys. `beforeAgent true` and `beforeOptions true` make the skipped stages cost nothing on other branches.
+- Every branch builds and scans; only `master` deploys. `beforeAgent true` and `beforeOptions true` make the skipped stages cost nothing on other branches.
 - `env.IMAGE_URI` is set once and read by every later stage, so no stage can pick up a different image. Turn on tag immutability for the ECR repository so the tag can't be overwritten after it was approved.
 - The image lives in the account that owns the registry. The ECR repository policy has to let the task execution roles in the dev, staging and prod accounts pull it.
 - Each `roleArn` is a deploy role in the target account that trusts the Jenkins identity used by `withAws`. Credentials from `assumeRole` are short-lived and only exist inside its block.
 - With several runs waiting at an approval, approving an older one after a newer one would roll production back. The `milestone` at the start of each deploy stage (Pipeline: Milestone Step plugin) aborts older runs once a newer one passes it. The ordinals only need to increase through the pipeline. See [How to Work with Promotions](../guides/promotions.md).
 
-For per-stage agents and executors, see [agents and labels](../fundamentals/agents-and-labels.md). For other `when` options, see [`when` conditions](../fundamentals/when-conditions.md).
+For per-stage agents and executors, see [Agents and Labels](../fundamentals/agents-and-labels.md). For other `when` options, see [`when` Conditions](../fundamentals/when-conditions.md).

@@ -141,7 +141,7 @@ stage('Deploy QA') {
     agent any
     when {
         beforeAgent true
-        branch 'main'
+        branch 'master'
     }
     steps {
         // aborts older runs that haven't reached this point yet
@@ -167,9 +167,9 @@ If the environment needs a person to sign off before it changes, for example bec
 ```groovy
 stage('Approve QA') {
     when {
-        // off main, skip the prompt and its timeout entirely
+        // off master, skip the prompt and its timeout entirely
         beforeOptions true
-        branch 'main'
+        branch 'master'
     }
     options {
         timeout(time: 1, unit: 'DAYS')
@@ -184,7 +184,7 @@ stage('Approve QA') {
 }
 ```
 
-Add `submitter` if only some people should be able to approve. See [Parameters & Approval Gates](../fundamentals/parameters-and-approval-gates.md).
+Add `submitter` if only some people should be able to approve. See [Parameters and Approval Gates](../fundamentals/parameters-and-approval-gates.md).
 
 ## 4. Keep environment config outside the image
 
@@ -194,12 +194,12 @@ The same image runs in every environment, so nothing environment-specific can be
 - secrets in Secrets Manager or Parameter Store in the qa account, referenced from the task definition's `secrets` section, so they never pass through Jenkins
 - infrastructure differences (instance sizes, scaling) in the infrastructure code for that account
 
-`ecsDeploy` copies the service's current task definition and changes only the image, so whatever the administrator configured for qa carries over on every deploy. Don't add `--build-arg ENV=qa` or a per-environment image tag; that is a different artifact per environment, which is what [build once, promote many](../concepts/build-once-promote-many.md) avoids.
+`ecsDeploy` copies the service's current task definition and changes only the image, so whatever the administrator configured for qa carries over on every deploy. Don't add `--build-arg ENV=qa` or a per-environment image tag; that is a different artifact per environment, which is what [Build Once, Promote Many](../concepts/build-once-promote-many.md) avoids.
 
 ## 5. Test the change
 
-1. Open a pull request with the new stage. PR builds don't deploy, so this only checks the `Jenkinsfile` parses and the build still works.
-2. After merging, watch the first `main` run reach `Deploy QA`. An `AccessDenied` on `sts:AssumeRole` means the trust policy or the Jenkins identity's permissions are missing; an `AccessDenied` on an `ecs:` or `iam:PassRole` action means the deploy role's permissions are. Send the exact error line to the cloud administrator.
+1. Open a pull request with the new stage. Pull request builds don't deploy, so this only checks the `Jenkinsfile` parses and the build still works.
+2. After merging, watch the first `master` run reach `Deploy QA`. An `AccessDenied` on `sts:AssumeRole` means the trust policy or the Jenkins identity's permissions are missing; an `AccessDenied` on an `ecs:` or `iam:PassRole` action means the deploy role's permissions are. Send the exact error line to the cloud administrator.
 3. A `CannotPullContainerError` in the ECS service events means the repository policy doesn't allow the qa execution role yet.
 4. Once it deploys, update your team's list of environments and the build description helper, if you use one; see [How to Work with Promotions](promotions.md).
 
@@ -209,6 +209,6 @@ The same image runs in every environment, so nothing environment-specific can be
 - [`ecsDeploy`](../library/ecs-deploy.md)
 - [Promote, Don't Rebuild](../pipelines/promote-across-environments.md)
 - [How to Work with Promotions](promotions.md)
-- [Build once, promote many](../concepts/build-once-promote-many.md)
+- [Build Once, Promote Many](../concepts/build-once-promote-many.md)
 - [Add a Secret or Credential](add-a-credential.md)
-- [Roles and responsibilities](roles-and-responsibilities.md)
+- [Roles & Responsibilities](roles-and-responsibilities.md)

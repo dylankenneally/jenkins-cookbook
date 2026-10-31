@@ -42,7 +42,7 @@ Please store these credentials, scoped to the job or folder above:
   play-service-account        Secret file   Play Console service account JSON key
 
 The mobile release owner (<role or contact>) will send the values through <agreed secure channel>.
-These are only used by stages that run on main / release branches.
+These are only used by stages that run on master / release branches.
 ```
 
 Credential IDs above match the [Android](../builds/android.md) recipe. If your administrator uses different IDs, use theirs in the `Jenkinsfile`.
@@ -82,7 +82,7 @@ Credentials, scoped to the job or folder above:
     (key ID and issuer ID are not secret; we'll put them in the Jenkinsfile)
 
 The mobile release owner (<role or contact>) will send the values through <agreed secure channel>.
-These are only used by stages that run on main / release branches.
+These are only used by stages that run on master / release branches.
 ```
 
 The lane and the keychain steps that use these are in [React Native](../builds/react-native.md), under iOS signing.
@@ -100,7 +100,7 @@ The simplest source is Jenkins' `BUILD_NUMBER`, read from the environment:
 // app/build.gradle.kts
 android {
     defaultConfig {
-        // ci passes the jenkins build number; local builds fall back to 1
+        // ci passes the Jenkins build number; local builds fall back to 1
         versionCode = providers.environmentVariable("BUILD_NUMBER")
             .map { it.toInt() + 1000 }
             .getOrElse(1)
@@ -117,7 +117,7 @@ increment_build_number(
 ```
 
 > [!WARNING]
-> `BUILD_NUMBER` counts per job. In a multibranch job each branch has its own count, and it restarts at 1 if the branch job is deleted and recreated or the job is moved. Upload from one branch only, add an offset above any number already used (the `+ 1000` above), or use a counter that can only go up, such as the commit count on `main` (`git rev-list --count HEAD`, which needs a full clone).
+> `BUILD_NUMBER` counts per job. In a multibranch job each branch has its own count, and it restarts at 1 if the branch job is deleted and recreated or the job is moved. Upload from one branch only, add an offset above any number already used (the `+ 1000` above), or use a counter that can only go up, such as the commit count on `master` (`git rev-list --count HEAD`, which needs a full clone).
 
 ## 4. Do the first Android upload by hand
 
@@ -129,14 +129,14 @@ For iOS, the app record must exist in App Store Connect with the same bundle ID 
 
 Pull request builds run code that hasn't been reviewed yet. They should never see signing keys or upload credentials.
 
-- Gate the signing and upload stages on release branches or tags, with `beforeAgent true` so pull requests don't even wait for the macOS agent:
+- Gate the signing and upload stages on `master` and release branches, with `beforeAgent true` so pull requests don't even wait for the macOS agent:
 
   ```groovy
   stage('Publish') {
       when {
           beforeAgent true
           anyOf {
-              branch 'main'
+              branch 'master'
               branch 'release/*'
           }
       }
@@ -147,12 +147,12 @@ Pull request builds run code that hasn't been reviewed yet. They should never se
   }
   ```
 
-- A `when` condition is in the `Jenkinsfile`, and a pull request can edit the `Jenkinsfile`. Ask your Jenkins administrator to scope the signing credentials so pull request builds can't read them, for example to a separate job that only builds `main` and tags.
-- Keep secrets in single-quoted `sh` and in environment variables read by Gradle or fastlane, never on the command line through Groovy strings. See [secrets in CI](../concepts/secrets-in-ci.md).
+- A `when` condition is in the `Jenkinsfile`, and a pull request can edit the `Jenkinsfile`. Ask your Jenkins administrator to scope the signing credentials so pull request builds can't read them, for example to a separate job that only builds `master` and tags.
+- Keep secrets in single-quoted `sh` and in environment variables read by Gradle or fastlane, never on the command line through Groovy strings. See [Secrets in CI](../concepts/secrets-in-ci.md).
 
 ## 6. Publish
 
-- **Android:** the `Publish to Play` stage in [Android](../builds/android.md) uploads the `.aab` with fastlane `supply` to the `internal` track. Add an approval gate if releases need sign-off; see [parameters and approval gates](../fundamentals/parameters-and-approval-gates.md).
+- **Android:** the `Publish to Play` stage in [Android](../builds/android.md) uploads the `.aab` with fastlane `supply` to the `internal` track. Add an approval gate if releases need sign-off; see [Parameters and Approval Gates](../fundamentals/parameters-and-approval-gates.md).
 - **iOS:** the `beta` lane in [React Native](../builds/react-native.md) signs, builds and calls `upload_to_testflight`.
 
 Archive the `.aab`, `mapping.txt`, `.ipa` and dSYMs with every release build so crashes can be symbolicated later.
@@ -166,10 +166,10 @@ Check the version and build number shown in the store match the Jenkins build yo
 
 ## Related
 
-- [Android build and test](../builds/android.md)
-- [React Native build and test](../builds/react-native.md)
-- [Add a credential](add-a-credential.md)
+- [Android Build & Test](../builds/android.md)
+- [React Native Build & Test](../builds/react-native.md)
+- [Add a Secret or Credential](add-a-credential.md)
 - [Secrets in CI](../concepts/secrets-in-ci.md)
-- [Multibranch and pull requests](../fundamentals/multibranch-and-pull-requests.md)
-- [Branches and pull requests](../concepts/branches-and-pull-requests.md)
-- [Roles and responsibilities](roles-and-responsibilities.md)
+- [Multibranch & Pull Requests](../fundamentals/multibranch-and-pull-requests.md)
+- [Branches, Pull Requests and What Runs Where](../concepts/branches-and-pull-requests.md)
+- [Roles & Responsibilities](roles-and-responsibilities.md)

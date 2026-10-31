@@ -128,6 +128,6 @@ stage('Deploy') {
 The `services-stable` waiter gives up after 10 minutes (40 checks, 15 seconds apart). A slow rollout, such as a large service or long health check grace period, can outlast it, so the step fails while ECS carries on deploying. Check the service events in the console before retrying.
 
 > [!NOTE]
-> Turn on the [deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-circuit-breaker.html) with rollback on the service (`--deployment-configuration "deploymentCircuitBreaker={enable=true,rollback=true}"`). ECS then rolls a failing deployment back to the last good revision by itself, and the step reports it as a failure because the service ended up on the old task definition.
+> Turn on the [deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-circuit-breaker.html) with rollback on the service (`--deployment-configuration "deploymentCircuitBreaker={enable=true,rollback=true}"`). ECS then rolls a failing deployment back to the last good revision by itself, and the step reports it as a failure because the service ended up on the old task definition. This applies to services that use the ECS rolling-update deployment controller, not to CodeDeploy (blue/green) or external deployments.
 
 Tags on the old revision aren't carried over. `describe-task-definition` only returns them with `--include TAGS`, and then beside the task definition rather than inside it, so they'd need merging into the JSON before registering.

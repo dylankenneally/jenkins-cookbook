@@ -10,7 +10,7 @@ Returns a version string for the checked-out commit, based on `git describe`. A 
 
 ```groovy
 /**
- * returns a version string for HEAD from git describe, safe to use as a docker tag
+ * returns a version string for HEAD from git describe, safe to use as a Docker tag
  *  - withSha: always include the commit count and short sha, even on a tagged commit, defaults to false
  */
 String call(Map args = [:]) {
@@ -26,7 +26,7 @@ String call(Map args = [:]) {
     """
     String version = sh(script: describe, returnStdout: true).trim()
 
-    // docker tags allow [A-Za-z0-9_.-] only, so a tag like 'release/1.4' needs flattening
+    // Docker tags allow [A-Za-z0-9_.-] only, so a tag like 'release/1.4' needs flattening
     return version.replaceAll(/[^\w.-]/, '-')
 }
 ```
@@ -55,7 +55,7 @@ stage('Build & Push Image') {
 }
 ```
 
-Use the same value as the image tag, the package version (`npm version`, `dotnet pack -p:Version=…`) and the deploy label, so a running service, its artifact and its commit can all be matched up. `dotnet` and npm expect SemVer, so strip a leading `v` before passing it to them.
+Use the same value as the image tag, the package version (`npm version`, `dotnet pack -p:Version=…`) and the deploy label, so a running service, its artifact and its commit can all be matched up. `dotnet` and npm expect SemVer, so strip a leading `v` before passing it to them. A value such as `1.4.0-3-g1a2b3c4` is a SemVer pre-release, so it sorts before `1.4.0`. The bare short SHA you get when no tags are reachable isn't SemVer at all, and `npm version` and `dotnet pack` reject it, so make sure tags are fetched in any build that packages.
 
 `--dirty` adds `-dirty` when tracked files have changed since checkout. In CI that usually means a build step is rewriting a committed file, which is worth fixing rather than shipping.
 

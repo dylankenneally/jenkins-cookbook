@@ -50,7 +50,8 @@ def call(Map args) {
           --output json
     """
     String findings = sh(script: describe, returnStdout: true).trim()
-    Map counts = readJSON(text: findings)
+    // plain maps rather than json-lib objects, so they serialise cleanly between steps
+    Map counts = readJSON(text: findings, returnPojo: true)
     echo "ECR scan findings for ${args.repository}:${args.tag}: ${counts}"
 
     List<String> blocking = SEVERITIES.take(threshold + 1).findAll { (counts[it] ?: 0) > 0 }
@@ -91,19 +92,26 @@ The image is already in the registry when the scan fails, so the failure stops t
 
 ## Alternative: Trivy
 
-[Trivy](https://trivy.dev/) scans the local image before it's pushed, so a failing image never reaches the registry:
+[Trivy](https://trivy.dev/) scans an image on the agent, so it can stop a failing image before it reaches the registry. `dockerPushToEcr` builds and pushes in one call, so there is no point between the two to scan. To scan first, build the image yourself, scan it, then tag and push it with the same `docker` commands that `dockerPushToEcr` runs:
 
 ```groovy
-sh '''
-    docker run --rm \
-      -v /var/run/docker.sock:/var/run/docker.sock \
-      aquasec/trivy:0.76.1 \
-      image \
-      --exit-code 1 \
-      --severity CRITICAL,HIGH \
-      my-backend-service:42
-'''
+stage('Build & Scan') {
+    steps {
+        sh '''
+            docker build -t my-backend-service:"$BUILD_NUMBER" .
+            docker run --rm \
+              -v /var/run/docker.sock:/var/run/docker.sock \
+              aquasec/trivy:0.76.1 \
+              image \
+              --exit-code 1 \
+              --severity CRITICAL,HIGH \
+              my-backend-service:"$BUILD_NUMBER"
+        '''
+    }
+}
 ```
 
+If you use `dockerPushToEcr` and scan afterwards, the image is already in the registry when the scan fails, as it is with `ecrScan`.
+
 > [!WARNING]
-> Pin an exact Trivy version (ideally by image digest), never `latest`. In March 2026 attackers published malicious Trivy releases and Docker Hub images that stole CI credentials ([advisory](https://github.com/advisories/ghsa-69fq-xp46-6x23)). A scanner runs with access to the Docker socket and the build's secrets, so upgrade it deliberately.
+> Pin an exact Trivy version (ideally by image digest), never `latest`. In March 2026 attackers published malicious Trivy releases and Docker Hub images that stole CI credentials ([advisory](https://github.com/advisories/ghsa-69fq-xp46-6x23)). A scanner runs with access to the Docker socket and the build's secrets, so upgrade it deliberately. Mounting `/var/run/docker.sock` gives the container full control of the agent's Docker daemon, which is equivalent to root on the agent.

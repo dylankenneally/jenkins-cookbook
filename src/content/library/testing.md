@@ -4,7 +4,7 @@ tags: [shared-library, testing]
 
 # Testing the Shared Library
 
-Every pipeline that loads the library runs its steps, so a broken step breaks every build at once. [JenkinsPipelineUnit](https://github.com/jenkinsci/JenkinsPipelineUnit) loads a `vars/` script outside Jenkins, with pipeline steps like `sh` and `error` replaced by mocks, so each step's logic can be unit tested in the library's own repo.
+Every pipeline that loads the library runs its steps, so a broken step breaks every pipeline that loads that version. [JenkinsPipelineUnit](https://github.com/jenkinsci/JenkinsPipelineUnit) loads a `vars/` script outside Jenkins, with pipeline steps like `sh` and `error` replaced by mocks, so each step's logic can be unit tested in the library's own repo.
 
 ## Repository layout
 
@@ -17,7 +17,7 @@ jenkins-shared-library/
 │   └── DockerPushToEcrTest.groovy  # one test class per step
 ├── build.gradle
 ├── settings.gradle
-├── gradlew                         # gradle wrapper, committed
+├── gradlew                         # Gradle Wrapper, committed
 ├── gradle/wrapper/
 └── Jenkinsfile                     # runs the tests for the library itself
 ```
@@ -45,7 +45,7 @@ java {
 }
 
 dependencies {
-    // groovy 3, as JenkinsPipelineUnit doesn't support groovy 4
+    // Groovy 3, as JenkinsPipelineUnit doesn't support Groovy 4
     testImplementation 'org.codehaus.groovy:groovy:3.0.25'
     testImplementation 'com.lesfurets:jenkins-pipeline-unit:1.31'
     testImplementation platform('org.junit:junit-bom:5.11.4')
@@ -94,7 +94,11 @@ class DockerPushToEcrTest extends BasePipelineTest {
         helper.registerAllowedMethod('sh', [String]) { cmd ->
             return null
         }
-        // the default error mock only marks the build failed, so throw to stop the step as jenkins does
+        // a fixed temp directory, so the private Docker config path is predictable
+        helper.registerAllowedMethod('pwd', [Map]) { args ->
+            return '/tmp/workspace@tmp'
+        }
+        // the default error mock only marks the build failed, so throw to stop the step as Jenkins does
         helper.registerAllowedMethod('error', [String]) { message ->
             throw new IllegalArgumentException(message)
         }
@@ -116,11 +120,11 @@ class DockerPushToEcrTest extends BasePipelineTest {
         List<String> commands = shellCommands()
         assertTrue(commands.any { it.contains("docker push '${REGISTRY}/my-app:42'") })
         assertTrue(commands.any { it.contains("docker push '${REGISTRY}/my-app:latest'") })
-        assertTrue(commands.last().contains("docker logout '${REGISTRY}'"))
+        assertTrue(commands.last().contains('rm -rf "$DOCKER_CONFIG"'))
     }
 
     @Test
-    void logsOutEvenWhenAPushFails() {
+    void removesTheLoginEvenWhenAPushFails() {
         helper.registerAllowedMethod('sh', [String]) { cmd ->
             if (cmd.toString().startsWith('docker push')) {
                 throw new RuntimeException('push failed')
@@ -131,7 +135,7 @@ class DockerPushToEcrTest extends BasePipelineTest {
         assertThrows(RuntimeException) {
             step.call(registry: REGISTRY, image: 'my-app', tag: '42')
         }
-        assertTrue(shellCommands().last().contains("docker logout '${REGISTRY}'"))
+        assertTrue(shellCommands().last().contains('rm -rf "$DOCKER_CONFIG"'))
     }
 
     @Test

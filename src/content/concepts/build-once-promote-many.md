@@ -27,7 +27,7 @@ An **environment** (also called a deploy target or stage) is a running copy of y
 
 | Environment | Purpose | Deployed |
 | --- | --- | --- |
-| dev | first real run, integration with other services | automatically from `main` |
+| dev | first real run, integration with other services | automatically from `master` |
 | staging | production-like, final checks, demos | after an approval |
 | prod | real users | after an approval |
 
@@ -69,18 +69,18 @@ A sign this has gone wrong: a build parameter like `TARGET_ENV=prod` that change
 
 ## Approvals
 
-An approval is a pause before an environment where a person confirms the promotion. In Jenkins it is an `input` step; see [Parameters & Approval Gates](../fundamentals/parameters-and-approval-gates.md).
+An approval is a pause before an environment where a person confirms the promotion. In Jenkins it is an `input` directive; see [Parameters and Approval Gates](../fundamentals/parameters-and-approval-gates.md).
 
-An approval only means something if the approver knows exactly what they are approving. With build-once, they approve a specific version that has already run in the environment before. With rebuilds, they approve an artifact that doesn't exist yet.
+An approval only means something if the approver knows exactly what they are approving. With build-once, they approve a specific version that has already run in the previous environment. With rebuilds, they approve an artifact that doesn't exist yet.
 
 Good approvals:
 
 - show the version and a link to what changed
-- are restricted to the people allowed to release (`submitter`) and record who approved
+- are restricted to the people allowed to release (`submitter`), with the approver recorded (`submitterParameter`)
 - time out instead of waiting forever
 - don't hold an executor while waiting
 
-When several runs wait at the same gate, approving an older one after a newer one deploys the older version. The recipe uses the `milestone` step to prevent that. Day-to-day handling of approvals is in [Promotions](../guides/promotions.md).
+When several runs wait at the same gate, approving an older one after a newer one deploys the older version. The recipe uses the `milestone` step to prevent that. Day-to-day handling of approvals is in [How to Work with Promotions](../guides/promotions.md).
 
 ## Rollback
 
@@ -88,7 +88,7 @@ With immutable artifacts, rollback is not a special operation. It is a deploy of
 
 That only works if old artifacts are still there. Keep enough history in the registry, and don't let a lifecycle rule delete the images prod might need to go back to. Database migrations need care too: a rollback is only safe if the old version still works with the current schema, which is why migrations are usually written to be backwards compatible for at least one release.
 
-The steps are in [Roll Back a Deploy](../guides/roll-back-a-deploy.md).
+The steps are in [Roll Back a Bad Deploy](../guides/roll-back-a-deploy.md).
 
 ## Related pages
 

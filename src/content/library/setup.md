@@ -4,7 +4,7 @@ tags: [shared-library]
 
 # Shared Library Setup
 
-The Docker and AWS building blocks in this cookbook are [shared library](https://www.jenkins.io/doc/book/pipeline/shared-libraries/) steps. Each one is written once in its own repo and every `Jenkinsfile` calls it by name, rather than copying helper functions between repositories.
+The building blocks in this cookbook are [shared library](https://www.jenkins.io/doc/book/pipeline/shared-libraries/) steps. Each one is written once in its own repo and every `Jenkinsfile` calls it by name, rather than copying helper functions between repositories.
 
 ## Repository layout
 
@@ -42,14 +42,14 @@ See [Testing the Shared Library](testing.md) for `test/` and the library's own `
 In **Manage Jenkins → System → Global Trusted Pipeline Libraries**, add the repo with the name `cookbook` and a default version (a branch or tag). Any pipeline can then load it with an annotation at the top of its `Jenkinsfile`:
 
 ```groovy
-@Library('cookbook') _
+@Library('cookbook@v1.2.0') _
 
 pipeline {
     // ...
 }
 ```
 
-Pin a version with `@Library('cookbook@v1.2.0') _` so a library change can't break every pipeline at once. The trailing `_` is required; it gives the annotation something to attach to. Pinning a version other than the default needs **Allow default version to be overridden** turned on for the library. See [Change the Shared Library Safely](../guides/change-the-shared-library.md) for how versions are released.
+Always pin a tagged version, as above, so a library change can't break every pipeline at once. `@Library('cookbook') _` with no version loads the default, which moves whenever the Jenkins administrator changes it. The trailing `_` is required; it gives the annotation something to attach to. Pinning a version other than the default needs **Allow default version to be overridden** turned on for the library. See [Change the Shared Library Safely](../guides/change-the-shared-library.md) for how versions are released.
 
 ## What the agents need
 
@@ -57,7 +57,7 @@ Pin a version with `@Library('cookbook@v1.2.0') _` so a library change can't bre
 - the [AWS Credentials](https://plugins.jenkins.io/aws-credentials/) plugin, with an AWS credential stored in Jenkins (the steps default to the ID `aws-credentials-id`)
 - the [Pipeline Utility Steps](https://plugins.jenkins.io/pipeline-utility-steps/) plugin, for the `readJSON` / `writeJSON` used by `ecrScan` and `ecsDeploy`
 - the [Slack Notification](https://plugins.jenkins.io/slack/) plugin for `notifySlack`
-- the [Workspace Cleanup](https://plugins.jenkins.io/ws-cleanup/) plugin for `cleanWs()`
+- the [Workspace Cleanup](https://plugins.jenkins.io/ws-cleanup/) plugin for `cleanWs`
 
 ## The building blocks
 

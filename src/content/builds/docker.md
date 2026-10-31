@@ -12,7 +12,7 @@ Builds container images with BuildKit: a multi-stage Dockerfile, a layer cache k
 # syntax=docker/dockerfile:1
 
 # build stage: dev dependencies and build tools stay here
-FROM node:22.12.0-alpine AS build
+FROM node:22.11.0-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -20,7 +20,7 @@ COPY . .
 RUN npm run build
 
 # runtime stage: production dependencies and the built output only
-FROM node:22.12.0-alpine
+FROM node:22.11.0-alpine
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
@@ -41,7 +41,7 @@ pipeline {
     environment {
         AWS_REGION = 'us-east-1'
         ECR_REGISTRY = '123456789012.dkr.ecr.us-east-1.amazonaws.com'
-        IMAGE_REPO = "${ECR_REGISTRY}/my-backend-service"
+        IMAGE_REPO = "${env.ECR_REGISTRY}/my-backend-service"
     }
     stages {
         stage('Builder') {
@@ -77,7 +77,7 @@ pipeline {
             }
             post {
                 always {
-                    // don't leave a registry token in the agent's docker config
+                    // don't leave a registry token in the agent's Docker config
                     sh 'docker logout "$ECR_REGISTRY"'
                 }
             }
@@ -93,17 +93,21 @@ The older inline cache writes cache metadata into the image itself and works wit
 ```groovy
 sh '''
     docker build \
-      --cache-from "$IMAGE_REPO:main" \
+      --cache-from "$IMAGE_REPO:master" \
       --build-arg BUILDKIT_INLINE_CACHE=1 \
       --tag "$IMAGE_REPO:$BUILD_NUMBER" \
-      --tag "$IMAGE_REPO:main" \
+      --tag "$IMAGE_REPO:master" \
       .
+    docker push "$IMAGE_REPO:$BUILD_NUMBER"
+    docker push "$IMAGE_REPO:master"
 '''
 ```
 
+Pushing the `master` tag is what makes the cache work: the next build reads its cache from that image in the registry, so it must be pushed after every build, from a stage that has already logged in to ECR as above. The moving `master` tag also needs a repository without immutable tags.
+
 Inline cache only covers the layers of the final stage, so the build stage of a multi-stage Dockerfile is rebuilt every time. Prefer the registry cache for multi-stage builds.
 
-## Multi-arch images
+## Multi-architecture images
 
 `--platform` builds one image per architecture and pushes them under a single tag, as a manifest list. Hosts pull the variant that matches their CPU.
 
@@ -135,7 +139,7 @@ stage('Build & Push Image') {
 }
 ```
 
-A multi-platform result can't be loaded into the local image store, so `--push` is required. The architecture that doesn't match the agent is built under QEMU emulation. Docker Desktop on macOS includes it; Linux agents need the binfmt handlers installed once, for example with the `tonistiigi/binfmt` image. Emulated builds are much slower, so for compiled code consider cross-compiling in a build stage that uses `FROM --platform=$BUILDPLATFORM`.
+A multi-architecture result can't be loaded into the local image store, so `--push` is required. The architecture that doesn't match the agent is built under QEMU emulation. Docker Desktop on macOS includes it; Linux agents need the binfmt handlers installed once, for example with the `tonistiigi/binfmt` image. Emulated builds are much slower, so for compiled code consider cross-compiling in a build stage that uses `FROM --platform=$BUILDPLATFORM`.
 
 ## Notes
 

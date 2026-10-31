@@ -28,10 +28,10 @@ The git tag is the source of truth for the version. [`gitVersion`](../library/gi
 
 ## 1. Pick the commit
 
-Release from the tip of `main` unless you are shipping a hotfix (see below).
+Release from the tip of `master` unless you are shipping a hotfix (see below).
 
 ```bash
-git switch main
+git switch master
 git pull --ff-only
 git log --oneline -5
 ```
@@ -64,23 +64,23 @@ Pushing the tag creates a new entry under the multibranch job's **Tags** tab, an
 1. Build and test the tagged commit.
 2. Package the artifacts with the version in the file names, and generate an SBOM.
 3. Write a changelog from the commits since the previous tag.
-4. Publish a release on the git host with the changelog as notes and the artifacts attached.
+4. Publish a release on the Git host with the changelog as notes and the artifacts attached.
 
-Your repo's pipeline may also push an image or deploy. Read its `Jenkinsfile` stages with `buildingTag()` or `tag` conditions to see exactly what runs.
+Your repo's pipeline may also push an image or deploy. Read its `Jenkinsfile` stages with `buildingTag` or `tag` conditions to see exactly what runs.
 
 ## 4. Check the release
 
 - In Jenkins, open the job's **Tags** tab, then the build for your tag. All stages should be green and the release stages should not show as skipped.
-- On the git host, open the release page for the tag, or run `gh release view v1.4.0`. Check that the artifacts are attached and the notes list the expected changes.
+- On the Git host, open the release page for the tag, or run `gh release view v1.4.0`. Check that the artifacts are attached and the notes list the expected changes.
 - Download one artifact and check the version in its name or metadata.
 
 If the tag appears under **Tags** but no build ran, the tag build strategy is missing. You can start it with **Build Now** on the tag, and ask your Jenkins administrator to add the strategy.
 
-If the build failed, fix the cause on `main` and release the next patch version. Don't delete and re-push the tag.
+If the build failed, fix the cause on `master` and release the next patch version. Don't delete and re-push the tag.
 
 ## 5. Write or edit the release notes
 
-The generated changelog is a list of commit subjects. It is a starting point, not finished notes. Edit the release on the git host to add a short summary, call out breaking changes and upgrade steps, and remove noise.
+The generated changelog is a list of commit subjects. It is a starting point, not finished notes. Edit the release on the Git host to add a short summary, call out breaking changes and upgrade steps, and remove noise.
 
 ```bash
 gh release edit v1.4.0 \
@@ -91,7 +91,7 @@ Editing the notes is always safe. It doesn't touch the tag or the artifacts.
 
 ## Hotfix from a release branch
 
-When `main` has moved on with changes you don't want to ship yet, fix the released version on a release branch:
+When `master` has moved on with changes you don't want to ship yet, fix the released version on a release branch:
 
 1. Create the branch from the released tag, if it doesn't exist already:
 
@@ -100,15 +100,16 @@ When `main` has moved on with changes you don't want to ship yet, fix the releas
    git push -u origin release/1.4
    ```
 
-2. Land the fix on `main` first through a normal pull request, so it isn't lost in the next release.
-3. Cherry-pick it onto the release branch. `-x` records the original commit in the message.
+2. Land the fix on `master` first through a normal pull request, so it isn't lost in the next release.
+3. Cherry-pick it onto a new branch from the release branch, so the change can go through review. `-x` records the original commit in the message.
 
    ```bash
-   git switch release/1.4
+   git switch -c hotfix/1.4.1 release/1.4
    git cherry-pick -x <commit-sha>
+   git push -u origin hotfix/1.4.1
    ```
 
-4. Push the change through a pull request into `release/1.4` and wait for the branch build to go green.
+4. Open a pull request from `hotfix/1.4.1` into `release/1.4`, and merge it once the pull request build is green.
 5. Tag the patch version on the release branch and push it:
 
    ```bash
@@ -143,7 +144,7 @@ Please:
   1. Add the "Discover tags" behaviour to the branch source.
   2. Add a build strategy for tags (Basic Branch Build Strategies plugin) so pushing a tag starts a build.
      If you also want branches and pull requests to keep building automatically, keep or add strategies for those too.
-  3. Make sure the checkout fetches tags (Advanced clone behaviours > Fetch tags) and is not a shallow clone.
+  3. Make sure the checkout fetches tags (Advanced clone behaviours → Fetch tags) and is not a shallow clone.
   4. Confirm the credential the release stage uses (<credential ID>) is available to this job.
 ```
 
@@ -152,10 +153,10 @@ Please:
 
 ## Related
 
-- [Tag-triggered release pipeline](../pipelines/release.md)
+- [Tag-Triggered Release](../pipelines/release.md)
 - [`gitVersion`](../library/git-version.md)
-- [`when` conditions](../fundamentals/when-conditions.md)
-- [Multibranch and pull requests](../fundamentals/multibranch-and-pull-requests.md)
-- [Build once, promote many](../concepts/build-once-promote-many.md)
-- [Promotions](promotions.md)
-- [Roles and responsibilities](roles-and-responsibilities.md)
+- [`when` Conditions](../fundamentals/when-conditions.md)
+- [Multibranch & Pull Requests](../fundamentals/multibranch-and-pull-requests.md)
+- [Build Once, Promote Many](../concepts/build-once-promote-many.md)
+- [How to Work with Promotions](promotions.md)
+- [Roles & Responsibilities](roles-and-responsibilities.md)

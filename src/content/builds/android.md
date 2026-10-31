@@ -4,13 +4,13 @@ tags: [mobile, testing, code-quality]
 
 # Android Build & Test
 
-Runs Android Lint and the JVM unit tests with the Gradle wrapper, then assembles the release build. Needs the JUnit and Warnings Next Generation plugins, plus Credentials Binding for signing.
+Runs Android Lint and the JVM unit tests with the Gradle Wrapper, then assembles the release build. Needs the JUnit and Warnings Next Generation plugins, plus Credentials Binding for signing.
 
 ```groovy
 pipeline {
     // the agent needs the android sdk and a jdk; see agent and sdk below
     agent {
-        label 'android'
+        label 'linux && android-sdk'
     }
     stages {
         stage('Lint') {
@@ -46,25 +46,25 @@ pipeline {
 }
 ```
 
-`--no-daemon` stops a Gradle daemon outliving the build on a shared agent. Separate stages give separate results in the stage view, but each one pays Gradle's configuration time again. `./gradlew --no-daemon lintDebug testDebugUnitTest assembleRelease` in one stage is faster; add `--continue` so the tests still run when lint fails. Quality gates on the lint issues work as described in [lint & static analysis](static-analysis.md).
+`--no-daemon` stops a Gradle daemon outliving the build on a shared agent. Separate stages give separate results in the stage view, but each one pays Gradle's configuration time again. `./gradlew --no-daemon lintDebug testDebugUnitTest assembleRelease` in one stage is faster; add `--continue` so the tests still run when lint fails. Quality gates on the lint issues work as described in [Lint and Static Analysis](static-analysis.md).
 
 The wrapper pins the Gradle version. Add `distributionSha256Sum` to `gradle/wrapper/gradle-wrapper.properties` so the agent also checks the download.
 
 ## Agent and SDK
 
-The Android Gradle plugin (AGP) needs JDK 17 to run, from AGP 8.0 up to the current 9.x releases. Either set `JAVA_HOME` on the agent or pick a JDK configured under Manage Jenkins > Tools:
+The Android Gradle plugin (AGP) needs JDK 17 to run, from AGP 8.0 up to the current 9.x releases. Either set `JAVA_HOME` on the agent or pick a JDK configured under **Manage Jenkins → Tools**:
 
 ```groovy
 tools {
-    // the name given to the jdk under manage jenkins > tools
+    // the name given to the JDK under Manage Jenkins → Tools
     jdk 'temurin-17'
 }
 ```
 
-The safer default is a labelled agent with the SDK installed once, `ANDROID_HOME` set in the node's environment, and the licences accepted. Install the command-line tools, then pin each package:
+The safer default is a labelled agent with the SDK installed once, `ANDROID_HOME` set in the node's environment and the licences accepted. Install the command-line tools, then pin each package:
 
 ```bash
-# linux shown; macos agents use the mac_arm64 or mac_x86_64 zip of the same build
+# Linux shown; macOS agents use the commandlinetools-mac zip of the same build
 export ANDROID_HOME="$HOME/android-sdk"
 mkdir -p "$ANDROID_HOME/cmdline-tools"
 curl -fsSLo /tmp/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-16111833_latest.zip
@@ -93,7 +93,7 @@ agent {
 }
 ```
 
-Check which JDK and SDK packages a tag ships before pinning it. Jenkins runs the container as the agent's user, so `GRADLE_USER_HOME` must point at a path that user can write; see the Gradle cache section below. Docker agents need the Docker Pipeline plugin, covered in [agents and labels](../fundamentals/agents-and-labels.md).
+Check which JDK and SDK packages a tag ships before pinning it. Jenkins runs the container as the agent's user, so `GRADLE_USER_HOME` must point at a path that user can write; see the Gradle cache section below. Docker agents need the Docker Pipeline plugin, covered in [Agents and Labels](../fundamentals/agents-and-labels.md).
 
 ## Signing a release
 
@@ -127,7 +127,7 @@ android {
 ```groovy
 stage('Bundle') {
     when {
-        branch 'main'
+        branch 'master'
     }
     environment {
         KEY_ALIAS = 'upload'
@@ -138,7 +138,7 @@ stage('Bundle') {
             string(credentialsId: 'android-keystore-password', variable: 'KEYSTORE_PASSWORD'),
             string(credentialsId: 'android-key-password', variable: 'KEY_PASSWORD')
         ]) {
-            // gradle reads the bound env vars itself; groovy never sees the secrets
+            // Gradle reads the bound env vars itself; Groovy never sees the secrets
             sh './gradlew --no-daemon bundleRelease'
         }
     }
@@ -159,7 +159,7 @@ stage('Bundle') {
 Without changing `build.gradle.kts`, Gradle also accepts the signing properties Android Studio injects, inside the same `withCredentials` block:
 
 ```groovy
-// single quotes: the shell expands the secrets, groovy never interpolates them
+// single quotes: the shell expands the secrets, Groovy never interpolates them
 sh '''
     ./gradlew --no-daemon bundleRelease \
       -Pandroid.injected.signing.store.file="$KEYSTORE_FILE" \
@@ -176,12 +176,12 @@ These properties are meant for the IDE and aren't a documented public API. They 
 
 ## Instrumented tests
 
-Emulators on CI are slow and flaky. Run `connectedDebugAndroidTest` on an agent with hardware acceleration (KVM on Linux, the Hypervisor framework on macOS), with the emulator, a system image and an AVD installed alongside the SDK. Jenkins kills background processes when an `sh` step ends, so the emulator is started, awaited and used in a single step.
+Emulators on CI are slow and flaky. Run `connectedDebugAndroidTest` on an agent with hardware acceleration (KVM on Linux, the Hypervisor framework on macOS), with the emulator, a system image and an AVD installed alongside the SDK. Jenkins kills any process a build leaves running when the build ends, so the emulator is started, awaited and used in a single step, and a `trap` stops it rather than leaving that to Jenkins.
 
 ```groovy
 stage('Instrumented Tests') {
     agent {
-        label 'android && kvm'
+        label 'linux && android-sdk && kvm'
     }
     options {
         // a stuck boot loop ends here instead of holding the agent
@@ -246,7 +246,7 @@ stage('Test Lab') {
 
 ## Publishing to Google Play
 
-Upload the signed AAB with [Gradle Play Publisher](https://github.com/Triple-T/gradle-play-publisher) (`com.github.triplet.play`, pinned, then `./gradlew publishReleaseBundle`) or fastlane's `supply`. Both authenticate with a Play service account JSON key, stored as a Secret file credential. Put the stage behind an approval gate as in [parameters and approval gates](../fundamentals/parameters-and-approval-gates.md).
+Upload the signed AAB with [Gradle Play Publisher](https://github.com/Triple-T/gradle-play-publisher) (`com.github.triplet.play`, pinned, then `./gradlew publishReleaseBundle`) or fastlane's `supply`. Both authenticate with a Play service account JSON key, stored as a Secret file credential. Put the stage behind an approval gate as in [Parameters and Approval Gates](../fundamentals/parameters-and-approval-gates.md).
 
 ```groovy
 stage('Publish to Play') {
@@ -284,5 +284,5 @@ Gradle locks its caches, so concurrent builds on the same agent can share the di
 
 ## Notes
 
-- [React Native](react-native.md) builds its Android app with the Gradle wrapper too, and reuses this page's signing approach.
-- Release builds on `main` only, as in the `Bundle` stage, keep the upload keystore away from pull request builds. See [multibranch and pull requests](../fundamentals/multibranch-and-pull-requests.md).
+- [React Native Build & Test](react-native.md) builds its Android app with the Gradle Wrapper too, and reuses this page's signing approach.
+- Release builds on `master` only, as in the `Bundle` stage, keep the upload keystore away from pull request builds. See [Multibranch and Pull Requests](../fundamentals/multibranch-and-pull-requests.md).

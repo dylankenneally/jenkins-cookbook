@@ -4,14 +4,14 @@ tags: [deploy]
 
 # How to Work with Promotions
 
-A promotion moves one built image through dev, staging and production, in that order, with an approval in front of each later stage. This guide covers setting that up for a service, approving a promotion, finding out what is deployed where, and the less common cases: promoting an older build, skipping an environment, and rolling back. It builds on the [Promote, Don't Rebuild](../pipelines/promote-across-environments.md) pipeline. For why the image is built only once, see [build once, promote many](../concepts/build-once-promote-many.md).
+A promotion moves one built image through dev, staging and production, in that order, with an approval in front of each later stage. This guide covers setting that up for a service, approving a promotion, finding out what is deployed where, and the less common cases: promoting an older build, skipping an environment, and rolling back. It builds on the [Promote, Don't Rebuild](../pipelines/promote-across-environments.md) pipeline. For why the image is built only once, see [Build Once, Promote Many](../concepts/build-once-promote-many.md).
 
 ## Before you start
 
 - Your service builds a Docker image and runs on Amazon ECS. For other targets the shape is the same; swap [`ecsDeploy`](../library/ecs-deploy.md) for the matching deploy step.
 - The repo already has a multibranch job in Jenkins. If not, start with [Onboard a New Repo](onboard-a-new-repo.md).
 - The `cookbook` shared library is registered on your Jenkins. See [Shared Library Setup](../library/setup.md).
-- You know who your cloud administrator and Jenkins administrator are. See [roles and responsibilities](roles-and-responsibilities.md).
+- You know who your cloud administrator and Jenkins administrator are. See [Roles and Responsibilities](roles-and-responsibilities.md).
 
 ## 1. Ask the cloud administrator for the environments
 
@@ -99,15 +99,15 @@ environment {
 
 Then pass `roleArn: env.DEV_ROLE_ARN` and so on. Environment-specific settings for the service itself (database URLs, feature flags, secrets) belong in each account's task definition or parameter store, not in the image or the `Jenkinsfile`. The same image has to run unchanged in every stage.
 
-Open a pull request with the change. The PR build runs the build and scan stages only; deploys run from `main`.
+Open a pull request with the change. The pull request build runs the build and scan stages only; deploys run from `master`.
 
 ## 4. Approve a promotion
 
-When a `main` build reaches `Approve Staging` or `Approve Production`, it pauses and waits. The run holds no executor while it waits, and it aborts on its own after the one-day timeout.
+When a `master` build reaches `Approve Staging` or `Approve Production`, it pauses and waits. The run holds no executor while it waits, and it aborts on its own after the one-day timeout.
 
 To find the prompt:
 
-1. Open the job for the `main` branch and click the running build.
+1. Open the job for the `master` branch and click the running build.
 2. Click **Paused for Input** in the left menu, or open **Console Output** and scroll to the bottom. Both show the message, such as "Promote this image to production?", with **Promote** and **Abort** buttons. The stage view on the job page also shows the paused stage; hovering over it offers the same buttons.
 3. Check the image URI printed by the earlier stages, and that the stage before succeeded, then click **Promote**.
 
@@ -126,7 +126,7 @@ Who can approve:
 Jenkins doesn't track deployments on its own, so make each build say what it did. Add a helper above the `pipeline` block that appends the environment to the build description:
 
 ```groovy
-@Library('cookbook') _
+@Library('cookbook@v1.2.0') _
 
 // appends to the build description, e.g. "v1.4.0-3-g1a2b3c4 deployed to dev, staging"
 void recordDeploy(String environment) {
@@ -198,7 +198,7 @@ Guard the build stage so it only runs without a tag:
 ```groovy
 stage('Build, Push & Scan') {
     agent {
-        label 'docker'
+        label 'linux && docker'
     }
     when {
         beforeAgent true
@@ -219,7 +219,7 @@ stage('Use Existing Image') {
     }
     steps {
         script {
-            // the tag ends up in shell commands, so accept only characters a docker tag can hold
+            // the tag ends up in shell commands, so accept only characters a Docker tag can hold
             if (!(params.IMAGE_TAG ==~ /[A-Za-z0-9_.-]+/)) {
                 error("IMAGE_TAG '${params.IMAGE_TAG}' is not a valid image tag")
             }
@@ -240,7 +240,7 @@ stage('Use Existing Image') {
 }
 ```
 
-To use it, open the `main` branch job, click **Build with Parameters**, enter the tag from the build description of the run you want (for example `v1.4.0-3-g1a2b3c4`) and start the build. It goes through dev, staging and production with the usual approvals. The parameter appears only after the first run that includes it.
+To use it, open the `master` branch job, click **Build with Parameters**, enter the tag from the build description of the run you want (for example `v1.4.0-3-g1a2b3c4`) and start the build. It goes through dev, staging and production with the usual approvals. The parameter appears only after the first run that includes it.
 
 > [!NOTE]
 > The scan result is from when the image was built. New vulnerabilities may have been published since, so consider calling [`ecrScan`](../library/ecr-scan.md) in this stage too.
@@ -261,7 +261,7 @@ A rollback is a promotion of an older image, or a redeploy of an earlier task de
 
 ## 9. Stop older runs overtaking newer ones
 
-Several `main` builds can be waiting at the same approval. If someone approves an older run after a newer one has already deployed, the older image replaces the newer one, which is an accidental rollback. The `milestone` step prevents this. When a run passes a milestone, Jenkins aborts any older run of the same job that hasn't passed it yet.
+Several `master` builds can be waiting at the same approval. If someone approves an older run after a newer one has already deployed, the older image replaces the newer one, which is an accidental rollback. The `milestone` step prevents this. When a run passes a milestone, Jenkins aborts older runs of the same job that have passed the previous milestone but not this one.
 
 Add one at the start of each deploy stage, with increasing ordinals:
 
@@ -270,7 +270,7 @@ stage('Deploy Staging') {
     agent any
     when {
         beforeAgent true
-        branch 'main'
+        branch 'master'
     }
     steps {
         // aborts older runs that haven't reached this point yet
@@ -289,7 +289,7 @@ stage('Deploy Staging') {
 }
 ```
 
-Use `milestone(ordinal: 10)` in `Deploy Dev` and `milestone(ordinal: 30)` in `Deploy Production`. The ordinals only need to increase through the pipeline; gaps leave room for a stage added later. The step comes from the Pipeline: Milestone Step plugin, which is part of the standard Pipeline plugin set. If Jenkins reports `No such DSL method 'milestone'`, ask the Jenkins administrator to install it.
+Use `milestone(ordinal: 10)` in `Deploy Dev` and `milestone(ordinal: 30)` in `Deploy Production`. The ordinals only need to increase through the pipeline; gaps leave room for a stage added later. The step comes from the Pipeline: Milestone Step plugin, which ships with the standard set of Pipeline plugins. If Jenkins reports `No such DSL method 'milestone'`, ask the Jenkins administrator to install it.
 
 > [!NOTE]
 > Promoting an older image with `IMAGE_TAG` isn't affected. The parameterised run is started after the others, so it counts as the newest run, and older runs waiting at an approval are aborted once it passes a milestone.
@@ -301,5 +301,5 @@ Use `milestone(ordinal: 10)` in `Deploy Dev` and `milestone(ordinal: 30)` in `De
 - [Add an Environment or AWS Account](add-an-environment.md)
 - [Roll Back a Bad Deploy](roll-back-a-deploy.md)
 - [`assumeRole`](../library/assume-role.md) and [`ecsDeploy`](../library/ecs-deploy.md)
-- [Build once, promote many](../concepts/build-once-promote-many.md)
-- [Release a version](release-a-version.md)
+- [Build Once, Promote Many](../concepts/build-once-promote-many.md)
+- [Release a New Version](release-a-version.md)

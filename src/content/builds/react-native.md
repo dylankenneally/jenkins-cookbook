@@ -49,10 +49,10 @@ pipeline {
                         label 'linux && android-sdk'
                     }
                     steps {
-                        // gradle runs node to bundle the js, so it needs node_modules here too
+                        // Gradle runs node to bundle the js, so it needs node_modules here too
                         sh 'npm ci'
                         dir('android') {
-                            // no daemon: a fresh gradle per build, nothing left running on the agent
+                            // no daemon: a fresh Gradle per build, nothing left running on the agent
                             sh './gradlew --no-daemon assembleRelease bundleRelease'
                         }
                     }
@@ -184,8 +184,8 @@ stage('iOS') {
     }
     environment {
         DEVELOPER_DIR = '/Applications/Xcode_26.app/Contents/Developer'
-        KEYCHAIN = "${WORKSPACE_TMP}/signing.keychain-db"
-        PROFILE_DIR = "${HOME}/Library/Developer/Xcode/UserData/Provisioning Profiles"
+        KEYCHAIN = "${env.WORKSPACE_TMP}/signing.keychain-db"
+        PROFILE_DIR = "${env.HOME}/Library/Developer/Xcode/UserData/Provisioning Profiles"
     }
     steps {
         withCredentials([
@@ -268,10 +268,10 @@ Expo projects can skip the native stages and run `npx eas-cli build --platform a
 when {
     beforeAgent true
     anyOf {
-        branch 'main'
+        branch 'master'
         branch 'release/*'
     }
 }
 ```
 
-See [`when` conditions](../fundamentals/when-conditions.md) for the other conditions. To treat platform as an axis instead of hand-written `parallel` branches, see [matrix builds](../fundamentals/matrix-builds.md), though the two platforms here differ enough that `parallel` is usually clearer.
+See [`when` Conditions](../fundamentals/when-conditions.md) for the other conditions. To treat platform as an axis instead of hand-written `parallel` branches, see [Matrix Builds](../fundamentals/matrix-builds.md), though the two platforms here differ enough that `parallel` is usually clearer.

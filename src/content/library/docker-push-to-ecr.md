@@ -15,7 +15,7 @@ Builds a container image and pushes it to an Amazon Elastic Container Registry (
  *  - image: repository name in ecr
  *  - tag: the primary tag, usually the build number or commit sha
  *  - extraTags: further tags to push, e.g. ['latest'] (opt-in, none by default)
- *  - context: docker build context, defaults to '.'
+ *  - context: Docker build context, defaults to '.'
  */
 String call(Map args) {
     ['registry', 'image', 'tag'].each {
@@ -37,19 +37,22 @@ String call(Map args) {
           '${context}'
     """
 
-    sh """
-        aws ecr get-login-password | \
-          docker login --username AWS --password-stdin '${args.registry}'
-    """
+    // a private Docker config per build, so concurrent builds on a shared agent never share, or log out of, one login
+    withEnv(["DOCKER_CONFIG=${pwd(tmp: true)}/docker-config"]) {
+        sh """
+            aws ecr get-login-password | \
+              docker login --username AWS --password-stdin '${args.registry}'
+        """
 
-    try {
-        tags.each { tag ->
-            sh "docker tag '${local}' '${remote}:${tag}'"
-            sh "docker push '${remote}:${tag}'"
+        try {
+            tags.each { tag ->
+                sh "docker tag '${local}' '${remote}:${tag}'"
+                sh "docker push '${remote}:${tag}'"
+            }
+        } finally {
+            // removing the directory removes the registry token with it
+            sh 'rm -rf "$DOCKER_CONFIG"'
         }
-    } finally {
-        // don't leave a registry token in the agent's docker config
-        sh "docker logout '${args.registry}'"
     }
 
     return "${remote}:${args.tag}"
@@ -76,4 +79,6 @@ stage('Build & Push Image') {
 
 The `script` block is only there to capture the returned URI; call it directly in `steps` if you don't need it. Moving tags like `latest` are opt-in through `extraTags`, because a deploy that pulls `latest` can't say which build it's running.
 
-Pair it with [`dockerCleanup()`](docker-cleanup.md) in `post { cleanup { … } }`.
+The registry login lives in a Docker config directory under the workspace's temporary directory, and the step deletes that directory when the push finishes, whether or not it succeeded. Using `docker logout` instead would edit the agent's shared `~/.docker/config.json`, and could log out a build that is still pushing to the same registry on that agent.
+
+Pair it with [`dockerCleanup`](docker-cleanup.md) in `post { cleanup { … } }`.

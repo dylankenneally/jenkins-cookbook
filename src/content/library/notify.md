@@ -31,7 +31,8 @@ def call(Map args) {
     slackSend(
         channel: args.channel,
         color: colour,
-        message: message
+        message: message,
+        failOnError: true
     )
 }
 ```
@@ -68,7 +69,7 @@ def call(Map args) {
     writeFile(file: 'payload.json', text: JsonOutput.toJson(payload))
 
     withCredentials([string(credentialsId: args.webhookCredentialsId, variable: 'TEAMS_WEBHOOK_URL')]) {
-        // single quotes: the shell expands the url, so the secret is never interpolated by groovy
+        // single quotes: the shell expands the url, so the secret is never interpolated by Groovy
         sh '''
             curl --fail --silent --show-error \
               -H 'Content-Type: application/json' \
@@ -97,4 +98,4 @@ The link in the default message uses `BUILD_URL`, which is only set when the Jen
 > [!NOTE]
 > Microsoft is retiring Office 365 connectors in Teams in favour of webhooks created with the Workflows app. Create the webhook from the channel's **Workflows** menu ("Send webhook alerts to a channel"). The `curl` call is generic, so only the payload shape needs to change if the webhook does.
 
-With `--fail`, a webhook that rejects the post fails the step. In `post { always { … } }` that turns a green build red, which is deliberate: a notification that silently stops working is easy to miss.
+Both steps fail when delivery fails: `notifyTeams` through `curl --fail`, and `notifySlack` through `failOnError: true` (without it, `slackSend` only logs the error). In `post { always { … } }` that turns a green build red, which is deliberate: a notification that silently stops working is easy to miss.

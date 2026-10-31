@@ -4,7 +4,7 @@ tags: [shared-library, aws, deploy]
 
 # `cfnDeploy` & `terraformApply`
 
-Two ways to apply infrastructure changes from a pipeline, each showing what will change and pausing for approval before applying it. `cfnDeploy` uses AWS CloudFormation change sets and `terraformApply` uses a saved Terraform plan. Run both inside [`withAws`](with-aws.md); Terraform's AWS provider picks up the same credentials and region from the environment.
+Two ways to apply infrastructure changes from a pipeline, each showing what will change and, by default, pausing for approval before applying it. `cfnDeploy` uses AWS CloudFormation change sets and `terraformApply` uses a saved Terraform plan. Run both inside [`withAws`](with-aws.md); Terraform's AWS provider picks up the same credentials and region from the environment.
 
 `terraformApply` needs the Terraform CLI on the agent's `PATH`.
 
@@ -18,6 +18,7 @@ Two ways to apply infrastructure changes from a pipeline, each showing what will
  *  - parameters: template parameters as a map, defaults to [:]
  *  - capabilities: e.g. ['CAPABILITY_NAMED_IAM'], defaults to none
  *  - approve: pause for a person to approve the change set, defaults to true
+ *  - approvalTimeout: minutes to wait for the approval before giving up, defaults to 30
  */
 def call(Map args) {
     ['stackName', 'template'].each {
@@ -26,19 +27,27 @@ def call(Map args) {
         }
     }
 
+    int approvalTimeout = args.approvalTimeout ?: 30
     Map parameters = args.parameters ?: [:]
     List<String> capabilities = args.capabilities ?: []
     // change set names must start with a letter and use only letters, digits and hyphens
     String changeSetName = "jenkins-${env.BUILD_NUMBER}"
 
-    // a missing stack is an error from describe-stacks, so it maps to NONE here
+    // a missing stack is the only describe-stacks error that means "create"; any other error stops the step
     String describeStack = """
-        aws cloudformation describe-stacks \
-          --stack-name '${args.stackName}' \
-          --query 'Stacks[0].StackStatus' \
-          --output text 2>/dev/null || echo NONE
+        if output=\$(aws cloudformation describe-stacks --stack-name '${args.stackName}' --query 'Stacks[0].StackStatus' --output text 2>&1); then
+            echo "\$output"
+        elif echo "\$output" | grep -q 'does not exist'; then
+            echo NONE
+        else
+            echo "\$output" >&2
+            exit 1
+        fi
     """
     String stackStatus = sh(script: describeStack, returnStdout: true).trim()
+    if (stackStatus == 'ROLLBACK_COMPLETE') {
+        error("cfnDeploy: stack '${args.stackName}' is in ROLLBACK_COMPLETE and can't be updated; delete it and run again")
+    }
     // a stack left in REVIEW_IN_PROGRESS by an unexecuted create still needs a CREATE change set
     String changeSetType = stackStatus in ['NONE', 'REVIEW_IN_PROGRESS'] ? 'CREATE' : 'UPDATE'
 
@@ -97,7 +106,9 @@ def call(Map args) {
 
     if (args.approve != false) {
         try {
-            input(message: "Execute change set ${changeSetName} on ${args.stackName}?", ok: 'Execute')
+            timeout(time: approvalTimeout, unit: 'MINUTES') {
+                input(message: "Execute change set ${changeSetName} on ${args.stackName}?", ok: 'Execute')
+            }
         } catch (err) {
             // rejected or timed out, so don't leave the change set behind
             deleteChangeSet(args.stackName, changeSetName)
@@ -149,11 +160,14 @@ private void deleteChangeSet(String stackName, String changeSetName) {
  * plans and applies a terraform configuration, pausing for approval in between
  *  - dir: directory holding the terraform configuration, e.g. 'infra'
  *  - approve: pause for a person to approve the plan, defaults to true
+ *  - approvalTimeout: minutes to wait for the approval before giving up, defaults to 30
  */
 def call(Map args) {
     if (!args.dir) {
         error("terraformApply: 'dir' is required")
     }
+
+    int approvalTimeout = args.approvalTimeout ?: 30
 
     dir(args.dir) {
         sh 'terraform init -input=false -no-color'
@@ -176,7 +190,9 @@ def call(Map args) {
         }
 
         if (args.approve != false) {
-            input(message: "Apply the plan above to ${args.dir}?", ok: 'Apply')
+            timeout(time: approvalTimeout, unit: 'MINUTES') {
+                input(message: "Apply the plan above to ${args.dir}?", ok: 'Apply')
+            }
         }
 
         // applying the saved plan means exactly what was approved gets applied
@@ -190,24 +206,21 @@ def call(Map args) {
 ```groovy
 stage('Infrastructure') {
     steps {
-        // don't let an unanswered approval hold the agent forever
-        timeout(time: 30, unit: 'MINUTES') {
-            withAws {
-                cfnDeploy(
-                    stackName: 'my-app-network',
-                    template: 'infra/network.yml',
-                    parameters: [Environment: 'production']
-                )
-                terraformApply(dir: 'infra/terraform')
-            }
+        withAws {
+            cfnDeploy(
+                stackName: 'my-app-network',
+                template: 'infra/network.yml',
+                parameters: [Environment: 'production']
+            )
+            terraformApply(dir: 'infra/terraform')
         }
     }
 }
 ```
 
 > [!WARNING]
-> `input` inside these steps pauses the build while it still holds the agent's executor and workspace. Always wrap the call in `timeout`. In real pipelines, split plan and apply into separate stages and put the approval in its own stage with `agent none`, so nothing is held while waiting; see [Parameters & Approval Gates](../fundamentals/parameters-and-approval-gates.md). Pass `approve: false` when the approval lives in its own stage.
+> `input` inside these steps pauses the build while it still holds the agent's executor and workspace. Each step limits only the wait for approval, with `approvalTimeout` (30 minutes by default); a rejected or timed-out approval fails the step. Nothing limits the apply itself, because stopping a CloudFormation or Terraform run part-way can leave a half-applied stack or a locked state. Don't wrap these steps in a `timeout` unless it is longer than your slowest apply. These steps plan and apply in one call, so they suit approvals that are answered within minutes. For approvals that can wait hours or days, review the change before the pipeline runs (for example the plan in a pull request) and pass `approve: false`, or use a pipeline with its own approval stage and `agent none`; see [Parameters and Approval Gates](../fundamentals/parameters-and-approval-gates.md).
 
 Parameter values go through the CLI's shorthand syntax, so values containing commas need the JSON form of `--parameters` instead. `--template-body` takes templates up to 51,200 bytes; larger ones need uploading to S3 and passing with `--template-url`.
 
-The `tfplan` file holds any sensitive values from the plan in plain text. Don't archive or stash it, and let `cleanWs()` remove it with the workspace.
+The `tfplan` file holds any sensitive values from the plan in plain text. Don't archive or stash it, and let `cleanWs` remove it with the workspace.

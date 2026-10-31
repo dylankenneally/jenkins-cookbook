@@ -65,7 +65,7 @@ pipeline {
             }
             steps {
                 withCredentials([string(credentialsId: 'github-release-token', variable: 'GH_TOKEN')]) {
-                    // single quotes: the shell expands the token, groovy never sees it
+                    // single quotes: the shell expands the token, Groovy never sees it
                     sh '''
                         gh release create "$TAG_NAME" \
                           --verify-tag \
@@ -88,13 +88,13 @@ pipeline {
 
 ## Notes
 
-- `buildingTag()` is true for any tag build. Use `tag 'v*'` instead to release only from version tags; see [`when` conditions](../fundamentals/when-conditions.md).
+- `buildingTag` is true for any tag build. Use `tag 'v*'` instead to release only from version tags; see [`when` Conditions](../fundamentals/when-conditions.md).
 - `gh` reads `GH_TOKEN` from the environment and finds the repo from the checkout's `origin` remote. `--verify-tag` stops it from creating a new tag if the one being built isn't on the remote. Every file after the flags is uploaded as a release asset.
-- The changelog needs the earlier tags in the workspace. Don't use a shallow clone, and make sure the checkout fetches tags (Advanced clone behaviours in the branch source). `gitVersion()` needs them too.
+- The changelog needs the earlier tags in the workspace. Don't use a shallow clone, and make sure the checkout fetches tags (Advanced clone behaviours in the branch source). `gitVersion` needs them too.
 - The token needs permission to create releases on the repository and nothing more.
 
 > [!NOTE]
-> Multibranch jobs don't build tags out of the box. Add the "Discover tags" behaviour to the branch source, and the [Basic Branch Build Strategies](https://plugins.jenkins.io/basic-branch-build-strategies/) plugin's tag strategy if pushing a tag should start a build. Without the strategy, tag jobs appear but have to be started by hand. See [multibranch and pull requests](../fundamentals/multibranch-and-pull-requests.md).
+> Multibranch jobs don't build tags out of the box. Add the "Discover tags" behaviour to the branch source, and the [Basic Branch Build Strategies](https://plugins.jenkins.io/basic-branch-build-strategies/) plugin's tag strategy if pushing a tag should start a build. Without the strategy, tag jobs appear but have to be started by hand. See [Multibranch and Pull Requests](../fundamentals/multibranch-and-pull-requests.md).
 
 ## Gitea
 

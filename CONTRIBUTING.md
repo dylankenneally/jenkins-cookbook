@@ -21,11 +21,11 @@ npm install
 npm start
 ```
 
-The site is served at <http://localhost:8080> and reloads as you edit. See the [README](./README.md) for the other scripts.
+The site is served at <http://localhost:8080> (or the next available port) and reloads as you edit. See the [README](./README.md) for the other scripts.
 
 ## Writing content
 
-The pages live in `src/content/` as Markdown. Each one is published as its own page. The only front matter a page needs is its [tags](#tagging-a-page).
+The pages live in `src/content/` as Markdown. Each one is published as its own page. The only front matter a recipe needs is its [tags](#tagging-a-page). Pages that aren't recipes, such as the landing, browse and 404 pages, set `searchable: false` instead. That keeps them out of the search index and means they take no tags.
 
 - **Start with a single `#` heading.** It becomes the page title.
 - **Write headings that make sense on their own.** Every heading gets a link anchor and shows up as a section in search results, so "Roll back an ECS service" is more useful than "Steps".
@@ -34,7 +34,50 @@ The pages live in `src/content/` as Markdown. Each one is published as its own p
 - **Use callouts for asides**: `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]` or `> [!CAUTION]`.
 - **Draw diagrams with mermaid** in a ` ```mermaid ` fence rather than text art.
 - **Add new pages to the browse list** in `src/content/browse.md`, so people can find them. If the page deserves a spot on the landing page, add it to the matching card in `src/data/landing.json`. The build fails if that file points at a page that doesn't exist.
-- **Use British spelling**, as the rest of the cookbook does (colour, behaviour, organisation).
+- **Make the first paragraph say what the page covers.** It becomes the page's description in search engines and link previews, cut to about 160 characters. Set `description` in the front matter to override it.
+- **Add new Jenkins and CI/CD terms to the glossary** in `src/content/concepts/glossary.md`, as a bold term followed by a colon and its definition, in alphabetical order, with a link to the page that covers the term. The A to Z index builds its entries from these paragraphs.
+- **Follow the [style guide](#style-guide)** for spelling, headings, voice and terminology.
+
+### Style guide
+
+The aim is one voice across every page, so a reader can't tell who wrote which.
+
+**Spelling and punctuation**
+
+- Use British spelling (colour, behaviour, organisation, -ise endings). Two exceptions: "artifact", which follows Jenkins (`archiveArtifacts`), and names that come from code, a library or a product, such as `NotSerializableException`.
+
+**Headings and links**
+
+- Write page titles (the `#` heading) in Title Case, and use `&` in them ("Agents & Labels"). Write every other heading in sentence case. Put code in backticks, as in "`when` Conditions".
+- Make link text match the title of the page it points to. Inside a sentence, write "and" for "&". When the link is a whole list item or table cell, keep the title exactly.
+
+**Voice and tone**
+
+- Write to the reader as "you", in the active voice, and use the imperative for instructions ("Add a timeout", not "A timeout should be added").
+- Be plain and direct. Say what something does rather than how good it is, and avoid words like "go-to", "drop-in" or "booster".
+- Keep code comments short and lower-case, and say why rather than what. Capitalise product names in them (Groovy, Jenkins, macOS, SCM).
+
+**Terminology**
+
+Use the same word for the same thing on every page.
+
+| Write | Not | Notes |
+| --- | --- | --- |
+| controller | master, built-in node | Mention "built-in node" once, in [Agents and Labels](./src/content/fundamentals/agents-and-labels.md), as another name for the controller. |
+| agent | slave, runner | Use "node" only for the `node` step and the **Manage Jenkins → Nodes** page. |
+| Declarative Pipeline, Scripted Pipeline | declarative pipeline | Capitalise them when they name the syntax. |
+| Multibranch Pipeline | multi-branch pipeline | Use it for the job type, and "multibranch" as an adjective ("a multibranch job"). |
+| pull request | merge request | Write "pull request (PR)" on first use on a page. Identifiers such as `PR-42` keep PR. |
+| Git host | git host | Capital G. |
+| `master` | `main` | The default branch in examples. |
+| `Jenkinsfile` | jenkinsfile, Jenkinsfile in plain text | Always in code font. |
+| `input` directive | `input` step | Say "directive" for the stage-level form. |
+| `dockerCleanup` | `dockerCleanup()` | No brackets on a step name in prose. |
+| Docker, Gradle, Maven, Linux, macOS | docker, gradle, maven, linux, macos | Capitalise the product, not the command (`docker build`). |
+| Gradle Wrapper, Maven Wrapper | Gradle wrapper | |
+| multi-architecture | multi-arch | |
+
+Write interface labels and menu paths in bold, with an arrow between levels: **Manage Jenkins → System**, **Build with Parameters**.
 
 ### Tagging a page
 

@@ -13,7 +13,7 @@ Generates a CycloneDX software bill of materials with [Syft](https://github.com/
  * generates an sbom with syft, archives it with a fingerprint and returns its path
  *  - target: what to scan, e.g. 'dir:.' or 'docker:my-backend-service:42'
  *  - format: any syft output format, defaults to 'cyclonedx-json'
- *  - output: file to write, defaults to 'sbom.cdx.json'
+ *  - output: file to write, defaults to a name that matches the format, e.g. 'sbom.cdx.json'
  */
 String call(Map args) {
     if (!args.target) {
@@ -21,7 +21,9 @@ String call(Map args) {
     }
 
     String format = args.format ?: 'cyclonedx-json'
-    String output = args.output ?: 'sbom.cdx.json'
+    // the default file name follows the format, so an SPDX file is never named .cdx.json
+    Map extensions = ['cyclonedx-json': 'cdx.json', 'cyclonedx-xml': 'cdx.xml', 'spdx-json': 'spdx.json', 'spdx-tag-value': 'spdx', 'syft-json': 'syft.json']
+    String output = args.output ?: "sbom.${extensions[format] ?: format}"
 
     // pinned so the sbom content only changes when the generator is upgraded on purpose
     // the socket lets syft read local images; stdout is redirected so the file is owned by the agent user
@@ -58,3 +60,6 @@ If the repo also commits a baseline SBOM that is reviewed in pull requests, this
 
 > [!NOTE]
 > Bump the pinned Syft version deliberately and check the release notes. Generator upgrades change SBOM content (new detectors, schema versions) even when the dependencies haven't changed.
+
+> [!WARNING]
+> Syft runs with `/var/run/docker.sock` mounted, which gives the container full control of the agent's Docker daemon, equivalent to root on the agent. Pin an exact Syft version, ideally by image digest, and never use `latest`. The same applies to the Trivy example on the [`ecrScan`](ecr-scan.md) page.

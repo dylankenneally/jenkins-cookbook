@@ -4,7 +4,7 @@ tags: [getting-started, deploy, aws]
 
 # From Build to Deploy
 
-This tutorial grows the pipeline from [Your First Pipeline](first-pipeline.md) into the [Static Frontend](../pipelines/static-frontend.md) pipeline. By the end, every branch and pull request builds and tests, and pushes to `main` also publish the site to an S3 bucket and refresh the CloudFront cache in front of it. It takes about 45 minutes of your time, plus the wait for the AWS resources and credential.
+This tutorial grows the pipeline from [Your First Pipeline](first-pipeline.md) into the [Static Frontend](../pipelines/static-frontend.md) pipeline. By the end, every branch and pull request (PR) builds and tests, and pushes to `master` also publish the site to an S3 bucket and refresh the CloudFront cache in front of it. It takes about 45 minutes of your time, plus the wait for the AWS resources and credential.
 
 ## Before you start
 
@@ -106,9 +106,9 @@ environment {
 
 ```groovy
 stage('Deploy') {
-    // pull requests and other branches build and test, but only main deploys
+    // pull requests and other branches build and test, but only master deploys
     when {
-        branch 'main'
+        branch 'master'
     }
     steps {
         withAws {
@@ -127,12 +127,12 @@ What each step does:
 - [`s3Sync`](../library/s3-cloudfront.md) mirrors `dist` to the bucket, uploading changed files and deleting ones that no longer exist locally.
 - [`cloudFrontInvalidate`](../library/s3-cloudfront.md) tells CloudFront to drop its cached copies and waits until it has, so a green build means visitors get the new files.
 
-The `when { branch 'main' }` condition is what makes this safe in a multibranch job. Every branch and pull request runs the same `Jenkinsfile`. Without the condition, pushing a feature branch would deploy it over the live site. Pull requests build under names like `PR-42`, so the condition is false for them, even for a pull request into `main`. That also keeps the AWS credential away from code that hasn't been reviewed yet. See [`when` Conditions](../fundamentals/when-conditions.md) for other conditions.
+The `when { branch 'master' }` condition is what makes this safe in a multibranch job. Every branch and pull request runs the same `Jenkinsfile`. Without the condition, pushing a feature branch would deploy it over the live site. Pull requests build under names like `PR-42`, so the condition is false for them, even for a pull request into `master`. That also keeps the AWS credential away from code that hasn't been reviewed yet. See [`when` Conditions](../fundamentals/when-conditions.md) for other conditions.
 
 > [!NOTE]
-> If your default branch is called something other than `main`, use that name in the `when` condition.
+> If your default branch is called something other than `master`, use that name in the `when` condition.
 
-Push your branch. The `Deploy` stage appears as skipped, because the branch isn't `main`. That is the expected result.
+Push your branch. The `Deploy` stage appears as skipped, because the branch isn't `master`. That is the expected result.
 
 ## 5. Add a timeout and cleanup
 
@@ -155,7 +155,7 @@ post {
 ```
 
 - `options` sets behaviour for the whole run. `timeout` aborts it after 30 minutes. Pick a limit a little above your slowest normal build. [Options Defaults](../fundamentals/options-defaults.md) has more options worth adding.
-- `post` at pipeline level runs after all the stages. `cleanWs()` deletes the workspace, so `node_modules` and `dist` don't fill the agent's disk. It needs the Workspace Cleanup plugin; if the build reports `No such DSL method 'cleanWs'`, ask your Jenkins administrator to install it.
+- `post` at pipeline level runs after all the stages. `cleanWs` deletes the workspace, so `node_modules` and `dist` don't fill the agent's disk. It needs the Workspace Cleanup plugin; if the build reports `No such DSL method 'cleanWs'`, ask your Jenkins administrator to install it.
 
 The complete `Jenkinsfile` now looks like this:
 
@@ -210,9 +210,9 @@ pipeline {
         }
 
         stage('Deploy') {
-            // pull requests and other branches build and test, but only main deploys
+            // pull requests and other branches build and test, but only master deploys
             when {
-                branch 'main'
+                branch 'master'
             }
             steps {
                 withAws {
@@ -234,8 +234,8 @@ pipeline {
 
 ## 6. Verify the deploy
 
-1. Open a pull request from your branch into `main`. The PR build should run `Install`, `Build` and `Test`, and skip `Deploy`.
-2. Merge the pull request. The `main` branch job builds the merge commit.
+1. Open a pull request from your branch into `master`. The PR build should run `Install`, `Build` and `Test`, and skip `Deploy`.
+2. Merge the pull request. The `master` branch job builds the merge commit.
 3. Open that build and click the `Deploy` stage. Its log should show `aws s3 sync` uploading files, then `CloudFront invalidation started:` with an invalidation ID, and then the wait completing.
 4. Open the site URL in a private browser window, so your browser's cache doesn't hide the change, and check that it shows the new version.
 
@@ -249,7 +249,7 @@ If the `Deploy` stage fails, the first error usually says what's wrong:
 
 ## Next steps
 
-- [Container Service](../pipelines/container-service.md) builds a Docker image, pushes it to ECR and rolls it out, for apps that run as containers.
-- [Promotions](../guides/promotions.md) covers deploying the same build to several environments, such as dev, staging and production.
+- [Container Service: ECR & CodeDeploy](../pipelines/container-service.md) builds a Docker image, pushes it to ECR and rolls it out, for apps that run as containers.
+- [How to Work with Promotions](../guides/promotions.md) covers deploying the same build to several environments, such as dev, staging and production.
 - [Onboard a New Repo](../guides/onboard-a-new-repo.md) is a checklist for bringing the next repo onto Jenkins.
-- [Add a Credential](../guides/add-a-credential.md) covers requesting other credentials, such as API tokens.
+- [Add a Secret or Credential](../guides/add-a-credential.md) covers requesting other credentials, such as API tokens.

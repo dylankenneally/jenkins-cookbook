@@ -68,12 +68,12 @@ java.io.NotSerializableException: java.util.regex.Matcher
 java.io.NotSerializableException: groovy.json.internal.LazyMap
 ```
 
-**Cause.** Pipeline state is serialized at every step so the build can resume after a restart. A non-serializable object was still held in a variable when a step ran. The usual suspects are a regex `Matcher` from `=~` and the `LazyMap` returned by `groovy.json.JsonSlurper`.
+**Cause.** Pipeline state is serialised at every step so the build can resume after a restart. A non-serialisable object was still held in a variable when a step ran. The usual suspects are a regex `Matcher` from `=~` and the `LazyMap` returned by `groovy.json.JsonSlurper`.
 
 **Fix.** Do the work in a `@NonCPS` method that returns only plain values, so the object never exists across a step:
 
 ```groovy
-// plain groovy: the Matcher is gone before any step runs
+// plain Groovy: the Matcher is gone before any step runs
 @NonCPS
 String majorVersion(String version) {
     def matcher = version =~ /^(\d+)\./
@@ -84,7 +84,7 @@ String majorVersion(String version) {
 }
 ```
 
-For JSON, use `readJSON` from the [Pipeline Utility Steps](https://plugins.jenkins.io/pipeline-utility-steps/) plugin instead of `JsonSlurper`; it returns serializable objects. If the object must live in pipeline code, set the variable to `null` before the next step. A `@NonCPS` method can't call steps itself; see the CPS notes in [Tips](../fundamentals/tips.md).
+For JSON, use `readJSON` from the [Pipeline Utility Steps](https://plugins.jenkins.io/pipeline-utility-steps/) plugin instead of `JsonSlurper`; it returns serialisable objects. If the object must live in pipeline code, set the variable to `null` before the next step. A `@NonCPS` method can't call steps itself; see the CPS notes in [`Jenkinsfile` Tips](../fundamentals/tips.md).
 
 ## `Required context class hudson.FilePath is missing`
 
@@ -123,7 +123,7 @@ pipeline {
 }
 ```
 
-Wrapping the step in `node('linux') { … }` also clears the error, but it allocates a fresh workspace without the stage's files. See [Agents & Labels](../fundamentals/agents-and-labels.md) and [Post-Actions & Status Notifications](../fundamentals/post-actions-and-status-notifications.md).
+Wrapping the step in `node('linux') { … }` also clears the error, but it allocates a fresh workspace without the stage's files. See [Agents and Labels](../fundamentals/agents-and-labels.md) and [Post-Actions and Status Notifications](../fundamentals/post-actions-and-status-notifications.md).
 
 ## `withCredentials` masking surprises
 
@@ -146,4 +146,4 @@ Deploying ****-service to ****
 Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
 ```
 
-**Fix.** Use long, random secrets so masking only hits the secret. Never `echo` a secret or a value derived from it, and pass it to tools via the environment in a single-quoted `sh`. Keep secrets inside the `withCredentials` block and out of files that get archived. If a secret has already reached a log or artifact, rotate it; deleting the build doesn't remove copies. See [Environment Variables & Secure Credentials](../fundamentals/environment-variables-and-secure-credentials.md) and [Tips](../fundamentals/tips.md).
+**Fix.** Use long, random secrets so masking only hits the secret. Never `echo` a secret or a value derived from it, and pass it to tools via the environment in a single-quoted `sh`. Keep secrets inside the `withCredentials` block and out of files that get archived. If a secret has already reached a log or artifact, rotate it; deleting the build doesn't remove copies. See [Environment Variables and Secure Credentials](../fundamentals/environment-variables-and-secure-credentials.md) and [`Jenkinsfile` Tips](../fundamentals/tips.md).

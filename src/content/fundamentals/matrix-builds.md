@@ -24,7 +24,7 @@ pipeline {
                     }
                 }
 
-                // no macos agent carries node 20 here, so skip that cell rather than queue forever
+                // no macOS agent carries node 20 here, so skip that cell rather than queue forever
                 excludes {
                     exclude {
                         axis {
@@ -60,7 +60,7 @@ pipeline {
 
 That gives three cells: linux/20, linux/22 and macos/22. Inside a cell the axis values are environment variables, so `sh 'echo "$PLATFORM"'` works.
 
-The labels here (`linux`, `macos`, `node-20`, `node-22`) are examples. Use whatever labels your agents carry; see [agents and labels](agents-and-labels.md).
+The labels here (`linux`, `macos`, `node-20`, `node-22`) are examples. Use whatever labels your agents carry; see [Agents and Labels](agents-and-labels.md).
 
 ## CMake on Linux and macOS
 
@@ -94,7 +94,7 @@ pipeline {
                     }
                     stage('Build') {
                         steps {
-                            // getconf works on linux and macos agents; nproc is linux-only
+                            // getconf works on Linux and macOS agents; nproc is Linux-only
                             sh '''
                                 cmake --build build \
                                   --parallel "$(getconf _NPROCESSORS_ONLN)"
@@ -127,6 +127,6 @@ The single-platform version of this build is in [C++ / CMake](../builds/cpp-cmak
 ## Notes
 
 - `excludes` removes combinations. Each `exclude` matches when every axis in it matches; `notValues` inverts an axis, for example to exclude everything except one platform.
-- Add `failFast true` inside `matrix` to abort the other cells as soon as one fails. Without it, every cell runs to the end so you see all failures.
+- Add `failFast true` to the `stage` that contains the `matrix`, beside it and not inside it, to abort the other cells as soon as one fails. `options { parallelsAlwaysFailFast() }` does the same for every parallel and matrix stage in the pipeline. Without either, every cell runs to the end so you see all failures.
 - The total cell count grows quickly. Two axes of three values is nine builds, each holding an executor.
-- `matrix` accepts the same directives as a stage (`agent`, `environment`, `options`, `when`, `post`, `tools`, `input`) and applies them to every cell.
+- `matrix` accepts most stage directives (`agent`, `environment`, `options`, `when`, `post`, `tools`, `input`) and applies them to every cell. `steps` and `parallel` are not allowed; the cell's work goes in the `stages` section.

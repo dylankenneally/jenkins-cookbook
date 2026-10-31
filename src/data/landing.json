@@ -5,9 +5,9 @@
   "track": [
     { "page": "concepts/ci-cd-basics.md", "summary": "What CI and CD are, and why the pipeline lives in the repo." },
     { "page": "tutorials/first-pipeline.md", "summary": "Request a job, add a Jenkinsfile, publish test results, then break a test and fix it." },
-    { "page": "concepts/how-jenkins-runs-your-pipeline.md", "summary": "Controller, agents, executors and workspaces, and the errors each one explains." },
+    { "page": "concepts/how-jenkins-runs-your-pipeline.md", "summary": "Controller, agents, executors, workspaces, and the errors each one explains." },
     { "page": "tutorials/reading-a-failed-build.md", "summary": "Find the failing stage, read from the first error, and know when to ask for help." },
-    { "page": "tutorials/build-to-deploy.md", "summary": "Grow the first pipeline into one that deploys a static site from main." }
+    { "page": "tutorials/build-to-deploy.md", "summary": "Grow the first pipeline into one that deploys a static site from master." }
   ],
   "cards": [
     {
@@ -23,7 +23,7 @@
     },
     {
       "title": "Guides",
-      "summary": "Step-by-step help for the jobs that come up: onboarding, credentials, releases and rollbacks.",
+      "summary": "Step-by-step help for the tasks that come up: onboarding, credentials, releases and rollbacks.",
       "links": [
         { "page": "guides/onboard-a-new-repo.md" },
         { "page": "guides/add-a-credential.md" },
@@ -58,7 +58,7 @@
     },
     {
       "title": "Shared library building blocks",
-      "summary": "Reusable Docker and AWS steps, written once and called from every pipeline.",
+      "summary": "Reusable steps for Docker, AWS, notifications and versioning, written once and called from every pipeline.",
       "links": [
         { "page": "library/setup.md" },
         { "page": "library/with-aws.md" },

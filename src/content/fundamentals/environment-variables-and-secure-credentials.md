@@ -11,7 +11,7 @@ pipeline {
     agent any
     environment {
         APP_ENV = 'production'
-        // Pulls a secret text or credential ID stored securely in Jenkins
+        // pulls a secret text or credential ID stored securely in Jenkins
         API_KEY = credentials('my-production-api-key')
     }
     stages {

@@ -4,7 +4,7 @@ tags: [nodejs, testing]
 
 # Node.js Build & Test
 
-Installs dependencies from the lockfile, builds, and runs the test suite. To ship the output to S3 and CloudFront, see the [static frontend pipeline](../pipelines/static-frontend.md).
+Installs dependencies from the lockfile, builds and runs the test suite. To ship the output to S3 and CloudFront, see the [static frontend pipeline](../pipelines/static-frontend.md).
 
 ```groovy
 pipeline {
@@ -34,7 +34,7 @@ To run unit tests, integration tests and lint side by side, see [parallel execut
 
 ## Dependency cache
 
-`npm ci` deletes `node_modules` and downloads every package again. Wrapping it in `withNodeCache` from the [dependency cache](../library/dependency-cache.md) building block keeps npm's download cache on the agent between builds.
+`npm ci` deletes `node_modules` and reinstalls every package, which on a fresh agent means downloading each one. Wrapping it in `withNodeCache` from the [dependency cache](../library/dependency-cache.md) building block keeps npm's download cache on the agent between builds.
 
 ```groovy
 stage('Install') {
@@ -106,7 +106,7 @@ The Coverage plugin reads Cobertura XML but not lcov, so have the test runner wr
 ```groovy
 stage('Test') {
     steps {
-        // text prints a summary to the console, cobertura is what jenkins reads
+        // text prints a summary to the console, cobertura is what Jenkins reads
         sh '''
             npx jest \
               --ci \
@@ -146,4 +146,4 @@ recordCoverage(
 )
 ```
 
-Keep `lcov` in the reporter list as well if SonarQube reads the coverage, since its JavaScript analysis takes lcov. See [lint & static analysis](static-analysis.md).
+Keep `lcov` in the reporter list as well if SonarQube reads the coverage, since its JavaScript analysis takes lcov. See [Lint and Static Analysis](static-analysis.md).

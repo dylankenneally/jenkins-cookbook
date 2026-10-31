@@ -82,9 +82,9 @@ stage('Deploy') {
     steps {
         withAws {
             codeDeploy(
-                application: 'my-app',
+                application: 'my-backend-service',
                 deploymentGroup: 'production',
-                bucket: 'my-codedeploy-artifacts-bucket',
+                bucket: 'my-deployment-bundles-bucket',
                 source: 'deploy'
             )
         }

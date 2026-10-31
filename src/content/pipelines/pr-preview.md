@@ -4,7 +4,7 @@ tags: [git, aws, deploy]
 
 # Pull Request Previews
 
-Extends the [static frontend](static-frontend.md) so every pull request gets its own copy of the site under `previews/pr-<number>/`, with the link posted on the PR. `main` still deploys to production. Uses the [shared library](../library/setup.md) steps [`withAws`](../library/with-aws.md), [`s3Sync` and `cloudFrontInvalidate`](../library/s3-cloudfront.md); the PR handling is covered in [multibranch and pull requests](../fundamentals/multibranch-and-pull-requests.md).
+Extends the [static frontend](static-frontend.md) so every pull request (PR) gets its own copy of the site under `previews/pr-<number>/`, with the link posted on the PR. `master` still deploys to production. Uses the [shared library](../library/setup.md) steps [`withAws`](../library/with-aws.md), [`s3Sync` and `cloudFrontInvalidate`](../library/s3-cloudfront.md); the PR handling is covered in [Multibranch and Pull Requests](../fundamentals/multibranch-and-pull-requests.md).
 
 ```groovy
 @Library('cookbook@v1.2.0') _
@@ -61,7 +61,7 @@ pipeline {
 
         stage('Deploy Production') {
             when {
-                branch 'main'
+                branch 'master'
             }
             steps {
                 sh 'npm run build'
@@ -83,7 +83,7 @@ pipeline {
 
 ## Notes
 
-- `changeRequest()` is true only in PR builds of a multibranch job, which is also where `CHANGE_ID` is set.
+- `changeRequest` is true only in PR builds of a multibranch job, which is also where `CHANGE_ID` is set.
 - Keep previews in their own bucket and CloudFront distribution, away from production. `s3Sync` deletes by default, but only under the prefix it is given, so one PR can't remove another's files.
 - `gh` reads `GH_TOKEN` from the environment and works out the repo from the checkout's `origin` remote. `--edit-last` edits the token owner's latest comment, so use a dedicated bot account.
 - The build description puts the link on the build page too, which is handy on servers other than GitHub.

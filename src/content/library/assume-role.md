@@ -68,14 +68,14 @@ stage('Deploy to Production') {
         withAws {
             assumeRole(roleArn: 'arn:aws:iam::210987654321:role/jenkins-deploy') {
                 sh 'aws sts get-caller-identity'
-                s3Sync(source: 'dist', bucket: 'my-production-bucket')
+                s3Sync(source: 'dist', bucket: 'my-frontend-app-bucket')
             }
         }
     }
 }
 ```
 
-The credential in Jenkins only needs permission to call `sts:AssumeRole` on the deploy roles. Each target account owns its own role and trust policy, so production access is granted (and revoked) in the production account, and nothing long-lived in Jenkins can touch it directly. The temporary keys expire on their own, so a leaked set is useful for an hour at most, unlike an access key that stays valid until someone rotates it.
+The credential in Jenkins only needs permission to call `sts:AssumeRole` on the deploy roles. Each target account owns its own role and trust policy, so production access is granted (and revoked) in the production account, and nothing long-lived in Jenkins can touch it directly. The temporary keys expire on their own, so a leaked set stops working when its session ends, after an hour by default, unlike an access key that stays valid until someone rotates it.
 
 > [!WARNING]
 > Values passed to `withEnv` are not masked. If the body prints its environment (`env`, `printenv`, `set -x` on a line that expands the variables) the keys appear in the console log, and Jenkins records `withEnv` arguments with the build's step metadata. The keys are short-lived, which limits the damage, but treat the build record as sensitive while they are valid.

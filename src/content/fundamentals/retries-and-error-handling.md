@@ -64,8 +64,8 @@ pipeline {
 
 ## Marking results
 
-- `catchError(buildResult:, stageResult:)` catches a failure, sets the build and stage results you choose, and lets the run continue. With no arguments it sets the build to `FAILURE`, leaves the stage looking successful, and carries on, which is easy to miss in the UI; pass both arguments explicitly.
-- `catchError` and `warnError` also catch aborts and `timeout` interruptions by default. Add `catchInterruptions: false` if clicking Abort should still stop the run.
+- `catchError(buildResult:, stageResult:)` catches a failure, sets the build and stage results you choose and lets the run continue. With no arguments it sets the build to `FAILURE`, leaves the stage looking successful and carries on, which is easy to miss in the UI; pass both arguments explicitly.
+- `catchError` and `warnError` also catch aborts and `timeout` interruptions by default. Add `catchInterruptions: false` if clicking **Abort** should still stop the run.
 - `warnError('message')` is shorthand for catching a failure and marking both build and stage `UNSTABLE`.
 - `unstable('message')` marks the build and stage `UNSTABLE` without needing a failure, for example after a check you run yourself.
 - `error('message')` fails the run on purpose.
@@ -96,4 +96,4 @@ stage('Integration Tests') {
 }
 ```
 
-Pipeline-wide timeouts are on [options defaults](options-defaults.md). For reacting to the final result, see [post actions](post-actions-and-status-notifications.md).
+Pipeline-wide timeouts are on [Options Defaults](options-defaults.md). For reacting to the final result, see [post actions](post-actions-and-status-notifications.md).

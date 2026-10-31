@@ -28,7 +28,7 @@ Fix forward (merge a fix and deploy it through the normal pipeline) when:
 
 - the release ran a database migration the old version can't work with
 - the old version has a problem of its own, such as a security fix the new one contains
-- the fix is small, understood, and the pipeline is fast enough that it beats the rollback
+- the fix is small and understood, and the pipeline is fast enough that it beats the rollback
 
 When unsure during an outage, roll back first and fix forward afterwards, unless a migration rules it out.
 
@@ -38,7 +38,7 @@ Check first whether ECS already rolled back. With the deployment circuit breaker
 
 If the new version is running but behaving badly, there are two routes.
 
-Rerun the pipeline for the older image. If your pipeline has the `IMAGE_TAG` parameter from [How to Work with Promotions](promotions.md), open the `main` job, click **Build with Parameters** and enter the last good tag. It redeploys through each environment with the usual approvals, so everything stays recorded in Jenkins and nobody needs direct AWS access. It is slower, because it goes through dev and staging first.
+Rerun the pipeline for the older image. If your pipeline has the `IMAGE_TAG` parameter from [How to Work with Promotions](promotions.md), open the `master` job, click **Build with Parameters** and enter the last good tag. It redeploys through each environment with the usual approvals, so everything stays recorded in Jenkins and nobody needs direct AWS access. It is slower, because it goes through dev and staging first.
 
 Point the service at the previous task definition revision. Every `ecsDeploy` registers a new revision, so the last good one is still there. Someone with access to the account runs:
 
@@ -93,7 +93,7 @@ aws deploy list-application-revisions \
 aws deploy create-deployment \
   --application-name my-backend-service \
   --deployment-group-name production \
-  --s3-location bucket=my-deployment-bundles-bucket,key=my-backend-service/jenkins-my-backend-service-main-41.zip,bundleType=zip
+  --s3-location bucket=my-deployment-bundles-bucket,key=my-backend-service/jenkins-my-backend-service-master-41.zip,bundleType=zip
 ```
 
 The CodeDeploy console does the same from the deployment group's history. A deployment still in progress can be stopped with `aws deploy stop-deployment --deployment-id <id> --auto-rollback-enabled`.
@@ -145,7 +145,7 @@ aws cloudfront create-invalidation \
 If the pipeline doesn't keep its output, the fallbacks are weaker:
 
 - S3 versioning, if the cloud administrator turned it on for the bucket, keeps every overwritten and deleted object. Restoring a whole site to a point in time means restoring each object's earlier version and removing delete markers, so ask the cloud administrator to do it with a script rather than by hand.
-- Rebuild the last good commit, by reverting the bad change on `main` and letting the pipeline deploy. That is a new build, not the old one, which is why keeping build output is worth setting up before you need it.
+- Rebuild the last good commit, by reverting the bad change on `master` and letting the pipeline deploy. That is a new build, not the old one, which is why keeping build output is worth setting up before you need it.
 
 Either way, invalidate CloudFront afterwards, or users keep getting the cached bad version until it expires.
 
@@ -177,13 +177,13 @@ Cause: <cause, if known | follow-up to find it>
 Follow-ups: <fix, test that would have caught it, alarm to add>
 ```
 
-Also add a note to the bad build's description in Jenkins, or ask someone with permission to, so anyone reading the deploy history later sees that it was rolled back. Then make sure the next normal deploy doesn't simply reship the bad change: revert or fix it on `main` first.
+Also add a note to the bad build's description in Jenkins, or ask someone with permission to, so anyone reading the deploy history later sees that it was rolled back. Then make sure the next normal deploy doesn't simply reship the bad change: revert or fix it on `master` first.
 
 ## Related
 
 - [How to Work with Promotions](promotions.md)
 - [Promote, Don't Rebuild](../pipelines/promote-across-environments.md)
-- [`ecsDeploy`](../library/ecs-deploy.md), [`codeDeploy`](../library/codedeploy.md), [`lambdaDeploy`](../library/lambda-deploy.md), [`s3Sync` & `cloudFrontInvalidate`](../library/s3-cloudfront.md)
-- [Build once, promote many](../concepts/build-once-promote-many.md)
-- [Roles and responsibilities](roles-and-responsibilities.md)
+- [`ecsDeploy`](../library/ecs-deploy.md), [`codeDeploy`](../library/codedeploy.md), [`lambdaDeploy`](../library/lambda-deploy.md), [`s3Sync` and `cloudFrontInvalidate`](../library/s3-cloudfront.md)
+- [Build Once, Promote Many](../concepts/build-once-promote-many.md)
+- [Roles & Responsibilities](roles-and-responsibilities.md)
 - [Troubleshooting](troubleshooting.md)

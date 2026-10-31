@@ -1,0 +1,17 @@
+---
+permalink: /sitemap.xml
+layout: false
+searchable: false
+eleventyExcludeFromCollections: true
+---
+<?xml version="1.0" encoding="UTF-8"?>
+{% comment %} the entries come from the pages and the tag vocabulary (scripts/sitemap.js); nothing in this list is written by hand {% endcomment -%}
+{% assign entries = collections | buildSitemapEntries: tagVocabulary, site.homepage -%}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{%- for entry in entries %}
+  <url>
+    <loc>{{ entry.loc | escape }}</loc>
+    <lastmod>{{ entry.lastmod }}</lastmod>
+  </url>
+{%- endfor %}
+</urlset>

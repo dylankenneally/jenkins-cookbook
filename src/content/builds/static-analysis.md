@@ -57,11 +57,11 @@ recordIssues(
 )
 ```
 
-The same step reads other tools, for example `clangTidy()` for [C++](cpp-cmake.md) and `msBuild()` for compiler warnings in a [.NET](dotnet.md) build log.
+The same step reads other tools, for example `clangTidy` for [C++](cpp-cmake.md) and `msBuild` for compiler warnings in a [.NET](dotnet.md) build log.
 
 ## SonarQube
 
-Needs the SonarQube Scanner for Jenkins plugin, with a server named `sonar` under Manage Jenkins > System, and the `sonar-scanner` CLI on the agent (pinned). Project settings live in `sonar-project.properties` in the repo.
+Needs the SonarQube Scanner for Jenkins plugin, with a server named `sonar` under **Manage Jenkins → System**, and the `sonar-scanner` CLI on the agent (pinned). Project settings live in `sonar-project.properties` in the repo.
 
 ```groovy
 stage('SonarQube Analysis') {

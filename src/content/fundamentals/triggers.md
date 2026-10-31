@@ -4,7 +4,7 @@ tags: [declarative, git]
 
 # Triggers
 
-The `triggers {}` directive starts a pipeline without a push: on a schedule, by polling the repo, or when another job finishes. Pushes and pull requests are better handled by webhooks, covered below.
+The `triggers {}` directive starts a pipeline without a push: on a schedule, by polling the repo, or when another job finishes. Pushes and pull requests are better handled by webhooks, which are set up on the Git host; see [Onboard a New Repo](../guides/onboard-a-new-repo.md).
 
 ```groovy
 pipeline {
@@ -15,7 +15,7 @@ pipeline {
         cron('H 2 * * *')
         // rebuild after the shared libraries build successfully
         upstream(
-            upstreamProjects: 'lib-core/main,lib-ui/main',
+            upstreamProjects: 'lib-core/master,lib-ui/master',
             threshold: hudson.model.Result.SUCCESS
         )
     }
@@ -49,8 +49,8 @@ In a multibranch job every branch reads the same `Jenkinsfile`, so a plain `cron
 
 ```groovy
 triggers {
-    // only main gets the nightly run
-    cron(env.BRANCH_NAME == 'main' ? 'H 2 * * *' : '')
+    // only master gets the nightly run
+    cron(env.BRANCH_NAME == 'master' ? 'H 2 * * *' : '')
 }
 ```
 
@@ -71,7 +71,7 @@ triggers {
 
 ## `upstream`
 
-- `upstreamProjects` is a comma-separated list of job names. For multibranch jobs, name the branch: `lib-core/main`.
+- `upstreamProjects` is a comma-separated list of job names. For multibranch jobs, name the branch: `lib-core/master`.
 - `threshold` is the worst upstream result that still triggers this job: `hudson.model.Result.SUCCESS`, `UNSTABLE` or `FAILURE`.
 
-To trigger only some stages from a timer, combine a trigger with `when { triggeredBy 'TimerTrigger' }`; see [`when` conditions](when-conditions.md).
+To trigger only some stages from a timer, combine a trigger with `when { triggeredBy 'TimerTrigger' }`; see [`when` Conditions](when-conditions.md).

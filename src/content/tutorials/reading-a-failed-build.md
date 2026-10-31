@@ -140,7 +140,7 @@ Whether you're asking your Jenkins administrator, the repo owner or a colleague,
 - what you've tried: a re-run, a local run, a Replay
 
 ```email to="whoever you're asking"
-Build: https://jenkins.example.com/job/my-app/job/main/57/
+Build: https://jenkins.example.com/job/my-app/job/master/57/
 Failing stage: Deploy
 First error: ERROR: Could not find credentials entry with ID 'aws-credentials-id'
 What changed: first build after adding the Deploy stage; the last green build (#56) had no Deploy stage

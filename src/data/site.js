@@ -13,6 +13,7 @@ function authorName(author) {
 
 module.exports = {
   title: "Jenkinsfile Cookbook",
+  description: "Recipes for Jenkins Declarative Pipelines, from a first Jenkinsfile through to deploying to AWS.",
   version: pkg.version,
   repoUrl: pkg.repository.url.replace(/^git\+/, "").replace(/\.git$/, ""),
   homepage: pkg.homepage,

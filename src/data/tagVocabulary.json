@@ -3,7 +3,7 @@
   { "id": "declarative", "description": "Declarative Pipeline syntax: stages, directives, options and the features you use in any Jenkinsfile." },
   { "id": "agents", "description": "Where a build runs: agents, labels, executors and workspaces." },
   { "id": "git", "description": "Branches, pull requests, tags, triggers and what runs where." },
-  { "id": "testing", "description": "Running tests, publishing results and coverage, and dealing with flaky tests." },
+  { "id": "testing", "description": "Running tests, publishing results, reporting coverage and dealing with flaky tests." },
   { "id": "code-quality", "description": "Linting, static analysis, quality gates and pipeline review." },
   { "id": "performance", "description": "Faster builds: parallel stages, matrix builds and dependency caches." },
   { "id": "security", "description": "Secrets, credentials, scanning and supply-chain checks." },

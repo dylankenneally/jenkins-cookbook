@@ -16,7 +16,7 @@ Find where a slow build spends its time, then apply the fixes that pay off most.
 
 Don't guess. A pipeline that feels slow because of tests is often slow because it waited for an agent.
 
-Turn on timestamps so every console line shows when it happened. Add `timestamps()` to the pipeline `options` (it needs the Timestamper plugin, which most installs have):
+Turn on timestamps so every console line shows when it happened. Add `timestamps` to the pipeline `options` (it needs the Timestamper plugin, which most installs have):
 
 ```groovy
 pipeline {
@@ -54,13 +54,13 @@ Fix the biggest bucket first and measure again after each change.
 
 ## 2. Run independent stages in parallel
 
-Lint, unit tests and integration tests usually don't depend on each other. Run them side by side with `parallel`, as shown in [parallel execution](../fundamentals/parallel-execution.md). For the same steps on several platforms or versions, use [matrix builds](../fundamentals/matrix-builds.md).
+Lint, unit tests and integration tests usually don't depend on each other. Run them side by side with `parallel`, as shown in [parallel execution](../fundamentals/parallel-execution.md). For the same steps on several platforms or versions, use [Matrix Builds](../fundamentals/matrix-builds.md).
 
 Parallel branches on the same agent share its CPU, memory and workspace. If the suites already saturate the agent, running them together won't help; give each branch its own agent instead, at the cost of the extra checkout described in step 7.
 
 ## 3. Cache dependencies
 
-A clean workspace downloads every package again. Keep the package cache outside the workspace so `cleanWs()` doesn't throw it away:
+A clean workspace downloads every package again. Keep the package cache outside the workspace so `cleanWs` doesn't throw it away:
 
 - npm and NuGet: [`withNodeCache` and `withNuGetCache`](../library/dependency-cache.md)
 - Gradle and Android: the Gradle cache section in [Android](../builds/android.md)
@@ -70,14 +70,14 @@ Caches live on the agent. Ephemeral agents start cold every time unless your Jen
 
 ## 4. Reuse Docker layers
 
-A fresh agent has no image layers, so every `docker build` starts from scratch. Order the Dockerfile so the dependency install comes before the source copy, and keep a registry layer cache so any agent can reuse unchanged layers. Both are in [Docker image builds](../builds/docker.md).
+A fresh agent has no image layers, so every `docker build` starts from scratch. Order the Dockerfile so the dependency install comes before the source copy, and keep a registry layer cache so any agent can reuse unchanged layers. Both are in [Docker Image Builds](../builds/docker.md).
 
 ## 5. Only build what changed in a monorepo
 
 If one push to a monorepo builds and tests every package, gate each package's stage on what changed. The [monorepo pipeline](../pipelines/monorepo.md) shows `changeset` conditions and a `git diff` fallback against the target branch.
 
 > [!WARNING]
-> `changeset` compares against the previous build of the same job, not against `main`. Treat it as an optimisation, not as the only guard on tests that must run.
+> `changeset` compares against the previous build of the same job, not against `master`. Treat it as an optimisation, not as the only guard on tests that must run.
 
 ## 6. Move slow suites to a nightly build
 
@@ -102,7 +102,7 @@ stage('E2E Tests') {
 }
 ```
 
-`params.RUN_SLOW_TESTS` needs a `booleanParam` in the pipeline's `parameters`; see [parameters and approval gates](../fundamentals/parameters-and-approval-gates.md).
+`params.RUN_SLOW_TESTS` needs a `booleanParam` in the pipeline's `parameters`; see [Parameters and Approval Gates](../fundamentals/parameters-and-approval-gates.md).
 
 Someone has to read the nightly result. Send it somewhere the team looks, as the nightly pipeline does with a notification.
 
@@ -133,10 +133,10 @@ stage('Linux') {
 }
 ```
 
-- Add `beforeAgent true` to `when` conditions so a skipped stage doesn't wait for an agent at all; see [`when` conditions](../fundamentals/when-conditions.md).
-- Pass build output with [stash and unstash](../fundamentals/stash-and-unstash.md) only when it is small. Large stashes go through the controller and can cost more time than they save.
+- Add `beforeAgent true` to `when` conditions so a skipped stage doesn't wait for an agent at all; see [`when` Conditions](../fundamentals/when-conditions.md).
+- Pass build output with [Stash and Unstash](../fundamentals/stash-and-unstash.md) only when it is small. Large stashes go through the controller and can cost more time than they save.
 
-More on per-stage agents is in [agents and labels](../fundamentals/agents-and-labels.md).
+More on per-stage agents is in [Agents and Labels](../fundamentals/agents-and-labels.md).
 
 ## 8. Be careful with shallow clones
 
@@ -150,16 +150,18 @@ Only use a shallow clone on jobs that don't version, release or diff. The clone 
 
 ## 9. Right-size timeouts and cancel superseded builds
 
-Timeouts don't make a passing build faster, but a hung build that holds an agent for hours makes everyone else's builds wait. Set the pipeline `timeout` to about twice a normal run, and give risky stages their own shorter limit. See [options defaults](../fundamentals/options-defaults.md) and [retries and error handling](../fundamentals/retries-and-error-handling.md).
+Timeouts don't make a passing build faster, but a hung build that holds an agent for hours makes everyone else's builds wait. Set the pipeline `timeout` to about twice a normal run, and give risky stages their own shorter limit. See [Options Defaults](../fundamentals/options-defaults.md) and [Retries and Error Handling](../fundamentals/retries-and-error-handling.md).
 
-On pull request jobs, a new push makes the previous build pointless. Abort it so it frees its agent:
+In a pipeline that never deploys, a new push to a branch or pull request makes the previous build pointless. Abort it so it frees its agent:
 
 ```groovy
 options {
-    // a newer push to the same branch or pr aborts the older running build
+    // a newer push to the same branch or PR aborts the older running build
     disableConcurrentBuilds(abortPrevious: true)
 }
 ```
+
+`abortPrevious` applies to every branch the `Jenkinsfile` builds, including `master`. In a pipeline that deploys, a new push to `master` would abort a deploy that is running or waiting at an approval. Leave it out of those pipelines and use the `milestone` step instead, as described in [How to Work with Promotions](promotions.md).
 
 ## 10. Ask for more or bigger agents
 
@@ -181,10 +183,10 @@ Request: <more executors on <label> | a larger agent type for <stage> | a dedica
 
 ## Related
 
-- [How Jenkins runs your pipeline](../concepts/how-jenkins-runs-your-pipeline.md)
+- [How Jenkins Runs Your Pipeline](../concepts/how-jenkins-runs-your-pipeline.md)
 - [Parallel execution](../fundamentals/parallel-execution.md)
-- [Agents and labels](../fundamentals/agents-and-labels.md)
-- [Dependency cache](../library/dependency-cache.md)
-- [Monorepo pipeline](../pipelines/monorepo.md)
-- [Nightly pipeline](../pipelines/nightly.md)
-- [Roles and responsibilities](roles-and-responsibilities.md)
+- [Agents & Labels](../fundamentals/agents-and-labels.md)
+- [`withNodeCache` & `withNuGetCache`](../library/dependency-cache.md)
+- [Monorepo: Build Only What Changed](../pipelines/monorepo.md)
+- [Nightly Build & Agent Maintenance](../pipelines/nightly.md)
+- [Roles & Responsibilities](roles-and-responsibilities.md)

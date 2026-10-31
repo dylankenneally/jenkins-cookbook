@@ -36,6 +36,6 @@ post {
 ```
 
 > [!WARNING]
-> Avoid `docker system prune --volumes` on shared agents. It deletes every unused image, network and volume on the machine, including ones other jobs are about to use.
+> Avoid `docker system prune` on shared agents, and especially `docker system prune --volumes`. It removes every stopped container, unused network and dangling image on the machine, plus the build cache, which other jobs are about to use. `--volumes` adds unused volumes (only anonymous ones from Docker 23.0, all of them before that), and `-a` adds every image that no container is using.
 
 To reclaim space agent-wide (dangling layers, old build cache), schedule a separate maintenance job that runs `docker image prune -f` and `docker builder prune -f` on each agent.

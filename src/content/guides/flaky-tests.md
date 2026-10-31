@@ -32,7 +32,7 @@ Wrapping the test run in `retry`, or turning on a test runner's retry option, ma
 - Every retry makes the build slower, and the cost grows as more flaky tests are retried.
 - Nobody looks at a green build, so the flakiness spreads unnoticed.
 
-[Retries and error handling](../fundamentals/retries-and-error-handling.md) covers where retry does belong: network steps like `npm ci` and uploads, not builds or tests.
+[Retries and Error Handling](../fundamentals/retries-and-error-handling.md) covers where retry does belong: network steps like `npm ci` and uploads, not builds or tests.
 
 ## 3. Quarantine the test
 
@@ -98,7 +98,7 @@ stage('Quarantined Tests') {
 }
 ```
 
-The stage shows yellow when a quarantined test fails, and the per-test history keeps building up so you can see when the fix works. If you'd rather the whole build shows unstable, set `buildResult: 'UNSTABLE'` and drop `skipMarkingBuildUnstable`. Pull requests stay mergeable either way, provided your branch protection only blocks on failed builds.
+The stage shows yellow when a quarantined test fails, and the per-test history keeps building up so you can see when the fix works. The build result stays green, so a required status check on pull requests still passes. If you want the whole build to show as unstable, set `buildResult: 'UNSTABLE'` and drop `skipMarkingBuildUnstable`, but check your Git host first: the GitHub branch source reports an unstable build as a failed status by default, so a required check would then block merges.
 
 > [!NOTE]
 > Quarantined results are added to the same build test report as the main run, so the total failed count includes them. The test names and the stage colour make it clear which ones they are.
@@ -132,9 +132,9 @@ Quarantine only works if it stays small and temporary.
 
 ## Related
 
-- [Retries and error handling](../fundamentals/retries-and-error-handling.md)
-- [Reading a failed build](../tutorials/reading-a-failed-build.md)
-- [Post-actions and status notifications](../fundamentals/post-actions-and-status-notifications.md)
-- [Nightly pipeline](../pipelines/nightly.md)
-- [Pipeline review checklist](pipeline-review-checklist.md)
+- [Retries & Error Handling](../fundamentals/retries-and-error-handling.md)
+- [Reading a Failed Build](../tutorials/reading-a-failed-build.md)
+- [Post-Actions & Status Notifications](../fundamentals/post-actions-and-status-notifications.md)
+- [Nightly Build & Agent Maintenance](../pipelines/nightly.md)
+- [Pipeline Review Checklist](pipeline-review-checklist.md)
 - [Troubleshooting](troubleshooting.md)

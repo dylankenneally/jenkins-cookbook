@@ -4,14 +4,14 @@ tags: [security]
 
 # Add a Secret or Credential
 
-How to get a secret (an API token, a password, a signing key, AWS access) into Jenkins and use it in a pipeline without it ending up in the repo, the console log or a chat history. The Jenkins administrator creates the credential; you decide what kind it is, request it, and reference it by ID. For the background, see [secrets in CI](../concepts/secrets-in-ci.md).
+How to get a secret (an API token, a password, a signing key, AWS access) into Jenkins and use it in a pipeline without it ending up in the repo, the console log or a chat history. The Jenkins administrator creates the credential; you decide what kind it is, request it, and reference it by ID. For the background, see [Secrets in CI](../concepts/secrets-in-ci.md).
 
 ## Before you start
 
 - You know which system issues the secret (a package registry, a SaaS API, a signing service) and who owns the account it belongs to.
 - Ideally the secret belongs to a service account or bot, not a person, so it keeps working when people change roles.
 - You know your Jenkins folder. Ask the Jenkins administrator if you're not sure.
-- Check the [conventions](conventions.md) page for your credential ID naming convention.
+- Check the [Conventions](conventions.md) page for your credential ID naming convention.
 
 ## 1. Decide the credential type
 
@@ -33,9 +33,9 @@ For AWS, you usually don't need a new credential at all. Jenkins normally has on
 Where the credential is stored decides which jobs can use it:
 
 - **Folder** credentials are only visible to jobs inside that folder. Use this by default. A token for your service's package registry has no reason to be readable by every other team's pipeline.
-- **Global** (root) credentials are visible to every job on the controller. Only use this for something genuinely shared, such as the base AWS credential or the Git host credential, and expect the administrator to push back.
+- **Root** credentials, in the Jenkins-wide store that is also called the global store, are visible to every job on the controller. Only use this for something genuinely shared, such as the base AWS credential or the Git host credential, and expect the administrator to push back.
 
-Jenkins also has a field called Scope with the values Global and System. System credentials can't be used by pipelines at all, so for anything a `Jenkinsfile` needs the answer is Global, in the folder's store.
+Jenkins also has a field called Scope with the values Global and System. System credentials can't be used by pipelines at all, so for anything a `Jenkinsfile` needs, set Scope to Global, even when the credential is stored in a folder.
 
 ## 3. Request the credential
 
@@ -44,9 +44,9 @@ Send the Jenkins administrator a request with everything except the secret itsel
 ```email to="your Jenkins administrator"
 Subject: New Jenkins credential for my-backend-service
 
-Credential ID: my-backend-service-npm-publish-token
+Credential ID: npm-publish-token
 Type: Secret text
-Store: folder my-backend-service
+Store: folder my-team
 Description: npm publish token for registry.example.com, used by the release stage
 Used by: Jenkinsfile in https://git.example.com/my-org/my-backend-service, stage "Publish"
 Issued by: registry.example.com, service account ci-my-backend-service
@@ -73,10 +73,10 @@ Bind the credential with `withCredentials` around the steps that need it, and us
 stage('Publish') {
     when {
         beforeAgent true
-        branch 'main'
+        branch 'master'
     }
     steps {
-        withCredentials([string(credentialsId: 'my-backend-service-npm-publish-token', variable: 'NPM_TOKEN')]) {
+        withCredentials([string(credentialsId: 'npm-publish-token', variable: 'NPM_TOKEN')]) {
             // the repo's .npmrc reads the token from the environment, so it's never written to disk:
             //   //registry.example.com/:_authToken=${NPM_TOKEN}
             sh 'npm publish --registry https://registry.example.com/'
@@ -90,7 +90,7 @@ A username and password, piped on standard input so it doesn't appear in the pro
 ```groovy
 withCredentials([
     usernamePassword(
-        credentialsId: 'my-backend-service-registry-login',
+        credentialsId: 'registry-login',
         usernameVariable: 'REGISTRY_USER',
         passwordVariable: 'REGISTRY_PASSWORD'
     )
@@ -107,7 +107,7 @@ withCredentials([
 A secret file, where the variable holds the path to a temporary copy that is deleted when the block ends:
 
 ```groovy
-withCredentials([file(credentialsId: 'my-backend-service-kubeconfig-dev', variable: 'KUBECONFIG')]) {
+withCredentials([file(credentialsId: 'kubeconfig-dev', variable: 'KUBECONFIG')]) {
     sh 'kubectl get pods --namespace my-backend-service'
 }
 ```
@@ -125,7 +125,7 @@ Jenkins masks the exact value of a bound secret in the console log, but only the
 - prove it works by using it, with output that doesn't include it
 
 ```groovy
-withCredentials([string(credentialsId: 'my-backend-service-api-token', variable: 'API_TOKEN')]) {
+withCredentials([string(credentialsId: 'api-token', variable: 'API_TOKEN')]) {
     // checks the token is set and accepted, printing only the http status
     sh '''
         test -n "$API_TOKEN"
@@ -168,4 +168,4 @@ Rotate first, investigate second. A leaked secret stays usable until it's revoke
 - [Conventions](conventions.md)
 - [`withAws`](../library/with-aws.md) and [`assumeRole`](../library/assume-role.md)
 - [Add an Environment or AWS Account](add-an-environment.md)
-- [Roles and responsibilities](roles-and-responsibilities.md)
+- [Roles & Responsibilities](roles-and-responsibilities.md)
