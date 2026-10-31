@@ -28,15 +28,20 @@ The difference is one approval. Most teams start with continuous delivery: autom
 A pipeline is the ordered list of things that happen to a change on its way from a commit to a running system. Each step either adds confidence or stops the change.
 
 ```mermaid
-flowchart LR
-    commit([commit]) --> build
+flowchart TB
+    accTitle: The stages of a CI/CD pipeline
+    accDescr: A commit starts the build. In the CI group the build is followed by test and package. The package then moves into the continuous delivery group: deploy to dev, an approval, then deploy to prod.
+    %% stacked rows keep the diagram narrow enough for a phone; the links join the groups rather than nodes inside them, because a link to a node inside a group makes mermaid ignore that group's direction
+    commit([commit]) --> ci
     subgraph ci [CI]
+        direction LR
         build --> test --> package
     end
     subgraph cd [Continuous delivery]
+        direction LR
         deployDev[deploy dev] --> approve --> deployProd[deploy prod]
     end
-    package --> deployDev
+    ci --> cd
 ```
 
 The early stages are fast and run on every change. The later ones are slower, touch real environments and usually run only on `master`. A failure anywhere stops the run, so a change that fails its tests never reaches an environment.

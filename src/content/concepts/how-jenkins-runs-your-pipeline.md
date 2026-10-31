@@ -17,6 +17,8 @@ Your Jenkins administrator runs both. Agents differ in what they have installed:
 
 ```mermaid
 flowchart TD
+    accTitle: A Jenkins controller and its agents
+    accDescr: The Git host sends a webhook to the controller, which holds the UI, jobs, history, queue and credentials and runs the pipeline's Groovy under CPS. The controller hands work to three agents: one labelled linux and docker with 2 executors, one labelled linux with 4 executors and one labelled macos with 1 executor.
     git([Git host]) -- webhook --> controller
     controller["controller<br/>UI, jobs, history, queue,<br/>credentials, Groovy (CPS)"]
     controller --> agent1["agent<br/>linux, docker<br/>2 executors"]
@@ -134,9 +136,11 @@ A **Multibranch Pipeline** job points at a repository. It scans the repo (**bran
 
 ```mermaid
 flowchart LR
+    accTitle: The child jobs a Multibranch Pipeline job creates
+    accDescr: The my-app Multibranch Pipeline job creates a branch job for master with its own builds 1, 2 and so on, a branch job for feature/login, a pull request job for PR-42 in which BRANCH_NAME is PR-42 and, if tag discovery is on, a tag job for v1.4.0.
     app["<code>my-app</code><br/>(multibranch job)"] --> master["<code>master</code><br/>branch job, builds 1, 2, ..."]
     app --> feature["<code>feature/login</code><br/>branch job"]
-    app --> pr["<code>PR-42</code><br/>pull request job, <code>BRANCH_NAME = PR-42</code>"]
+    app --> pr["<code>PR-42</code><br/>pull request job<br/><code>BRANCH_NAME = PR-42</code>"]
     app --> tag["<code>v1.4.0</code><br/>tag job, if tag discovery is on"]
 ```
 

@@ -40,15 +40,21 @@ Environments are often in separate cloud accounts, so a mistake in dev can't tou
 Rebuilding looks equivalent but isn't. Between two builds a base image tag can move, a dependency range can resolve to a newer package, a build tool can update. The result is a prod artifact that never ran in dev or staging, whose security scan was done on a different artifact, and whose bugs nobody has seen yet.
 
 ```mermaid
-flowchart LR
+flowchart TB
+    accTitle: Promoting one artifact compared with rebuilding for each environment
+    accDescr: Promote: one build produces image 1.4.0, which is deployed to dev, then staging, then prod. Rebuild: three separate builds produce image A for dev, image B for staging and image C for prod, so no artifact goes through every environment.
     subgraph promote [Promote: same bytes everywhere]
+        direction LR
         build --> image["image 1.4.0"] --> dev --> staging --> prod
     end
-    subgraph rebuild [Rebuild: three different artifacts, only one of which was tested together]
+    subgraph rebuild [Rebuild: three different artifacts, none tested in every environment]
+        direction LR
         buildA[build] --> imageA["image A"] --> devA[dev]
         buildB[build] --> imageB["image B"] --> stagingB[staging]
         buildC[build] --> imageC["image C"] --> prodC[prod]
     end
+    %% the invisible link keeps promote above rebuild, since mermaid doesn't follow source order on its own
+    promote ~~~ rebuild
 ```
 
 Promotion is also faster, since deploying an existing artifact takes seconds to minutes and building can take much longer.

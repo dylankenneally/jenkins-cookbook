@@ -31,6 +31,14 @@ const FONT_FILES = {
   [`${MONO}/LICENSE`]: "assets/fonts/jetbrains-mono-LICENSE.txt"
 };
 
+// self-hosted mermaid: the minified esm build and the chunks it imports on demand (no source maps), with the licence its mit terms ask to travel with it
+const MERMAID = "node_modules/mermaid";
+const MERMAID_FILES = {
+  [`${MERMAID}/dist/mermaid.esm.min.mjs`]: "assets/vendor/mermaid/mermaid.esm.min.mjs",
+  [`${MERMAID}/dist/chunks/mermaid.esm.min/*.mjs`]: "assets/vendor/mermaid/chunks/mermaid.esm.min",
+  [`${MERMAID}/LICENSE`]: "assets/vendor/mermaid/LICENSE.txt"
+};
+
 // gets the first heading from the supplied markdown document
 function firstHeading(inputPath) {
   if (typeof inputPath !== "string" || !inputPath.endsWith(".md")) {
@@ -170,9 +178,18 @@ function fenceSource(env) {
   return env?.page?.inputPath ?? "a markdown page";
 }
 
-// ```mermaid fences become <pre class="mermaid"> for the browser-side renderer
-function renderMermaid(token) {
-  return `<pre class="mermaid">${escapeHtml(token.content)}</pre>\n`;
+// a diagram's accessible name and description, which mermaid puts in the svg's <title> and <desc> for screen readers
+const MERMAID_ACC_TITLE = /^\s*accTitle\s*:/m;
+const MERMAID_ACC_DESCR = /^\s*accDescr\s*(:|\{)/m;
+
+// ```mermaid fences become <pre class="mermaid"> for the browser-side renderer; the source is kept out of the search index, since it's markup rather than prose
+function renderMermaid(token, env) {
+  if (!MERMAID_ACC_TITLE.test(token.content) || !MERMAID_ACC_DESCR.test(token.content)) {
+    console.error(`[mermaid] ${fenceSource(env)}: a mermaid diagram needs an accTitle and an accDescr line, so screen readers have a name and a description for it`);
+    throw new SyntaxError("mermaid diagram without accTitle and accDescr");
+  }
+
+  return `<pre class="mermaid" data-pagefind-ignore>${escapeHtml(token.content)}</pre>\n`;
 }
 
 // how a line of a ```jenkins-log fence is styled; the first match wins and unmatched lines stay plain
@@ -376,6 +393,7 @@ module.exports = function (eleventyConfig) {
   // served from /assets/
   eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
   eleventyConfig.addPassthroughCopy(FONT_FILES);
+  eleventyConfig.addPassthroughCopy(MERMAID_FILES);
 
   eleventyConfig.addGlobalData("layout", "default");
   eleventyConfig.addGlobalData("date", "git Last Modified");
