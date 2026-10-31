@@ -12,7 +12,8 @@ crumbParent:
   label: tags
   url: /tags/
 eleventyComputed:
-  title: "#{{ tag.id }}"
+  title: "#{{ tag.id }}: Jenkins Pipeline Recipes"
+  description: "Jenkins pipeline recipes tagged #{{ tag.id }}. {{ tag.description }}"
   crumbName: "{{ tag.id }}.md"
 ---
 {% comment %} one page for each tag in the vocabulary, listing the recipes that carry it grouped by the part of the cookbook they sit in {% endcomment %}

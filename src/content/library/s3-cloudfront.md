@@ -1,4 +1,5 @@
 ---
+title: "s3Sync & cloudFrontInvalidate: Deploy to S3 & CloudFront"
 tags: [shared-library, aws, deploy]
 ---
 

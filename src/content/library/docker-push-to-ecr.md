@@ -1,4 +1,5 @@
 ---
+title: "dockerPushToEcr: Push a Docker Image to Amazon ECR"
 tags: [shared-library, docker, aws]
 ---
 

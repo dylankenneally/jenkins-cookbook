@@ -1,4 +1,5 @@
 ---
+title: "sbom: Generate a CycloneDX SBOM in Jenkins with Syft"
 tags: [shared-library, security, release]
 ---
 

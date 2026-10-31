@@ -1,4 +1,5 @@
 ---
+title: "gitVersion: Version Numbers from git describe"
 tags: [shared-library, git, release]
 ---
 

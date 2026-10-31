@@ -1,4 +1,5 @@
 ---
+description: Cut build times by running test suites side by side with parallel stages in a Jenkinsfile, each on its own agent, with failFast to stop the rest when one fails.
 tags: [declarative, performance]
 ---
 

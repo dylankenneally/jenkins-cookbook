@@ -1,4 +1,5 @@
 ---
+description: Use a Jenkinsfile's post section to archive artifacts on success, alert on failure and clean the workspace last, and see the order post conditions run in.
 tags: [declarative, notifications]
 ---
 

@@ -11,6 +11,7 @@ const { validateTags, tagUrl, tagSummaries, groupBySection } = require("./script
 const { editLinksFor } = require("./scripts/edit-links.js");
 const { assertFullHistory, getRecipeLastUpdated, getSiteLastUpdated } = require("./scripts/last-updated.js");
 const { buildSitemapEntries } = require("./scripts/sitemap.js");
+const { getAbsoluteUrl } = require("./scripts/absolute-url.js");
 
 const CONTENT_DIR = "src/content";
 const LANDING_DATA = "src/data/landing.json";
@@ -383,6 +384,9 @@ module.exports = function (eleventyConfig) {
 
   // sitemap.xml lists every page and every tag page, with absolute urls and their last-modified dates
   eleventyConfig.addFilter("buildSitemapEntries", buildSitemapEntries);
+
+  // a page's full public address, for the canonical link and the link-preview tags in the layout
+  eleventyConfig.addFilter("getAbsoluteUrl", getAbsoluteUrl);
 
   // prefixes root-relative urls with pathPrefix, so the site works under /jenkins-cookbook/ on github pages
   eleventyConfig.addPlugin(HtmlBasePlugin);

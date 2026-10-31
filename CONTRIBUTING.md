@@ -27,7 +27,7 @@ The site is served at <http://localhost:8080> (or the next available port) and r
 
 The pages live in `src/content/` as Markdown. Each one is published as its own page. The only front matter a recipe needs is its [tags](#tagging-a-page). Pages that aren't recipes, such as the landing, browse and 404 pages, set `searchable: false` instead. That keeps them out of the search index and means they take no tags.
 
-- **Start with a single `#` heading.** It becomes the page title.
+- **Start with a single `#` heading.** It becomes the page title. When the heading alone says little in a search result, as with a step name like `withAws`, set `title` in the front matter. It replaces the title shown in search engines and browser tabs, and the heading stays as it is.
 - **Write headings that make sense on their own.** Every heading gets a link anchor and shows up as a section in search results, so "Roll back an ECS service" is more useful than "Steps".
 - **Link between pages with relative `.md` paths**, for example `[Troubleshooting](../guides/troubleshooting.md)`. They are rewritten to the right URL when the site is built.
 - **Tag every code fence with its language** (`groovy`, `bash`, `yaml` and so on) so it is highlighted. Use `bash` for shell commands (not `sh`), `jenkins-log` for output copied from a Jenkins console log, `email to="your Jenkins administrator"` for a message the reader sends (start it with a `Subject:` line if it has one, and write placeholders as `<…>`), and `plaintext` for other plain text (not `text`). The build fails on a language the highlighter doesn't know.

@@ -1,4 +1,5 @@
 ---
+description: A starting Jenkinsfile for a Declarative Pipeline with build and test stages, a timeout, timestamps, an environment block and workspace cleanup.
 tags: [declarative]
 ---
 

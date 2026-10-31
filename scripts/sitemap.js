@@ -4,26 +4,10 @@
 // - the tag pages are added from the tag vocabulary, as they're left out of the collections
 
 const { tagUrl } = require("./tags.js");
-
-// "/guides/flaky-tests/" -> "https://kenneally.dev/jenkins-cookbook/guides/flaky-tests/"
-function getAbsoluteUrl(url, homepage) {
-  if (typeof url !== "string" || !url.startsWith("/")) {
-    console.error(`[sitemap] a page has no root-relative url to list: ${url}`);
-    throw new TypeError("sitemap urls must start with /");
-  }
-
-  return new URL(url.slice(1), homepage).href;
-}
+const { assertUsableHomepage, getAbsoluteUrl } = require("./absolute-url.js");
 
 function getNewestDate(dates) {
   return new Date(Math.max(...dates.map((date) => date.getTime())));
-}
-
-function assertUsableHomepage(homepage) {
-  if (typeof homepage !== "string" || !/^https?:\/\/[^/]+\/(?:.*\/)?$/.test(homepage)) {
-    console.error(`[sitemap] the homepage in package.json must be an absolute url ending in /, so page addresses can be built from it: ${homepage}`);
-    throw new TypeError("unusable homepage for the sitemap");
-  }
 }
 
 // the sitemap's entries, { loc, lastmod }, for every page in the collections plus one per tag

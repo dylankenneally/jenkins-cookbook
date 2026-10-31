@@ -1,4 +1,5 @@
 ---
+title: "dockerCleanup: Remove Docker Images from Jenkins Agents"
 tags: [shared-library, docker]
 ---
 

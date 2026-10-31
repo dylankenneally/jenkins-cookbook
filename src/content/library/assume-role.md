@@ -1,4 +1,5 @@
 ---
+title: "assumeRole: Assume an AWS IAM Role in Jenkins"
 tags: [shared-library, aws, security]
 ---
 

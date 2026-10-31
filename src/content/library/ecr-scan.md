@@ -1,4 +1,5 @@
 ---
+title: "ecrScan: Fail a Jenkins Build on ECR Image Scan Findings"
 tags: [shared-library, docker, aws, security]
 ---
 
