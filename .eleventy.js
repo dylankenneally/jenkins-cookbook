@@ -10,6 +10,7 @@ const { breadcrumbsFor, validateSections } = require("./scripts/breadcrumbs.js")
 const { validateTags, tagUrl, tagSummaries, groupBySection } = require("./scripts/tags.js");
 const { editLinksFor } = require("./scripts/edit-links.js");
 const { assertFullHistory, getRecipeLastUpdated, getSiteLastUpdated } = require("./scripts/last-updated.js");
+const { buildSitemapEntries } = require("./scripts/sitemap.js");
 
 const CONTENT_DIR = "src/content";
 const LANDING_DATA = "src/data/landing.json";
@@ -325,6 +326,9 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addFilter("tagSummaries", tagSummaries);
   eleventyConfig.addFilter("groupBySection", (pages, sections) => groupBySection(pages, sections, CONTENT_DIR));
 
+  // sitemap.xml lists every page and every tag page, with absolute urls and their last-modified dates
+  eleventyConfig.addFilter("buildSitemapEntries", buildSitemapEntries);
+
   // prefixes root-relative urls with pathPrefix, so the site works under /jenkins-cookbook/ on github pages
   eleventyConfig.addPlugin(HtmlBasePlugin);
 
@@ -356,6 +360,6 @@ module.exports = function (eleventyConfig) {
       includes: "../includes",
       layouts: "../layouts"
     },
-    templateFormats: ["md", "html"]
+    templateFormats: ["md", "html", "liquid"], // liquid is for output that isn't a page, such as sitemap.xml
   };
 };
