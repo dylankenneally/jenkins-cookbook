@@ -19,7 +19,7 @@ Each environment should be its own AWS account, or at least its own isolated env
 
 Send your cloud administrator something like this:
 
-```plaintext
+```email to="your cloud administrator"
 Subject: AWS environments for my-backend-service (dev, staging, production)
 
 Service: my-backend-service
@@ -49,7 +49,7 @@ cluster name and service name.
 
 The base credential is the identity Jenkins uses to call `sts:AssumeRole`. It needs no other permissions. Many Jenkins installations already have one, used by every pipeline through [`withAws`](../library/with-aws.md) under the ID `aws-credentials-id`.
 
-```plaintext
+```email to="your Jenkins administrator"
 Subject: AWS base credential for my-backend-service promotions
 
 Repo: https://git.example.com/my-org/my-backend-service

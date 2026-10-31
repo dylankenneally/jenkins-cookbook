@@ -16,7 +16,7 @@ How to add a new deploy target, such as a QA environment between dev and staging
 
 Send something like this:
 
-```plaintext
+```email to="your cloud administrator"
 Subject: New qa environment for my-backend-service
 
 Service: my-backend-service, Amazon ECS (Fargate), region us-east-1

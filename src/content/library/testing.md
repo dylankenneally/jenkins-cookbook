@@ -8,7 +8,7 @@ Every pipeline that loads the library runs its steps, so a broken step breaks ev
 
 ## Repository layout
 
-```plaintext
+```tree
 jenkins-shared-library/
 ├── vars/
 │   ├── dockerPushToEcr.groovy

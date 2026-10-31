@@ -132,7 +132,7 @@ If a release is wrong, release the next patch version with the fix. If a release
 
 Multibranch jobs don't build tags out of the box. Two settings on the job's branch source are needed, and the checkout must include tags and full history for the version and changelog to be right:
 
-```plaintext
+```email to="your Jenkins administrator"
 Subject: Enable tag builds for <job name>
 
 Job: <link to the multibranch job>

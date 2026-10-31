@@ -41,7 +41,7 @@ Jenkins also has a field called Scope with the values Global and System. System 
 
 Send the Jenkins administrator a request with everything except the secret itself:
 
-```plaintext
+```email to="your Jenkins administrator"
 Subject: New Jenkins credential for my-backend-service
 
 Credential ID: my-backend-service-npm-publish-token
@@ -50,10 +50,10 @@ Store: folder my-backend-service
 Description: npm publish token for registry.example.com, used by the release stage
 Used by: Jenkinsfile in https://git.example.com/my-org/my-backend-service, stage "Publish"
 Issued by: registry.example.com, service account ci-my-backend-service
-Owner: (role or person who can issue a new one)
-Rotation: every 90 days, or when the owner changes; expires (date, if it has one)
+Owner: <role or person who can issue a new one>
+Rotation: every 90 days, or when the owner changes; expires <date, if it has one>
 
-Secret handover: (how the value will reach you, see below)
+Secret handover: <how the value will reach you, see below>
 ```
 
 > [!WARNING]

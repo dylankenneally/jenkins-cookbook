@@ -1,5 +1,6 @@
 // adds a "Copy" button to every code block
-// - each <pre> is wrapped in a div, so the button stays put while a wide block scrolls sideways
+// - a labelled block (```jenkins-log, ```email) gets the button in its bar
+// - any other <pre> is wrapped in a div, so the button stays put while a wide block scrolls sideways
 // - the copied text is the block's plain text, without the syntax highlighting markup
 // - no buttons are added where the clipboard api is missing (it needs https or localhost)
 // - mermaid diagrams are skipped, they are drawings rather than code
@@ -26,10 +27,20 @@ function codeText(block) {
   return (block.textContent ?? "").replace(/\n+$/, "");
 }
 
-function addCopyButton(block, status) {
+function placeButton(block, button) {
+  const bar = block.closest(".code-figure")?.querySelector(".code-figure__bar");
+  if (bar) {
+    bar.append(button);
+    return;
+  }
+
   const wrapper = document.createElement("div");
   wrapper.className = "code-block";
+  block.before(wrapper);
+  wrapper.append(button, block);
+}
 
+function addCopyButton(block, status) {
   const button = document.createElement("button");
   button.type = "button";
   button.className = "code-copy";
@@ -57,8 +68,7 @@ function addCopyButton(block, status) {
   });
 
   show("idle");
-  block.before(wrapper);
-  wrapper.append(button, block);
+  placeButton(block, button);
 }
 
 if (navigator.clipboard?.writeText) {

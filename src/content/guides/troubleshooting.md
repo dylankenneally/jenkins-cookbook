@@ -8,7 +8,7 @@ Common pipeline errors, what causes them and how to fix them. The exact text var
 
 ## `MissingPropertyException: No such property`
 
-```plaintext
+```jenkins-log
 groovy.lang.MissingPropertyException: No such property: DEPLOY_ENV for class: groovy.lang.Binding
 ```
 
@@ -40,7 +40,7 @@ stage('Package') {
 
 ## `RejectedAccessException: Scripts not permitted to use`
 
-```plaintext
+```jenkins-log
 org.jenkinsci.plugins.scriptsecurity.sandbox.RejectedAccessException: Scripts not permitted to use staticMethod jenkins.model.Jenkins getInstance
 ```
 
@@ -60,11 +60,11 @@ Libraries configured at folder level are untrusted and still sandboxed, so movin
 
 ## `NotSerializableException`
 
-```plaintext
+```jenkins-log
 java.io.NotSerializableException: java.util.regex.Matcher
 ```
 
-```plaintext
+```jenkins-log
 java.io.NotSerializableException: groovy.json.internal.LazyMap
 ```
 
@@ -88,7 +88,7 @@ For JSON, use `readJSON` from the [Pipeline Utility Steps](https://plugins.jenki
 
 ## `Required context class hudson.FilePath is missing`
 
-```plaintext
+```jenkins-log
 org.jenkinsci.plugins.workflow.steps.MissingContextVariableException: Required context class hudson.FilePath is missing
 Perhaps you forgot to surround the code with a step that provides this, such as: node
 ```
@@ -127,7 +127,7 @@ Wrapping the step in `node('linux') { … }` also clears the error, but it alloc
 
 ## `withCredentials` masking surprises
 
-```plaintext
+```jenkins-log
 + ./deploy.sh --env ****
 Deploying ****-service to ****
 ```
@@ -142,7 +142,7 @@ Deploying ****-service to ****
 - only the console log is masked; files you write and archive, test reports and artifacts are not
 - Groovy interpolation into `sh` puts the secret in the command itself, and Jenkins warns:
 
-```plaintext
+```jenkins-log
 Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
 ```
 

@@ -53,7 +53,7 @@ The `Jenkinsfile` should decide where and when things run; the project's own scr
 
 In a double-quoted Groovy string, `${TOKEN}` is replaced by Groovy before the shell sees the command. The secret then sits in the command string, where it can show up in the process list on the agent and in the recorded step arguments. Jenkins flags this in the console log:
 
-```plaintext
+```jenkins-log
 Warning: A secret was passed to "sh" using Groovy String interpolation, which is insecure.
 ```
 

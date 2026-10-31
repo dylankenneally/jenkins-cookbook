@@ -28,7 +28,7 @@ Creating the job usually needs your Jenkins administrator, because it involves j
 
 A request your Jenkins administrator can act on looks like this:
 
-```plaintext
+```email to="your Jenkins administrator"
 Please create a multibranch pipeline job for our repo.
 
 - Git host and repo URL: https://git.example.com/my-group/my-app

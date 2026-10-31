@@ -105,18 +105,138 @@ function escapeHtml(text) {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-// ```mermaid fences skip prism and become <pre class="mermaid"> for the browser-side renderer
-function renderMermaidFences(md) {
-  const fallback = md.renderer.rules.fence;
+// a ```name fence skips prism and is rendered by render(token, env) instead; any other fence falls through to the next renderer
+function customFence(name, render) {
+  return (md) => {
+    const fallback = md.renderer.rules.fence;
 
-  md.renderer.rules.fence = (tokens, idx, options, env, self) => {
-    const token = tokens[idx];
-    if (token.info.trim().split(/\s+/)[0] !== "mermaid") {
-      return fallback(tokens, idx, options, env, self);
+    md.renderer.rules.fence = (tokens, idx, options, env, self) => {
+      const token = tokens[idx];
+      if (token.info.trim().split(/\s+/)[0] !== name) {
+        return fallback(tokens, idx, options, env, self);
+      }
+
+      return render(token, env);
+    };
+  };
+}
+
+// a code block with a bar above it; the bar stays out of the search index, and code-copy.js puts the copy button in it
+function labelledBlock(kind, bar, code) {
+  return `<figure class="code-figure ${kind}"><figcaption class="code-figure__bar" data-pagefind-ignore>${bar}</figcaption><pre><code>${code}</code></pre></figure>\n`;
+}
+
+// the page a fence came from, for build errors; eleventy passes the page data to markdown-it as its env
+function fenceSource(env) {
+  return env?.page?.inputPath ?? "a markdown page";
+}
+
+// ```mermaid fences become <pre class="mermaid"> for the browser-side renderer
+function renderMermaid(token) {
+  return `<pre class="mermaid">${escapeHtml(token.content)}</pre>\n`;
+}
+
+// how a line of a ```jenkins-log fence is styled; the first match wins and unmatched lines stay plain
+const JENKINS_LOG_LINES = [
+  // sh steps echo each command with a leading "+", which is how a reader finds what was running
+  { kind: "command", pattern: /^\+ / },
+  { kind: "error", pattern: /^(ERROR:|FAIL\b|script returned exit code [1-9])|^[\w.$]*(Exception|Error)\b/ },
+  { kind: "warning", pattern: /^Warning:/ }
+];
+
+function jenkinsLogLine(line) {
+  const rule = JENKINS_LOG_LINES.find(({ pattern }) => pattern.test(line));
+  if (!rule) {
+    return escapeHtml(line);
+  }
+
+  return `<span class="jenkins-log__${rule.kind}">${escapeHtml(line)}</span>`;
+}
+
+// ```jenkins-log fences become a labelled console excerpt; lines stay newline-separated so copy and search see the plain text
+function renderJenkinsLog(token) {
+  const lines = token.content.replace(/\n$/, "").split("\n").map(jenkinsLogLine).join("\n");
+  return labelledBlock("jenkins-log", '<span class="code-figure__title">Console output</span>', lines);
+}
+
+// a line of a ```tree fence: the box-drawing branches, the entry (a folder ends in "/"), then an optional "# comment"
+const TREE_LINE = /^([│├└─\s]*)(.*?)(\s+#.*)?$/;
+
+// the branches are hidden from screen readers, which would otherwise read each box-drawing character aloud; copy still gets them
+function treeLine(line) {
+  const [, branch, entry, comment] = line.match(TREE_LINE);
+  const kind = entry.endsWith("/") ? "folder" : "file";
+  const parts = [branch && `<span class="tree__branch" aria-hidden="true">${escapeHtml(branch)}</span>`, entry && `<span class="tree__${kind}">${escapeHtml(entry)}</span>`, comment && `<span class="tree__comment">${escapeHtml(comment)}</span>`];
+  return parts.filter(Boolean).join("");
+}
+
+// ```tree fences become a labelled directory listing
+function renderTree(token) {
+  const lines = token.content.replace(/\n$/, "").split("\n").map(treeLine).join("\n");
+  return labelledBlock("tree", '<span class="code-figure__title">Directory tree</span>', lines);
+}
+
+// ```email to="your Jenkins administrator": who it's for is required; an optional "Subject: ..." first line is split out for the draft
+const EMAIL_INFO = /^email\s+to="([^"]+)"$/;
+const EMAIL_SUBJECT = /^Subject: (.+)\n+/;
+
+// wraps each <placeholder> on a line in a span, treating nested ones as part of the outer; a "<" left open at the end of the line fails the build
+function markPlaceholders(line, env) {
+  let html = "";
+  let depth = 0;
+  for (const char of line) {
+    if (char === "<") {
+      html += depth === 0 ? '<span class="email__placeholder">&lt;' : "&lt;";
+      depth++;
+      continue;
     }
 
-    return `<pre class="mermaid">${escapeHtml(token.content)}</pre>\n`;
-  };
+    if (char === ">" && depth > 0) {
+      depth--;
+      html += depth === 0 ? "&gt;</span>" : "&gt;";
+      continue;
+    }
+
+    html += escapeHtml(char);
+  }
+
+  if (depth > 0) {
+    console.error(`[email] ${fenceSource(env)}: a placeholder is never closed with ">" on this line of an email fence: ${line}`);
+    throw new SyntaxError("unclosed placeholder in an email fence");
+  }
+
+  return html;
+}
+
+// a new draft with the subject and body filled in and no recipient; mailto bodies take CRLF line breaks (RFC 6068)
+function mailtoHref(subject, body) {
+  const params = [subject && `subject=${encodeURIComponent(subject)}`, `body=${encodeURIComponent(body.replace(/\n/g, "\r\n"))}`].filter(Boolean);
+  return `mailto:?${params.join("&")}`;
+}
+
+// ```email fences become a labelled message: who it's for, a link to open it as a draft, and highlighted placeholders
+function renderEmail(token, env) {
+  const recipient = token.info.trim().match(EMAIL_INFO)?.[1];
+  if (!recipient) {
+    console.error(`[email] ${fenceSource(env)}: an email fence must say who it's for, e.g. \`\`\`email to="your Jenkins administrator", but it was \`\`\`${token.info.trim()}`);
+    throw new SyntaxError("email fence without a recipient");
+  }
+
+  const text = token.content.replace(/\n+$/, "");
+  const subject = text.match(EMAIL_SUBJECT)?.[1];
+  const body = subject ? text.replace(EMAIL_SUBJECT, "") : text;
+
+  const lines = text.split("\n").map((line, index) => {
+    const html = markPlaceholders(line, env);
+    const content = subject && index === 0 ? `<span class="email__subject">${html}</span>` : html;
+    // the line's own indent, so the css can hang a wrapped line under its text; the newline stays inside so copy and search keep it
+    const indent = line.match(/^ */)[0].length;
+    const style = indent > 0 ? ` style="--indent: ${indent}ch"` : "";
+    return `<span class="email__line"${style}>${content}\n</span>`;
+  });
+
+  const bar = `<span class="code-figure__title">Email to ${escapeHtml(recipient)}</span><a class="email__draft" href="${escapeHtml(mailtoHref(subject, body))}">Open in email</a>`;
+  return labelledBlock("email", bar, lines.join(""));
 }
 
 // github-style callout markers, `> [!NOTE]` and friends, keyed to the label shown above the callout
@@ -165,7 +285,10 @@ function renderCallouts(md) {
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(syntaxHighlight, { errorOnInvalidLanguage: true }); // otherwise we can have unescaped output
 
-  eleventyConfig.amendLibrary("md", renderMermaidFences);
+  eleventyConfig.amendLibrary("md", customFence("mermaid", renderMermaid));
+  eleventyConfig.amendLibrary("md", customFence("jenkins-log", renderJenkinsLog));
+  eleventyConfig.amendLibrary("md", customFence("email", renderEmail));
+  eleventyConfig.amendLibrary("md", customFence("tree", renderTree));
   eleventyConfig.amendLibrary("md", renderCallouts);
 
   // headings get ids, so search can link straight to a section

@@ -165,16 +165,16 @@ If a release with a destructive migration has gone out, fix forward rather than 
 
 Once the service is healthy, write it down while it's fresh, in your team's incident log or the deployment channel:
 
-```plaintext
+```log
 Rollback: my-backend-service, production
-When: (start and end time, with time zone)
+When: <start and end time, with time zone>
 Bad version: v1.4.0-3-g1a2b3c4 (Jenkins build #42)
 Restored version: v1.3.2 (task definition my-backend-service:41)
-How: (pipeline rerun with IMAGE_TAG / update-service / alias moved / ...)
-Done by: (role or person), approved by: (role or person)
-Symptom: (what users saw, how it was noticed)
-Cause: (if known) / follow-up to find it
-Follow-ups: (fix, test that would have caught it, alarm to add)
+How: <pipeline rerun with IMAGE_TAG | update-service | alias moved | ...>
+Done by: <role or person>, approved by: <role or person>
+Symptom: <what users saw, how it was noticed>
+Cause: <cause, if known | follow-up to find it>
+Follow-ups: <fix, test that would have caught it, alarm to add>
 ```
 
 Also add a note to the bad build's description in Jenkins, or ask someone with permission to, so anyone reading the deploy history later sees that it was rolled back. Then make sure the next normal deploy doesn't simply reship the bad change: revert or fix it on `main` first.

@@ -131,7 +131,7 @@ A pinned version means a library change reaches your pipeline only when you bump
 
 To ask for the default to move, for example after a new major version has been adopted:
 
-```plaintext
+```email to="your Jenkins administrator"
 Subject: Update the default version of the "cookbook" shared library
 
 Library: cookbook (Global Trusted Pipeline Libraries)

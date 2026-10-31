@@ -538,9 +538,104 @@ pre code {
 }
 
 @media print {
-  .code-copy {
+  .code-copy,
+  .email__draft {
     display: none;
   }
+}
+
+/* Labelled code blocks (```jenkins-log, ```email): a bar above the block holds its title, any links, and the copy button that code-copy.js adds */
+.code-figure {
+  margin: var(--spacing-unit) 0;
+}
+
+.code-figure pre {
+  margin: 0;
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+
+.code-figure__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 0.75rem;
+  min-height: 1.75rem;
+  padding-left: var(--spacing-unit);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  background-color: var(--color-code-bg);
+  border-left: 4px solid var(--color-accent);
+  border-bottom: 1px solid var(--color-border);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.code-figure__title {
+  flex: 1;
+  padding: 0.25rem 0;
+}
+
+.code-figure__bar .code-copy {
+  position: static;
+  align-self: stretch;
+  border-width: 0 0 0 1px;
+  border-radius: 0 var(--radius) 0 0;
+}
+
+/* Jenkins console excerpts: .eleventy.js marks command, error and warning lines; colours are 5.6:1 or better on --color-code-bg */
+.jenkins-log__command {
+  font-weight: 600;
+}
+
+.jenkins-log__error {
+  color: #b91c1c;
+}
+
+.jenkins-log__warning {
+  color: #854d0e;
+}
+
+/* Email templates: lines wrap instead of scrolling so a request reads like a message; placeholders are 5.5:1 on their tint */
+.email pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* each line hangs: a wrapped line continues 2ch past where its own text starts, rather than at the left edge */
+.email__line {
+  display: block;
+  padding-left: calc(var(--indent, 0ch) + 2ch);
+  text-indent: calc(-1 * (var(--indent, 0ch) + 2ch));
+}
+
+.email__subject {
+  font-weight: 600;
+}
+
+/* no horizontal padding, so the aligned columns in some templates stay on the monospace grid */
+.email__placeholder {
+  color: #9a3412;
+  background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  border-radius: var(--radius);
+}
+
+/* Directory trees: branches recede, folders stand out, comments match the syntax-highlight comment colour */
+.tree__branch {
+  color: var(--color-text-light);
+}
+
+.tree__folder {
+  font-weight: 600;
+}
+
+.tree__comment {
+  color: #6b6358;
+  font-style: italic;
+}
+
+/* with no copy button after it (no clipboard api), the link would otherwise touch the bar's edge */
+.email__draft:last-child {
+  margin-right: var(--spacing-unit);
 }
 
 /* Syntax highlighting (Prism tokens via eleventy-plugin-syntaxhighlight); every colour is 4.5:1 or better on --color-code-bg */

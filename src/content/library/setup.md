@@ -10,7 +10,7 @@ The Docker and AWS building blocks in this cookbook are [shared library](https:/
 
 Each file under `vars/` becomes a pipeline step named after the file, and its `call` method is what runs.
 
-```plaintext
+```tree
 jenkins-shared-library/
 ├── vars/
 │   ├── withAws.groovy               # AWS credentials and region for a block

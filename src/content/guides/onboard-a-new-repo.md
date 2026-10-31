@@ -45,11 +45,11 @@ Deploy stages should be guarded with `when { branch 'main' }` so pull requests n
 
 A multibranch job scans the repo and creates a child job for each branch, pull request and tag that has a `Jenkinsfile`. Ask the Jenkins administrator for one, with these details:
 
-```plaintext
+```email to="your Jenkins administrator"
 Subject: New multibranch pipeline job for my-backend-service
 
 Repository URL: https://git.example.com/my-org/my-backend-service.git
-Git host: GitHub / GitLab / Bitbucket / Gitea (pick one)
+Git host: <GitHub | GitLab | Bitbucket | Gitea>
 Folder in Jenkins: my-backend-service (or the existing folder for the team)
 Script path: Jenkinsfile
 
@@ -73,8 +73,8 @@ Periodic scan: once a day, as a fallback for missed webhooks
 Webhook: please send the payload URL and secret to use on the Git host
 (the repo owner will add it).
 
-Credentials or agents the pipeline needs: (list them, or "none yet")
-Owner: (your name or role, for questions about this job)
+Credentials or agents the pipeline needs: <list them, or "none yet">
+Owner: <your name or role, for questions about this job>
 ```
 
 The administrator may change some of these choices to match how your Jenkins is set up. If the pipeline needs credentials, request them separately with [Add a Secret or Credential](add-a-credential.md).
@@ -85,12 +85,12 @@ Without a webhook, Jenkins only notices new commits at its periodic scan, which 
 
 If you don't have admin rights on the repo, send the repo owner the details the Jenkins administrator gave you:
 
-```plaintext
+```email to="the repo owner"
 Subject: Webhook for Jenkins on my-backend-service
 
 Please add a webhook to https://git.example.com/my-org/my-backend-service
 
-Payload URL: (from the Jenkins administrator)
+Payload URL: <from the Jenkins administrator>
 Content type: application/json
 Secret: (shared through the password manager, not in this message)
 Events: pushes, pull requests (and tag pushes, if tags are built)
@@ -113,7 +113,7 @@ After adding it, the Git host's webhook page shows recent deliveries. A green ti
 
 A status check only stops a merge if the Git host requires it. Ask the repo owner to turn this on once the check has reported at least once, because most hosts only list checks they have already seen.
 
-```plaintext
+```email to="the repo owner"
 Subject: Branch protection for main on my-backend-service
 
 Please protect the main branch:
