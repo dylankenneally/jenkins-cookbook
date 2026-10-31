@@ -43,7 +43,7 @@ Errors this explains:
 
 When a build or stage needs an executor, it goes into the **queue** until one matching its label is free. While it waits, the console log shows something like:
 
-```text
+```plaintext
 Waiting for next available executor on 'linux'
 ```
 

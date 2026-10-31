@@ -19,7 +19,7 @@ Each environment should be its own AWS account, or at least its own isolated env
 
 Send your cloud administrator something like this:
 
-```text
+```plaintext
 Subject: AWS environments for my-backend-service (dev, staging, production)
 
 Service: my-backend-service
@@ -49,7 +49,7 @@ cluster name and service name.
 
 The base credential is the identity Jenkins uses to call `sts:AssumeRole`. It needs no other permissions. Many Jenkins installations already have one, used by every pipeline through [`withAws`](../library/with-aws.md) under the ID `aws-credentials-id`.
 
-```text
+```plaintext
 Subject: AWS base credential for my-backend-service promotions
 
 Repo: https://git.example.com/my-org/my-backend-service
@@ -164,7 +164,7 @@ Images are tagged with the [`gitVersion`](../library/git-version.md) output, suc
 
 Jenkins records what was deployed; AWS knows what is running. To check, someone with read access to the account can run:
 
-```sh
+```bash
 aws ecs describe-services \
   --cluster production \
   --services my-backend-service \

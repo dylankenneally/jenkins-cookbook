@@ -30,7 +30,7 @@ The upload keystore signs the bundle you send to Play. With Play App Signing, Go
 
 The Play service account needs to be invited in Play Console (**Users and permissions**) with permission to release to testing tracks for this app. That is a Play Console admin task for the mobile release owner.
 
-```text
+```plaintext
 Subject: Android release credentials for <app name>
 
 Job: <link to the multibranch job or folder>
@@ -58,7 +58,7 @@ Pick one signing approach with your mobile release owner:
 
 Both need an App Store Connect API key (`.p8`) to upload to TestFlight, created in App Store Connect by the mobile release owner with a role that can upload builds.
 
-```text
+```plaintext
 Subject: iOS release agent and credentials for <app name>
 
 Job: <link to the multibranch job or folder>

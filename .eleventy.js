@@ -163,7 +163,7 @@ function renderCallouts(md) {
 }
 
 module.exports = function (eleventyConfig) {
-  eleventyConfig.addPlugin(syntaxHighlight);
+  eleventyConfig.addPlugin(syntaxHighlight, { errorOnInvalidLanguage: true }); // otherwise we can have unescaped output
 
   eleventyConfig.amendLibrary("md", renderMermaidFences);
   eleventyConfig.amendLibrary("md", renderCallouts);

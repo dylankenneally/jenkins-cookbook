@@ -41,7 +41,7 @@ Jenkins also has a field called Scope with the values Global and System. System 
 
 Send the Jenkins administrator a request with everything except the secret itself:
 
-```text
+```plaintext
 Subject: New Jenkins credential for my-backend-service
 
 Credential ID: my-backend-service-npm-publish-token

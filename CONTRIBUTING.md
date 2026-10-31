@@ -30,7 +30,7 @@ The pages live in `src/content/` as Markdown. Each one is published as its own p
 - **Start with a single `#` heading.** It becomes the page title.
 - **Write headings that make sense on their own.** Every heading gets a link anchor and shows up as a section in search results, so "Roll back an ECS service" is more useful than "Steps".
 - **Link between pages with relative `.md` paths**, for example `[Troubleshooting](../guides/troubleshooting.md)`. They are rewritten to the right URL when the site is built.
-- **Tag every code fence with its language** (`groovy`, `bash`, `yaml` and so on) so it is highlighted.
+- **Tag every code fence with its language** (`groovy`, `bash`, `yaml` and so on) so it is highlighted. Use `bash` for shell commands (not `sh`) and `plaintext` for plain text (not `text`). The build fails on a language the highlighter doesn't know.
 - **Use callouts for asides**: `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]` or `> [!CAUTION]`.
 - **Draw diagrams with mermaid** in a ` ```mermaid ` fence rather than text art.
 - **Add new pages to the browse list** in `src/content/browse.md`, so people can find them. If the page deserves a spot on the landing page, add it to the matching card in `src/data/landing.json`. The build fails if that file points at a page that doesn't exist.

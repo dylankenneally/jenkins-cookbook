@@ -38,7 +38,7 @@ The last line of a failed log is almost always a summary, such as `script return
 
 Each `sh` command is printed with a `+` in front, so you can see which command was running when the output went wrong:
 
-```text
+```plaintext
 + npm ci
 added 812 packages in 21s
 + npm test -- --ci
@@ -56,16 +56,16 @@ Errors from your own tools are output from the command after the `+` line: a com
 
 Errors from Jenkins or Groovy come from the pipeline itself. They usually mention Java or Groovy class names, or `WorkflowScript`, which is Jenkins's name for your `Jenkinsfile`:
 
-```text
+```plaintext
 org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed:
 WorkflowScript: 14: Expected a stage @ line 14, column 9.
 ```
 
-```text
+```plaintext
 java.lang.NoSuchMethodError: No such DSL method 'withAws' found among steps
 ```
 
-```text
+```plaintext
 groovy.lang.MissingPropertyException: No such property: DEPLOY_ENV for class: groovy.lang.Binding
 ```
 
@@ -139,7 +139,7 @@ Whether you're asking your Jenkins administrator, the repo owner or a colleague,
 - what changed: your commit, a dependency update, or nothing that you know of
 - what you've tried: a re-run, a local run, a Replay
 
-```text
+```plaintext
 Build: https://jenkins.example.com/job/my-app/job/main/57/
 Failing stage: Deploy
 First error: ERROR: Could not find credentials entry with ID 'aws-credentials-id'

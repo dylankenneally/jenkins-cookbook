@@ -45,7 +45,7 @@ Deploy stages should be guarded with `when { branch 'main' }` so pull requests n
 
 A multibranch job scans the repo and creates a child job for each branch, pull request and tag that has a `Jenkinsfile`. Ask the Jenkins administrator for one, with these details:
 
-```text
+```plaintext
 Subject: New multibranch pipeline job for my-backend-service
 
 Repository URL: https://git.example.com/my-org/my-backend-service.git
@@ -85,7 +85,7 @@ Without a webhook, Jenkins only notices new commits at its periodic scan, which 
 
 If you don't have admin rights on the repo, send the repo owner the details the Jenkins administrator gave you:
 
-```text
+```plaintext
 Subject: Webhook for Jenkins on my-backend-service
 
 Please add a webhook to https://git.example.com/my-org/my-backend-service
@@ -113,7 +113,7 @@ After adding it, the Git host's webhook page shows recent deliveries. A green ti
 
 A status check only stops a merge if the Git host requires it. Ask the repo owner to turn this on once the check has reported at least once, because most hosts only list checks they have already seen.
 
-```text
+```plaintext
 Subject: Branch protection for main on my-backend-service
 
 Please protect the main branch:

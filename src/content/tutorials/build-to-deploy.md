@@ -36,7 +36,7 @@ A [shared library](../concepts/glossary.md) is a separate Git repo of pipeline s
 
 Your Jenkins administrator registers the library on the controller, under a name, once for everyone. You can't do this from a `Jenkinsfile`. Ask them:
 
-```text
+```plaintext
 Is the cookbook shared library registered on our Jenkins?
 
 - What name is it registered under? (the cookbook examples use "cookbook")
@@ -68,7 +68,7 @@ The `withAws` step looks for the ID `aws-credentials-id` unless you pass a diffe
 
 Send your cloud administrator:
 
-```text
+```plaintext
 Please create an IAM identity for Jenkins to deploy our frontend, and pass its access keys to the Jenkins administrator.
 
 - S3 bucket: my-frontend-app-bucket
@@ -80,7 +80,7 @@ Please create an IAM identity for Jenkins to deploy our frontend, and pass its a
 
 Send your Jenkins administrator:
 
-```text
+```plaintext
 Please store an AWS credential for our multibranch job.
 
 - Kind: AWS Credentials (from the AWS Credentials plugin)

@@ -139,6 +139,7 @@ Release builds need a keystore. Store it as a Secret file credential and pass th
 [fastlane `match`](https://docs.fastlane.tools/actions/match/) is the most common CI approach and the one to prefer. It keeps the certificates and profiles encrypted in a private git repo, S3 bucket or Google Cloud bucket, and installs them at build time. Add `fastlane` to the Gemfile so its version is pinned with CocoaPods, and give it a lane:
 
 ```ruby
+# fastlane/Fastfile
 lane :beta do
   # creates a temporary keychain when running on ci
   setup_ci

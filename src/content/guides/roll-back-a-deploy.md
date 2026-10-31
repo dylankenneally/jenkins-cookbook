@@ -42,7 +42,7 @@ Rerun the pipeline for the older image. If your pipeline has the `IMAGE_TAG` par
 
 Point the service at the previous task definition revision. Every `ecsDeploy` registers a new revision, so the last good one is still there. Someone with access to the account runs:
 
-```sh
+```bash
 # the newest revisions first; the family is usually the service name
 aws ecs list-task-definitions \
   --family-prefix my-backend-service \
@@ -71,7 +71,7 @@ This is the fastest route. It also reverts any task definition changes made sinc
 
 CodeDeploy can roll back on its own. Ask the cloud administrator to turn on automatic rollback for the deployment group, triggered by a failed deployment and, if the service has CloudWatch alarms, by an alarm:
 
-```sh
+```bash
 aws deploy update-deployment-group \
   --application-name my-backend-service \
   --current-deployment-group-name production \
@@ -82,7 +82,7 @@ A rollback in CodeDeploy is a new deployment of the last revision that succeeded
 
 To roll back a deployment that succeeded but is behaving badly, redeploy the previous revision. [`codeDeploy`](../library/codedeploy.md) uploads each build's bundle to S3, and in the [Container Service](../pipelines/container-service.md) pipeline the bundle names the image it runs, so redeploying an old bundle redeploys the old image too:
 
-```sh
+```bash
 # recent revisions, newest first
 aws deploy list-application-revisions \
   --application-name my-backend-service \
@@ -105,7 +105,7 @@ The CodeDeploy console does the same from the deployment group's history. A depl
 
 [`lambdaDeploy`](../library/lambda-deploy.md) publishes an immutable version for each release and moves an alias, such as `live`, onto it. Callers use the alias, so a rollback is moving the alias back to the previous version. It takes effect straight away and changes no code.
 
-```sh
+```bash
 # what the alias points at now
 aws lambda get-alias \
   --function-name my-function \
@@ -131,7 +131,7 @@ A published version includes the configuration it was published with, such as en
 
 Redeploy an earlier build's artifact. This works if the pipeline keeps each build's output, for example with `archiveArtifacts artifacts: 'dist/**'` in the build stage, or by also syncing it to a versioned prefix such as `s3://my-frontend-releases/<version>/`. Sync that copy back into the live bucket and invalidate the cache:
 
-```sh
+```bash
 aws s3 sync \
   s3://my-frontend-releases/v2.3.1/ \
   s3://my-frontend-app-bucket/ \
@@ -165,7 +165,7 @@ If a release with a destructive migration has gone out, fix forward rather than 
 
 Once the service is healthy, write it down while it's fresh, in your team's incident log or the deployment channel:
 
-```text
+```plaintext
 Rollback: my-backend-service, production
 When: (start and end time, with time zone)
 Bad version: v1.4.0-3-g1a2b3c4 (Jenkins build #42)

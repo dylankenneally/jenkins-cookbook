@@ -165,7 +165,7 @@ options {
 
 If queue wait is the biggest bucket after the fixes above, or a single stage is limited by CPU or memory, the answer is capacity. That is your Jenkins administrator's call. Bring numbers:
 
-```text
+```plaintext
 Subject: Agent capacity request for <job name>
 
 Job: <link to the job>
