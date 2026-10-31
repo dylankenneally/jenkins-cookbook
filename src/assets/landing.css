@@ -5,7 +5,6 @@
   --landing-width: 1120px;
   --accent-soft: color-mix(in srgb, var(--color-accent) 8%, var(--color-bg));
   --accent-line: color-mix(in srgb, var(--color-accent) 25%, var(--color-bg));
-  --zebra: color-mix(in srgb, #7a6a50 6%, var(--color-bg));
 }
 
 .landing main,
@@ -124,7 +123,7 @@
 }
 
 .button--primary {
-  color: #ffffff;
+  color: var(--color-on-accent);
   background: var(--color-accent);
   border-color: var(--color-accent);
 }
@@ -335,7 +334,7 @@
 }
 
 .matrix tbody tr:nth-child(even) {
-  --row-bg: var(--zebra);
+  --row-bg: var(--color-zebra);
 }
 
 .matrix tbody tr:hover {
@@ -374,7 +373,7 @@
 }
 
 .matrix__block a:hover {
-  color: #ffffff;
+  color: var(--color-on-accent);
   background: var(--color-link);
   border-color: var(--color-link);
 }

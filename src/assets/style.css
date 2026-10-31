@@ -48,26 +48,75 @@
 }
 
 /*
- * Palette: warm paper, charcoal text and a rust accent. Contrast ratios are against --color-bg unless noted.
- *  - --color-accent is 5.0:1, but only 4.5:1 on the code background and tints, so it is for fills, borders,
- *    focus rings and large headings
+ * Palette: warm paper, charcoal text and a rust accent, with a warm charcoal dark theme below. Contrast ratios are against --color-bg unless noted.
+ *  - every colour is a custom property here, with a light and a dark value; the rest of the css (and the mermaid diagrams) only use these
+ *  - --color-accent is 5.0:1, but only 4.5:1 on the code background and tints, so it is for fills, borders, focus rings and large headings
  *  - --color-link is the deeper rust (7.1:1) for small text such as links and inline code
+ *  - syntax, callout and console colours are 4.5:1 or better on --color-code-bg and on their own tints
  */
 :root {
+  color-scheme: light;
   --color-bg: #fdfbf7;
   --color-text: #222222; /* 15.4:1 */
   --color-text-light: #5c564e; /* 7.0:1 */
-  --color-border: #ddd6c8;
+  --color-border: #ddd6c8; /* hairlines, 1.4:1 */
+  --color-control-border: #8a8174; /* the edge of a form control, 3:1 or better */
   --color-code-bg: #f3eee4;
   --color-code-text: #9a3412; /* 6.3:1 on the code background */
   --color-accent: #c2410c;
   --color-link: #9a3412;
+  --color-on-accent: #ffffff; /* text on an accent or link fill: 5.2:1 and 7.3:1 */
+  --color-zebra: #f5f2ed; /* alternate table rows */
+  --color-shadow: rgba(34, 34, 34, 0.12);
+  --color-tip: #166534;
+  --color-important: #6d28d9;
+  --color-warning: #854d0e;
+  --color-caution: #b91c1c;
+  --syntax-comment: #6b6358;
+  --syntax-property: #9f1d5a;
+  --syntax-string: #3f6212;
+  --syntax-operator: #8a4b08;
+  --syntax-keyword: #1e40af;
+  --syntax-function: #b91c1c;
   --font-sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: "JetBrains Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
   --max-width: 900px;
   --spacing-unit: 1rem;
   --inset: 1rem; /* horizontal padding shared by the header and the page content, so their edges line up */
   --radius: 2px;
+}
+
+/*
+ * Dark theme: theme.js (and the inline script in default.html) set data-theme on <html> from the reader's choice or the os.
+ *  - screen only, so a page always prints on paper in the light palette
+ *  - --color-on-accent turns dark, since white is only 2.8:1 on the brighter accent
+ */
+@media screen {
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --color-bg: #1b1915;
+    --color-text: #e9e4da; /* 13.9:1 */
+    --color-text-light: #a9a193; /* 6.9:1 */
+    --color-border: #3a352d; /* 1.4:1 */
+    --color-control-border: #7d7568; /* 3.9:1 */
+    --color-code-bg: #26231e;
+    --color-code-text: #f5a66b; /* 7.9:1 on the code background */
+    --color-accent: #f0782d; /* 6.2:1, 5.5:1 on the code background */
+    --color-link: #f59e5c; /* 8.3:1 */
+    --color-on-accent: #1b1915; /* 6.2:1 on the accent, 8.3:1 on the link colour */
+    --color-zebra: #221f1b;
+    --color-shadow: rgba(0, 0, 0, 0.5);
+    --color-tip: #6fd08c;
+    --color-important: #b9a2ff;
+    --color-warning: #e6c15a;
+    --color-caution: #ff8f80;
+    --syntax-comment: #a39a8b;
+    --syntax-property: #f38fb8;
+    --syntax-string: #a8d86b;
+    --syntax-operator: #e6b450;
+    --syntax-keyword: #8fb4ff;
+    --syntax-function: #ff8f80;
+  }
 }
 
 * {
@@ -178,8 +227,6 @@ main, article {
 .site-header__search {
   flex: 0 1 24rem;
   min-width: 0;
-  /* the search field's edge needs 3:1 against the paper to be seen as a control; the page's hairline colour is only 1.4:1 */
-  --pf-border: #8a8174;
 }
 
 .site-nav {
@@ -201,7 +248,7 @@ main, article {
   opacity: 1;
 }
 
-/* a placeholder for the light/dark switch, which is not wired up yet */
+/* the light/dark switch (theme.js): pressed means dark; it shows a moon in the light theme and a sun in the dark one */
 .theme-toggle {
   display: inline-flex;
   align-items: center;
@@ -213,15 +260,26 @@ main, article {
   background: transparent;
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
+  cursor: pointer;
 }
 
-.theme-toggle:disabled {
-  cursor: not-allowed;
+.theme-toggle:hover {
+  color: var(--color-link);
+  border-color: var(--color-link);
 }
 
 .theme-toggle svg {
   width: 1rem;
   height: 1rem;
+}
+
+.theme-toggle__sun,
+:root[data-theme="dark"] .theme-toggle__moon {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-toggle__sun {
+  display: block;
 }
 
 @media (max-width: 640px) {
@@ -291,22 +349,35 @@ main, article {
   opacity: 1;
 }
 
-/* Search (Pagefind component UI): use the site's fonts and colours */
-:root {
+/*
+ * Search (Pagefind component UI): use the site's fonts and colours, in either theme.
+ *  - set on the search's container, not :root: pagefind-component-ui.css sets its defaults on :root and loads after this file, so it would win
+ *  - custom properties survive the components' `all: initial`, so these inherit into them
+ */
+.site-header__search {
   --pf-font: var(--font-sans);
   --pf-text: var(--color-text);
   --pf-text-secondary: var(--color-text-light);
-  --pf-background: var(--color-bg);
   --pf-text-muted: var(--color-text-light); /* the default grey is 4.39:1 on the paper */
-  --pf-border: var(--color-border);
+  --pf-background: var(--color-bg);
+  --pf-border: var(--color-control-border); /* the field's edge needs 3:1 to be seen as a control */
   --pf-border-focus: var(--color-accent);
   --pf-hover: var(--color-code-bg);
+  --pf-mark: var(--color-text);
+  --pf-skeleton: var(--color-code-bg);
+  --pf-skeleton-shine: var(--color-border);
+  --pf-scroll-shadow: var(--color-shadow);
+  --pf-error-bg: color-mix(in srgb, var(--color-caution) 8%, var(--color-bg));
+  --pf-error-border: var(--color-caution);
+  --pf-error-text: var(--color-caution);
+  --pf-error-text-secondary: var(--color-caution);
   --pf-outline-focus: var(--color-accent);
   --pf-border-radius: var(--radius);
   --pf-input-height: 2.1rem;
   --pf-searchbox-max-width: 100%;
-  --pf-shadow-md: 0 4px 12px rgba(34, 34, 34, 0.12);
-  --pf-shadow-lg: 0 16px 48px rgba(34, 34, 34, 0.2);
+  --pf-shadow-sm: 0 2px 8px var(--color-shadow);
+  --pf-shadow-md: 0 4px 12px var(--color-shadow);
+  --pf-shadow-lg: 0 16px 48px var(--color-shadow);
 }
 
 /* The strip above a page's title: the breadcrumbs on the left and, on a recipe, when it was last updated on the right */
@@ -378,7 +449,7 @@ main, article {
 }
 
 .tag-chip:hover {
-  color: #ffffff;
+  color: var(--color-on-accent);
   background-color: var(--color-link);
   border-color: var(--color-link);
   opacity: 1;
@@ -606,20 +677,20 @@ pre code {
   border-radius: 0 var(--radius) 0 0;
 }
 
-/* Jenkins console excerpts: .eleventy.js marks command, error and warning lines; colours are 5.6:1 or better on --color-code-bg */
+/* Jenkins console excerpts: .eleventy.js marks command, error and warning lines; colours are 5.6:1 or better on --color-code-bg in both themes */
 .jenkins-log__command {
   font-weight: 600;
 }
 
 .jenkins-log__error {
-  color: #b91c1c;
+  color: var(--color-caution);
 }
 
 .jenkins-log__warning {
-  color: #854d0e;
+  color: var(--color-warning);
 }
 
-/* Email templates: lines wrap instead of scrolling so a request reads like a message; placeholders are 5.5:1 on their tint */
+/* Email templates: lines wrap instead of scrolling so a request reads like a message; placeholders are 5.5:1 on their tint (6.8:1 dark) */
 .email pre {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -638,7 +709,7 @@ pre code {
 
 /* no horizontal padding, so the aligned columns in some templates stay on the monospace grid */
 .email__placeholder {
-  color: #9a3412;
+  color: var(--color-code-text);
   background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
   border-radius: var(--radius);
 }
@@ -653,7 +724,7 @@ pre code {
 }
 
 .tree__comment {
-  color: #6b6358;
+  color: var(--syntax-comment);
   font-style: italic;
 }
 
@@ -662,12 +733,12 @@ pre code {
   margin-right: var(--spacing-unit);
 }
 
-/* Syntax highlighting (Prism tokens via eleventy-plugin-syntaxhighlight); every colour is 4.5:1 or better on --color-code-bg */
+/* Syntax highlighting (Prism tokens via eleventy-plugin-syntaxhighlight); every colour is 4.5:1 or better on --color-code-bg in both themes */
 .token.comment,
 .token.prolog,
 .token.doctype,
 .token.cdata {
-  color: #6b6358;
+  color: var(--syntax-comment);
   font-style: italic;
 }
 
@@ -682,7 +753,7 @@ pre code {
 .token.constant,
 .token.symbol,
 .token.deleted {
-  color: #9f1d5a;
+  color: var(--syntax-property);
 }
 
 .token.selector,
@@ -691,30 +762,30 @@ pre code {
 .token.char,
 .token.builtin,
 .token.inserted {
-  color: #3f6212;
+  color: var(--syntax-string);
 }
 
 .token.operator,
 .token.entity,
 .token.url,
 .token.variable {
-  color: #8a4b08;
+  color: var(--syntax-operator);
 }
 
 .token.atrule,
 .token.attr-value,
 .token.keyword {
-  color: #1e40af;
+  color: var(--syntax-keyword);
 }
 
 .token.function,
 .token.class-name {
-  color: #b91c1c;
+  color: var(--syntax-function);
 }
 
 .token.regex,
 .token.important {
-  color: #8a4b08;
+  color: var(--syntax-operator);
 }
 
 /* Lists */
@@ -772,10 +843,10 @@ blockquote {
   color: var(--callout-colour);
 }
 
-.callout--tip { --callout-colour: #166534; }
-.callout--important { --callout-colour: #6d28d9; }
-.callout--warning { --callout-colour: #854d0e; }
-.callout--caution { --callout-colour: #b91c1c; }
+.callout--tip { --callout-colour: var(--color-tip); }
+.callout--important { --callout-colour: var(--color-important); }
+.callout--warning { --callout-colour: var(--color-warning); }
+.callout--caution { --callout-colour: var(--color-caution); }
 
 /* Horizontal rule */
 hr {

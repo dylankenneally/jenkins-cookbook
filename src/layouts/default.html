@@ -31,6 +31,21 @@
     <link rel="manifest" href="/assets/icons/site.webmanifest">
     <meta name="theme-color" content="#fdfbf7">
     <link rel="preload" href="/assets/fonts/ibm-plex-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+    {% comment %} sets the theme before the first stylesheet, so a page never paints in the wrong one; theme.js does the rest and shares the storage key {% endcomment %}
+    <script>
+      (() => {
+        let theme = null;
+        try {
+          theme = localStorage.getItem("jenkins-cookbook:theme");
+        } catch {
+          // storage is blocked (privacy settings), so follow the os
+        }
+        if (theme !== "light" && theme !== "dark") {
+          theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
     <link rel="stylesheet" href="/assets/style.css">
     {% if landingStyle %}<link rel="stylesheet" href="/assets/landing.css">{% endif %}
     {% if notFoundPage %}<link rel="stylesheet" href="/assets/not-found.css">{% endif %}
@@ -39,6 +54,7 @@
     {% if aboutPage %}<link rel="stylesheet" href="/assets/about.css">{% endif %}
     <link rel="stylesheet" href="/pagefind/pagefind-component-ui.css">
     <script type="module" src="/pagefind/pagefind-component-ui.js"></script>
+    <script type="module" src="/assets/theme.js"></script>
     <script type="module" src="/assets/mermaid-viewer.js"></script>
     <script type="module" src="/assets/site.js"></script>
     <script type="module" src="/assets/code-copy.js"></script>
@@ -64,9 +80,10 @@
           <a class="site-repo" href="{{ siteIndex.url }}">A to Z</a>
           <a class="site-repo" href="{{ site.repoUrl }}" aria-label="{{ site.title }} on GitHub" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
-        {% comment %} placeholder only: the light/dark switch is not built yet, so the button is disabled; the label and title match {% endcomment %}
-        <button class="theme-toggle" type="button" disabled aria-label="Toggle dark mode (not available yet)" title="Dark mode: coming soon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        {% comment %} the light/dark switch: theme.js keeps aria-pressed in step with the theme on screen, and css shows the moon or the sun {% endcomment %}
+        <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Dark theme" title="Dark theme">
+          <svg class="theme-toggle__moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          <svg class="theme-toggle__sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         </button>
       </div>
     </header>

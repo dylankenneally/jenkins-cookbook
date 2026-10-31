@@ -113,6 +113,14 @@ People copy these recipes into real pipelines, so keep the examples safe.
 - Pin versions and image tags in examples rather than using `latest`.
 - Show secrets being handled the safe way, as described in [Secrets in CI](./src/content/concepts/secrets-in-ci.md).
 
+## Changing the styles
+
+The site has a light and a dark theme. Readers get the one their system asks for, and the button in the header switches between them. Every colour is a custom property at the top of `src/assets/style.css`, with a light value in the `:root` block and a dark value in the `[data-theme="dark"]` block below it. The other stylesheets and the diagrams use only those properties.
+
+- Add a new colour as a property with both values, never as a hex value in a rule.
+- Check that text colours reach a contrast of at least 4.5:1 against both the page and `--color-code-bg`, in both themes. Form control edges need 3:1.
+- Check the change in both themes. Pages always print in the light theme.
+
 ## Submitting a change
 
 Every change reaches `master` through a pull request, including the maintainer's own. Nobody pushes to `master` directly.

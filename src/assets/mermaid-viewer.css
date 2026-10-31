@@ -118,5 +118,12 @@
 
 /* a diagram that failed to render keeps its source visible */
 pre.mermaid.mermaid--error {
-  border-left-color: #b02a2a;
+  border-left-color: var(--color-caution);
+}
+
+/* pages print in the light palette, but a diagram drawn for the dark theme has its colours baked into the svg; inverting it, then turning the hues back, gets close to the light drawing */
+@media print {
+  :root[data-theme="dark"] .mermaid-viewer__viewport svg {
+    filter: invert(1) hue-rotate(180deg);
+  }
 }

@@ -45,7 +45,7 @@
 }
 
 .letters__list a:hover {
-  color: #ffffff;
+  color: var(--color-on-accent);
   background: var(--color-link);
 }
 
@@ -86,7 +86,7 @@
   font-size: 1.4rem;
   font-weight: 700;
   line-height: 1;
-  color: #ffffff;
+  color: var(--color-on-accent);
   background: var(--color-accent);
   border-radius: var(--radius);
 }

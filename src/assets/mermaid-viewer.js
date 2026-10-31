@@ -7,9 +7,11 @@
  *  - on touch screens a vertical swipe scrolls the page rather than the diagram, except in fullscreen
  *  - keyboard on a focused diagram: + / - zoom, 0 fit, 1 actual size, arrows pan, f fullscreen
  *  - a diagram opens no smaller than a readable size; one too wide for that starts at its left edge, with a hint to drag
- *  - diagrams are drawn in the site's fonts and palette, read from the css custom properties in style.css
+ *  - diagrams are drawn in the site's fonts and palette, read from the css custom properties in style.css, and redrawn when the theme changes
  *  - each diagram is named and described by its accTitle and accDescr (the build fails without them)
  */
+
+import { onThemeChange } from "./theme.js";
 
 // served from this site (copied from node_modules by .eleventy.js), so the version is the one in package-lock.json
 const MERMAID_URL = new URL("./vendor/mermaid/mermaid.esm.min.mjs", import.meta.url).href;
@@ -61,13 +63,19 @@ const ICONS = {
 };
 
 /**
+ * a diagram's current drawing; both change together when it is redrawn in a new theme.
+ * @typedef {object} Drawing
+ * @property {SVGSVGElement} svg the rendered diagram
+ * @property {{ width: number, height: number }} size its natural size in css pixels
+ */
+
+/**
  * pan/zoom state for one diagram, applied as a css transform on the svg.
  * @param {HTMLElement} viewport the clipping element that receives input
- * @param {SVGSVGElement} svg the rendered diagram
- * @param {{ width: number, height: number }} size the diagram's natural size in css pixels
+ * @param {Drawing} drawing read on every change, so a redraw is picked up without resetting the view
  * @param {(scale: number, overflowing: boolean) => void} onChange called after every change, with whether part of the diagram is out of view
  */
-function createPanZoom(viewport, svg, size, onChange) {
+function createPanZoom(viewport, drawing, onChange) {
   let scale = 1;
   let x = 0;
   let y = 0;
@@ -76,11 +84,12 @@ function createPanZoom(viewport, svg, size, onChange) {
   let mode = "start";
 
   function overflowing() {
+    const { size } = drawing;
     return size.width * scale > viewport.clientWidth + 1 || size.height * scale > viewport.clientHeight + 1;
   }
 
   function apply() {
-    svg.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+    drawing.svg.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
     onChange(scale, overflowing());
   }
 
@@ -107,6 +116,7 @@ function createPanZoom(viewport, svg, size, onChange) {
 
   // centre the diagram at the given scale
   function centreAt(nextScale) {
+    const { size } = drawing;
     scale = nextScale;
     x = (viewport.clientWidth - size.width * scale) / 2;
     y = (viewport.clientHeight - size.height * scale) / 2;
@@ -115,6 +125,7 @@ function createPanZoom(viewport, svg, size, onChange) {
 
   // largest scale that shows the whole diagram, never enlarging past natural size
   function fitScale() {
+    const { size } = drawing;
     return Math.min(1, viewport.clientWidth / size.width, viewport.clientHeight / size.height);
   }
 
@@ -122,8 +133,8 @@ function createPanZoom(viewport, svg, size, onChange) {
   function start() {
     mode = "start";
     scale = Math.min(1, Math.max(fitScale(), MIN_START_SCALE));
-    const width = size.width * scale;
-    const height = size.height * scale;
+    const width = drawing.size.width * scale;
+    const height = drawing.size.height * scale;
     x = width > viewport.clientWidth ? 0 : (viewport.clientWidth - width) / 2;
     y = height > viewport.clientHeight ? 0 : (viewport.clientHeight - height) / 2;
     apply();
@@ -400,22 +411,15 @@ function createBar(viewer, view) {
 }
 
 /**
- * replaces a <pre class="mermaid"> with the rendered, interactive diagram.
- * @param {HTMLPreElement} pre
+ * parses mermaid's markup and checks it before anything on the page changes, so a bad render leaves the page as it was.
  * @param {string} svgMarkup
- * @param {string} id unique to this diagram, for the help text's id
+ * @param {string} id the id the diagram was rendered with, for error messages
  */
-function mountViewer(pre, svgMarkup, id) {
-  const viewer = document.createElement("figure");
-  viewer.className = "mermaid-viewer";
+function parseDiagram(svgMarkup, id) {
+  const template = document.createElement("template");
+  template.innerHTML = svgMarkup;
 
-  const viewport = document.createElement("div");
-  viewport.className = "mermaid-viewer__viewport";
-  viewport.tabIndex = 0;
-  viewport.setAttribute("role", "group");
-  viewport.innerHTML = svgMarkup;
-
-  const svg = viewport.querySelector("svg");
+  const svg = template.content.querySelector("svg");
   if (!svg) {
     console.error("[mermaid-viewer] mermaid returned markup with no <svg> element"); // eslint-disable-line no-console
     throw new TypeError("mermaid render produced no svg");
@@ -429,29 +433,64 @@ function mountViewer(pre, svgMarkup, id) {
     throw new TypeError("mermaid diagram without accTitle and accDescr");
   }
 
-  const help = document.createElement("p");
-  help.id = `${id}-help`;
-  help.className = "visually-hidden";
-  help.textContent = HELP_TEXT;
+  return { svg, titleId, descId };
+}
 
+/**
+ * puts a parsed diagram in the viewport (replacing any earlier drawing) and pins it to its natural size.
+ * @param {HTMLElement} viewport already on the page, so the svg can be measured
+ * @param {ReturnType<typeof parseDiagram>} diagram
+ * @param {string} helpId the id of the hidden text that explains the controls
+ * @returns {Drawing}
+ */
+function placeDiagram(viewport, diagram, helpId) {
+  const { svg, titleId, descId } = diagram;
+  viewport.replaceChildren(svg);
   viewport.setAttribute("aria-labelledby", titleId);
-  viewport.setAttribute("aria-describedby", `${descId} ${help.id}`);
-
-  viewer.append(viewport, help);
-  pre.replaceWith(viewer);
+  viewport.setAttribute("aria-describedby", `${descId} ${helpId}`);
 
   // pin the svg to its natural size so the transform is the only thing scaling it
   const size = naturalSize(svg);
   svg.removeAttribute("style");
   svg.setAttribute("width", String(size.width));
   svg.setAttribute("height", String(size.height));
+  return { svg, size };
+}
+
+/**
+ * replaces a <pre class="mermaid"> with the rendered, interactive diagram.
+ * @param {HTMLPreElement} pre
+ * @param {string} svgMarkup
+ * @param {string} id unique to this diagram, for the help text's id
+ * @returns {(svgMarkup: string, renderId: string) => void} redraws the diagram (in new colours) and keeps the reader's view
+ */
+function mountViewer(pre, svgMarkup, id) {
+  const diagram = parseDiagram(svgMarkup, id);
+
+  const viewer = document.createElement("figure");
+  viewer.className = "mermaid-viewer";
+
+  const viewport = document.createElement("div");
+  viewport.className = "mermaid-viewer__viewport";
+  viewport.tabIndex = 0;
+  viewport.setAttribute("role", "group");
+
+  const help = document.createElement("p");
+  help.id = `${id}-help`;
+  help.className = "visually-hidden";
+  help.textContent = HELP_TEXT;
+
+  viewer.append(viewport, help);
+  pre.replaceWith(viewer);
+
+  const drawing = placeDiagram(viewport, diagram, help.id);
 
   // the bar shows the view's zoom level and its buttons drive the view; the view first reports a change from the resize observer below, once the bar exists
-  const view = createPanZoom(viewport, svg, size, (scale, overflowing) => bar.update(scale, overflowing));
+  const view = createPanZoom(viewport, drawing, (scale, overflowing) => bar.update(scale, overflowing));
   const bar = createBar(viewer, view);
   viewer.prepend(bar.element);
 
-  sizeViewport(viewport, size);
+  sizeViewport(viewport, drawing.size);
   bindInput(viewer, viewport, view);
 
   // on a resize (window, rotation, fullscreen): resize the inline viewport to the new width, then put the view back unless the reader has moved it
@@ -460,13 +499,23 @@ function mountViewer(pre, svgMarkup, id) {
   new ResizeObserver(() => {
     const fullscreen = document.fullscreenElement === viewer;
     if (!fullscreen && viewport.clientWidth !== lastWidth) {
-      sizeViewport(viewport, size);
+      sizeViewport(viewport, drawing.size);
     }
 
     lastWidth = viewport.clientWidth;
     view.refresh(fullscreen !== wasFullscreen);
     wasFullscreen = fullscreen;
   }).observe(viewport);
+
+  return (nextMarkup, renderId) => {
+    const next = parseDiagram(nextMarkup, renderId);
+    Object.assign(drawing, placeDiagram(viewport, next, help.id));
+    if (document.fullscreenElement !== viewer) {
+      sizeViewport(viewport, drawing.size);
+    }
+
+    view.refresh(false);
+  };
 }
 
 // resolves once the viewer styles apply, so layout measurements in mountViewer are accurate
@@ -506,6 +555,56 @@ function loadLabelFonts() {
   return Promise.all(LABEL_FONTS.map((property) => document.fonts.load(`16px ${siteProperty(property)}`)));
 }
 
+// read afresh for every render, so a redraw picks up the colours of the theme now on screen
+function mermaidConfig() {
+  // the classic look, since the default neo look adds gradient borders and drop shadows the site doesn't use anywhere else, and draws subgraph borders in the node colour
+  const flowchart = { wrappingWidth: LABEL_WRAP_WIDTH, minNodeWidth: MIN_NODE_WIDTH };
+  return { startOnLoad: false, securityLevel: "strict", look: "classic", theme: "base", themeVariables: siteThemeVariables(), flowchart };
+}
+
+/**
+ * a diagram on the page: its source, kept because the viewer replaces the <pre> that held it, and how to redraw it.
+ * @typedef {object} MountedDiagram
+ * @property {string} id
+ * @property {string} source
+ * @property {ReturnType<typeof mountViewer>} redraw
+ */
+
+// bumped by each theme change, so a redraw that a newer one overtakes stops rather than finishing in the old colours
+let redrawGeneration = 0;
+
+/**
+ * draws every diagram again in the current theme's colours; one that fails keeps its earlier drawing.
+ * @param {typeof import("mermaid").default} mermaid
+ * @param {MountedDiagram[]} diagrams
+ */
+async function redrawDiagrams(mermaid, diagrams) {
+  redrawGeneration += 1;
+  const generation = redrawGeneration;
+  mermaid.initialize(mermaidConfig());
+
+  const failures = [];
+  for (const diagram of diagrams) {
+    // a fresh id each time: mermaid removes any element that already has the id it renders with, which would blank the diagram on screen meanwhile
+    const renderId = `${diagram.id}-${generation}`;
+    try {
+      const { svg } = await mermaid.render(renderId, diagram.source);
+      if (generation !== redrawGeneration) {
+        return;
+      }
+
+      diagram.redraw(svg, renderId);
+    } catch (error) {
+      console.error(`[mermaid-viewer] diagram ${diagram.id} failed to redraw for the new theme; its earlier drawing is left on the page`, error); // eslint-disable-line no-console
+      failures.push(error);
+    }
+  }
+
+  if (failures.length > 0) {
+    throw new AggregateError(failures, `${failures.length} of ${diagrams.length} mermaid diagram(s) failed to redraw`);
+  }
+}
+
 async function renderDiagrams() {
   /** @type {HTMLPreElement[]} */
   const blocks = [...document.querySelectorAll("pre.mermaid")];
@@ -514,22 +613,28 @@ async function renderDiagrams() {
   }
 
   const [{ default: mermaid }] = await Promise.all([import(MERMAID_URL), loadStylesheet(), loadLabelFonts()]);
-  // the classic look, since the default neo look adds gradient borders and drop shadows the site doesn't use anywhere else, and draws subgraph borders in the node colour
-  const flowchart = { wrappingWidth: LABEL_WRAP_WIDTH, minNodeWidth: MIN_NODE_WIDTH };
-  mermaid.initialize({ startOnLoad: false, securityLevel: "strict", look: "classic", theme: "base", themeVariables: siteThemeVariables(), flowchart });
+  mermaid.initialize(mermaidConfig());
 
   // render every diagram before failing, so one bad diagram doesn't hide the rest
+  /** @type {MountedDiagram[]} */
+  const diagrams = [];
   const failures = [];
   for (const [index, pre] of blocks.entries()) {
     const id = `mermaid-diagram-${index}`;
+    const source = pre.textContent ?? "";
     try {
-      const { svg } = await mermaid.render(id, pre.textContent ?? "");
-      mountViewer(pre, svg, id);
+      const { svg } = await mermaid.render(id, source);
+      diagrams.push({ id, source, redraw: mountViewer(pre, svg, id) });
     } catch (error) {
       pre.classList.add("mermaid--error");
       console.error(`[mermaid-viewer] diagram ${index + 1} failed to render; its source is left on the page`, error); // eslint-disable-line no-console
       failures.push(error);
     }
+  }
+
+  // the theme can change while the page is open (the header toggle, the os, another tab)
+  if (diagrams.length > 0) {
+    onThemeChange(() => redrawDiagrams(mermaid, diagrams));
   }
 
   if (failures.length > 0) {
