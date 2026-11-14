@@ -34,7 +34,7 @@
   "dependencies": {
     "@11ty/eleventy": "^3.1.7",
     "@11ty/eleventy-plugin-syntaxhighlight": "^5.0.2",
-    "markdown-it-anchor": "^10.0.0",
+    "markdown-it-anchor": "^10.1.0",
     "pagefind": "^1.5.2"
   },
   "devDependencies": {
